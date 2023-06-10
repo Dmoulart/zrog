@@ -4,6 +4,8 @@ const rl = @import("raylib");
 const Zecs = @import("zecs");
 const Ecs = @import("./context.zig").Ecs;
 
+const ts = std.time.milliTimestamp;
+
 const createCamera = @import("./graphics/camera.zig").createCamera;
 const createPlayer = @import("./player/create-player.zig").createPlayer;
 
@@ -68,13 +70,11 @@ fn loop(world: *Ecs) anyerror!void {
 
     // Main game loop
     while (!rl.WindowShouldClose()) {
-        var loop_start = std.time.milliTimestamp();
-        _ = loop_start;
+        var loop_start = ts();
 
         world.step();
 
-        var dt = std.time.milliTimestamp();
-        world.setResource(.dt, dt);
+        world.setResource(.dt, ts() - loop_start);
     }
 
     rl.CloseWindow();
