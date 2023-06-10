@@ -27,11 +27,11 @@ pub fn main() !void {
     const screen_width = world.getResource(.screen_width);
     const screen_height = world.getResource(.screen_height);
 
-    rl.InitWindow(screen_height, screen_width, "Zrog");
+    rl.InitWindow(screen_width, screen_height, "Zrog");
     rl.SetTargetFPS(60);
 
-    var x: f32 = 0;
-    var y: f32 = 0;
+    var x: i32 = 0;
+    var y: i32 = 0;
 
     // Fill map
     while (y < 50) : (y += 1) {
@@ -67,10 +67,11 @@ fn loop(world: *Ecs) anyerror!void {
     // Main game loop
     while (!rl.WindowShouldClose()) {
         var loop_start = std.time.milliTimestamp();
+        _ = loop_start;
 
         world.step();
 
-        var dt = @intToFloat(f32, std.time.milliTimestamp() - loop_start);
+        var dt = std.time.milliTimestamp();
         world.setResource(.dt, dt);
     }
 

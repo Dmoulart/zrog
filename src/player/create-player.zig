@@ -21,6 +21,12 @@ pub fn createPlayer(world: *Ecs) Zecs.Entity {
         .y = 10,
         .z = 1,
     });
+
+    world.write(player, .Velocity, .{
+        .x = 0,
+        .y = 0,
+    });
+
     world.write(player, .Sprite, .{
         .char = "@",
         .color = rl.WHITE,

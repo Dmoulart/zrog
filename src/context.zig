@@ -4,13 +4,13 @@ const rl = @import("raylib");
 pub const Ecs = Zecs.Context(.{
     .components = .{
         Zecs.Component("Transform", struct {
-            x: f32,
-            y: f32,
-            z: f32,
+            x: i32,
+            y: i32,
+            z: i32,
         }),
         Zecs.Component("Velocity", struct {
-            x: f32,
-            y: f32,
+            x: i32,
+            y: i32,
         }),
         Zecs.Component("Sprite", struct {
             char: *const [1:0]u8,
@@ -26,11 +26,11 @@ pub const Ecs = Zecs.Context(.{
         ),
     },
     .Resources = struct {
-        dt: f32 = 0,
-        TIME_FACTOR: f32 = 0.01,
+        dt: i64 = 0,
+        TIME_FACTOR: i32 = 1,
         camera: Zecs.Entity = 0,
-        screen_height: c_int = 1200,
-        screen_width: c_int = 800,
+        screen_height: c_int = 800,
+        screen_width: c_int = 1200,
         player: Zecs.Entity = 0,
     },
     .capacity = 10_000,
