@@ -15,11 +15,11 @@ pub fn render(world: *Ecs) void {
 }
 
 fn draw(world: *Ecs, entity: Zecs.Entity) void {
-    const sprite = world.pack(entity, .Sprite);
+    const sprite    = world.pack(entity, .Sprite);
     const transform = world.pack(entity, .Transform);
 
     var x = @floatToInt(c_int, transform.x.*) * CELL_SIZE;
     var y = @floatToInt(c_int, transform.y.*) * CELL_SIZE;
 
-    rl.DrawText(sprite.char.*, x, y, 24, sprite.color.*);
+    rl.DrawText(sprite.char.*, x, y, CELL_SIZE, sprite.color.*);
 }

@@ -7,6 +7,7 @@ pub fn createPlayer(world: *Ecs) Zecs.Entity {
         .Transform,
         .Velocity,
         .Sprite,
+        .Input,
     });
 
     world.registerType(Player);
@@ -18,6 +19,7 @@ pub fn createPlayer(world: *Ecs) Zecs.Entity {
     world.write(player, .Transform, .{
         .x = 10,
         .y = 10,
+        .z = 1,
     });
     world.write(player, .Sprite, .{
         .char = "@",

@@ -9,6 +9,7 @@ const createPlayer = @import("./player/create-player.zig").createPlayer;
 
 const render = @import("./graphics/renderer.zig").render;
 const movement = @import("./physics/movement.zig").movement;
+const moveCommands = @import("./input/move-commands.zig").moveCommands;
 
 pub fn main() !void {
     // Creation
@@ -29,19 +30,10 @@ pub fn main() !void {
     rl.InitWindow(screen_height, screen_width, "Zrog");
     rl.SetTargetFPS(60);
 
-    _ = createCamera(&world);
-    _ = createPlayer(&world);
-
-    try loop(&world);
-}
-
-fn loop(world: *Ecs) anyerror!void {
-    world.addSystem(movement);
-    world.addSystem(render);
-
     var x: f32 = 0;
     var y: f32 = 0;
 
+    // Fill map
     while (y < 50) : (y += 1) {
         while (x < 50) : (x += 1) {
             var block = world.createEmpty();
@@ -55,10 +47,22 @@ fn loop(world: *Ecs) anyerror!void {
             world.write(block, .Transform, .{
                 .x = x,
                 .y = y,
+                .z = 0,
             });
         }
         x = 0;
     }
+
+    _ = createCamera(&world);
+    _ = createPlayer(&world);
+
+    try loop(&world);
+}
+
+fn loop(world: *Ecs) anyerror!void {
+    world.addSystem(movement);
+    world.addSystem(render);
+    world.addSystem(moveCommands);
 
     // Main game loop
     while (!rl.WindowShouldClose()) {
