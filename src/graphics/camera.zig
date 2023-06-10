@@ -38,12 +38,10 @@ pub fn createCamera(world: *Ecs) Zecs.Entity {
 
     world.setResource(.camera, camera);
 
-    world.addSystem(updateCameraMovement);
-
     return camera;
 }
 
-pub fn updateCameraMovement(world: *Ecs) void {
+pub fn updateCamera(world: *Ecs) void {
     var camera = world.getResource(.camera);
 
     followPlayer(world, camera);
