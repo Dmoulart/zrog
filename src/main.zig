@@ -66,26 +66,12 @@ fn loop(world: *Ecs) anyerror!void {
 
     // Main game loop
     while (!rl.WindowShouldClose()) {
-        var camera = world.getResource(.camera);
-        // clone ?
-        var camera_object = world.clone(camera, .Camera);
-
-        rl.BeginDrawing();
-
-        rl.ClearBackground(rl.BLACK);
-
-        rl.BeginMode2D(camera_object);
-
         var loop_start = std.time.milliTimestamp();
 
         world.step();
 
         var dt = @intToFloat(f32, std.time.milliTimestamp() - loop_start);
         world.setResource(.dt, dt);
-
-        rl.EndMode2D();
-
-        rl.EndDrawing();
     }
 
     rl.CloseWindow();
