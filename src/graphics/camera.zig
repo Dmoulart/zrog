@@ -26,31 +26,22 @@ pub fn createCamera(world: *Ecs) Zecs.Entity {
         },
     );
 
-    // bind camera offset to transform
-    var camera_transform_x = world.get(camera, .Transform, .x);
-    var camera_transform_y = world.get(camera, .Transform, .y);
-
-    var camera_offset = world.get(camera, .Camera, .offset);
-    var camera_offset_x = &camera_offset.x;
-    var camera_offset_y = &camera_offset.y;
-
-    camera_offset_x = camera_transform_x;
-    camera_offset_y = camera_transform_y;
-
     world.setResource(.camera, camera);
+
+    world.addSystem(updateCameraMovement);
 
     return camera;
 }
 
 pub fn updateCameraMovement(world: *Ecs) void {
-    var camera_ent = world.getResource(.camera_entity);
-    syncCameraMovements(world, camera_ent);
+    var camera = world.getResource(.camera);
+    syncCameraMovements(world, camera);
 }
 
-fn syncCameraMovements(world: *Ecs, camera_ent: Zecs.Entity) void {
-    var camera_object = world.get(camera_ent, .Camera, .object);
-    var position = world.pack(camera_ent, .Position);
+fn syncCameraMovements(world: *Ecs, camera: Zecs.Entity) void {
+    var offset = world.get(camera, .Camera, .offset);
+    var position = world.pack(camera, .Transform);
 
-    camera_object.offset.x = position.x.*;
-    camera_object.offset.y = position.y.*;
+    offset.x = -position.x.*;
+    offset.y = -position.y.*;
 }
