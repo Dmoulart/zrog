@@ -1,0 +1,3 @@
+[submodule "libs/zecs"]
+	path = libs/zecs
+	url = git@github.com:Dmoulart/zecs.git
