@@ -33,5 +33,5 @@ pub const Ecs = Zecs.Context(.{
         screen_width: c_int = 1200,
         player: Zecs.Entity = 0,
     },
-    .capacity = 10_000,
+    .capacity = 1_000_002,
 });

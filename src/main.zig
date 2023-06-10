@@ -4,7 +4,7 @@ const rl = @import("raylib");
 const Zecs = @import("zecs");
 const Ecs = @import("./context.zig").Ecs;
 
-const ts = std.time.milliTimestamp;
+const timestamp = std.time.milliTimestamp;
 
 const createCamera = @import("./graphics/camera.zig").createCamera;
 const createPlayer = @import("./player/create-player.zig").createPlayer;
@@ -13,6 +13,8 @@ const render = @import("./graphics/renderer.zig").render;
 const updateCamera = @import("./graphics/camera.zig").updateCamera;
 const movement = @import("./physics/movement.zig").movement;
 const moveCommands = @import("./input/move-commands.zig").moveCommands;
+
+const Forest = @import("./map/forest.zig");
 
 pub fn main() !void {
     // Creation
@@ -34,27 +36,17 @@ pub fn main() !void {
     rl.SetTargetFPS(60);
 
     var x: i32 = 0;
+    _ = x;
     var y: i32 = 0;
+    _ = y;
 
-    // Fill map
-    while (y < 50) : (y += 1) {
-        while (x < 50) : (x += 1) {
-            var block = world.createEmpty();
-            world.attach(block, .Transform);
-            world.attach(block, .Sprite);
-
-            world.write(block, .Sprite, .{
-                .char = ".",
-                .color = rl.GREEN,
-            });
-            world.write(block, .Transform, .{
-                .x = x,
-                .y = y,
-                .z = 0,
-            });
-        }
-        x = 0;
-    }
+    Forest.generate(
+        &world,
+        0,
+        0,
+        1000,
+        1000,
+    );
 
     _ = createCamera(&world);
     _ = createPlayer(&world);
@@ -70,11 +62,11 @@ fn loop(world: *Ecs) anyerror!void {
 
     // Main game loop
     while (!rl.WindowShouldClose()) {
-        var loop_start = ts();
+        var loop_start = timestamp();
 
         world.step();
 
-        world.setResource(.dt, ts() - loop_start);
+        world.setResource(.dt, timestamp() - loop_start);
     }
 
     rl.CloseWindow();
