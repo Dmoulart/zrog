@@ -1,5 +1,5 @@
 const Zecs = @import("zecs");
-const Rl = @import("raylib");
+const rl = @import("raylib");
 
 pub const Ecs = Zecs.Context(.{
     .components = .{
@@ -11,11 +11,19 @@ pub const Ecs = Zecs.Context(.{
             x: f32,
             y: f32,
         }),
+        Zecs.Component("Sprite", struct {
+            char: *const [1:0]u8,
+            color: rl.Color,
+        }),
+        Zecs.Component(
+            "Camera",
+            rl.Camera2D,
+        ),
     },
     .Resources = struct {
         dt: f32 = 0,
-        camera: ?*Rl.Camera2D = null,
-        camera_entity: Zecs.Entity = 0,
+        camera: Zecs.Entity = 0,
+        player: Zecs.Entity = 0,
         screen_height: c_int = 1200,
         screen_width: c_int = 800,
     },
