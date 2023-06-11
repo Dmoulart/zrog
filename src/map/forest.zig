@@ -61,23 +61,23 @@ pub fn getTerrainBoundingBox(world: *Ecs, terrain: Zecs.Entity) BoundingBox {
 pub fn createTrees(world: *Ecs, offset_x: i32, offset_y: i32) void {
     automaton.fillWithLivingChance(10);
 
-    automaton.update(22);
+    automaton.update(12);
 
-    var cells_x: usize = 0;
-    var cells_y: usize = 0;
+    var x: usize = 0;
+    var y: usize = 0;
 
     var cell_offset_x = @intCast(usize, offset_x);
     var cell_offset_y = @intCast(usize, offset_y);
 
-    while (cells_y < automaton.height - 1) : (cells_y += 1) {
-        cells_x = 0;
+    while (y < automaton.height - 1) : (y += 1) {
+        x = 0;
 
-        while (cells_x < automaton.width - 1) : (cells_x += 1) {
+        while (x < automaton.width - 1) : (x += 1) {
             mapLivingCellToTree(
                 world,
-                cells_x + cell_offset_x,
-                cells_y + cell_offset_y,
-                automaton.getPtr(cells_x, cells_y),
+                x + cell_offset_x,
+                y + cell_offset_y,
+                automaton.getPtr(x, y),
             );
         }
     }
