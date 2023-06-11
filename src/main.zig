@@ -20,6 +20,9 @@ const moveCommands = @import("./input/move-commands.zig").moveCommands;
 
 const Forest = @import("./map/forest.zig");
 
+const Automaton = @import("./map/chunks.zig").MapAutomaton;
+var automaton = Automaton.init();
+
 pub fn main() !void {
     // Creation
 
@@ -37,12 +40,7 @@ pub fn main() !void {
     const screen_height = world.getResource(.screen_height);
 
     rl.InitWindow(screen_width, screen_height, "Zrog");
-    rl.SetTargetFPS(60);
-
-    var x: i32 = 0;
-    _ = x;
-    var y: i32 = 0;
-    _ = y;
+    rl.SetTargetFPS(10);
 
     Forest.generate(
         &world,
@@ -53,6 +51,8 @@ pub fn main() !void {
     _ = createCamera(&world);
     _ = createPlayer(&world);
 
+    automaton.debugFill();
+
     try loop(&world);
 }
 
@@ -61,16 +61,23 @@ fn loop(world: *Ecs) anyerror!void {
     world.addSystem(moveCommands);
     world.addSystem(updateCamera);
 
-    world.addSystem(prerender);
-    world.addSystem(render);
-    world.addSystem(renderTerrain);
-    world.addSystem(postrender);
+    // world.addSystem(prerender);
+    // world.addSystem(render);
+    // world.addSystem(renderTerrain);
+    // world.addSystem(postrender);
 
     // Main game loop
     while (!rl.WindowShouldClose()) {
         var loop_start = timestamp();
 
         world.step();
+
+        automaton.update(1);
+
+        // clone ?
+        var camera = world.clone(world.getResource(.camera), .Camera);
+
+        automaton.debugDraw(camera, 24);
 
         world.setResource(.dt, timestamp() - loop_start);
     }

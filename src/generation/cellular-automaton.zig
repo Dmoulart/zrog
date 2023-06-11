@@ -1,4 +1,5 @@
 const std = @import("std");
+const rl = @import("raylib");
 
 pub const CellularAutomatonCells = enum(u8) {
     dead = 0,
@@ -68,13 +69,13 @@ pub fn CellularAutomaton(comptime width: comptime_int, comptime height: comptime
             }
         }
 
-        pub fn each(self: *Self, param: anytype, function: *const fn (param: anytype, x: usize, y: usize, state: *Cells) void) void {
+        pub fn each(self: *Self, function: *const fn (x: usize, y: usize, state: *Cells) void) void {
             var y: usize = 0;
             while (y < height - 1) : (y += 1) {
                 var x: usize = 0;
 
                 while (x < width - 1) : (x += 1) {
-                    function(param, x, y, self.getPtr(x, y));
+                    function(x, y, self.getPtr(x, y));
                 }
             }
         }
@@ -131,25 +132,68 @@ pub fn CellularAutomaton(comptime width: comptime_int, comptime height: comptime
                         // If the cell is alive, then it stays alive if it has either 2 or 3 live neighbors.
                         if (alive_neighbors < 2 or alive_neighbors > 3) {
                             next_cells[x][y] = .dead;
-                            // self.set(x, y, .dead);
                         } else {
                             next_cells[x][y] = .alive;
-                            // self.set(x, y, .alive);
                         }
                     } else {
                         // If the cell is dead, then it springs to life only in the case that it has 3 live neighbors.
                         if (alive_neighbors == 3) {
-                            next_cells[x][y] = .dead;
-                            // self.set(x, y, .dead);
-                        } else {
                             next_cells[x][y] = .alive;
-                            // self.set(x, y, .alive);
+                        } else {
+                            next_cells[x][y] = .dead;
                         }
                     }
                 }
             }
 
             self.cells = next_cells;
+        }
+
+        // debug
+        pub fn debugFill(self: *Self) void {
+            const RndGen = std.rand.DefaultPrng;
+            var rnd = RndGen.init(0);
+
+            var y: usize = 0;
+
+            while (y < self.height - 1) : (y += 1) {
+                var x: usize = 0;
+
+                while (x < self.width - 1) : (x += 1) {
+                    var alive = rnd.random().boolean();
+                    var state: Cells = if (alive) .alive else .dead;
+
+                    self.set(x, y, state);
+                }
+            }
+        }
+
+        // draw
+        pub fn debugDraw(self: *Self, camera: rl.Camera2D, size: c_int) void {
+            rl.BeginDrawing();
+
+            rl.ClearBackground(rl.BLACK);
+
+            rl.BeginMode2D(camera);
+
+            var cells_x: usize = 0;
+            var cells_y: usize = 0;
+
+            while (cells_y < self.height - 1) : (cells_y += 1) {
+                cells_x = 0;
+
+                while (cells_x < self.width - 1) : (cells_x += 1) {
+                    const state = self.get(cells_x, cells_y);
+
+                    if (state == .alive) {
+                        rl.DrawText("*", @intCast(c_int, cells_x) * size, @intCast(c_int, cells_y) * size, size, rl.WHITE);
+                    }
+                }
+            }
+
+            rl.EndMode2D();
+
+            rl.EndDrawing();
         }
     };
 }
