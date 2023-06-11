@@ -145,18 +145,10 @@ pub fn CellularAutomaton(comptime width: comptime_int, comptime height: comptime
 
                     if (current_cell == .alive) {
                         // If the cell is alive, then it stays alive if it has either 2 or 3 live neighbors.
-                        if (alive_neighbors < 2 or alive_neighbors > 3) {
-                            next_cells[x][y] = .dead;
-                        } else {
-                            next_cells[x][y] = .alive;
-                        }
+                        next_cells[x][y] = if (alive_neighbors < 2 or alive_neighbors > 3) .dead else .alive;
                     } else {
                         // If the cell is dead, then it springs to life only in the case that it has 3 live neighbors.
-                        if (alive_neighbors == 3) {
-                            next_cells[x][y] = .alive;
-                        } else {
-                            next_cells[x][y] = .dead;
-                        }
+                        next_cells[x][y] = if (alive_neighbors == 3) .alive else .dead;
                     }
                 }
             }

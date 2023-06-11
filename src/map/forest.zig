@@ -35,8 +35,8 @@ pub fn createTerrain(world: *Ecs, x: i32, y: i32) void {
         .z = 0,
     });
     world.write(terrain, .Sprite, .{
-        .char = ".",
-        .color = rl.GREEN,
+        .char = "\"",
+        .color = rl.DARKGRAY,
     });
     world.write(terrain, .Terrain, .{
         .width = MAP_CHUNK_SIZE,
@@ -59,9 +59,9 @@ pub fn getTerrainBoundingBox(world: *Ecs, terrain: Zecs.Entity) BoundingBox {
 }
 
 pub fn createTrees(world: *Ecs, offset_x: i32, offset_y: i32) void {
-    automaton.fillWithLivingChance(50);
+    automaton.fillWithLivingChance(10);
 
-    automaton.update(12);
+    automaton.update(22);
 
     var cells_x: usize = 0;
     var cells_y: usize = 0;
@@ -96,8 +96,8 @@ pub fn createTree(world: *Ecs, x: i32, y: i32) void {
     world.attach(grass, .Sprite);
 
     world.write(grass, .Sprite, .{
-        .char = "O",
-        .color = rl.YELLOW,
+        .char = "0",
+        .color = rl.BLUE,
     });
     world.write(grass, .Transform, .{
         .x = x,

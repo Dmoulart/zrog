@@ -57,8 +57,8 @@ fn loop(world: *Ecs) anyerror!void {
     world.addSystem(updateCamera);
 
     world.addSystem(prerender);
-    world.addSystem(render);
     world.addSystem(renderTerrain);
+    world.addSystem(render);
     world.addSystem(postrender);
 
     // Main game loop
