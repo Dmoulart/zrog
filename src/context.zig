@@ -24,6 +24,13 @@ pub const Ecs = Zecs.Context(.{
             "Input",
             struct { field: bool }, // Cannot make tag component :(
         ),
+        Zecs.Component(
+            "Terrain",
+            struct {
+                height: u32,
+                width: u32,
+            },
+        ),
     },
     .Resources = struct {
         dt: i64 = 0,

@@ -1,6 +1,7 @@
+const std = @import("std");
 const Ecs = @import("../context.zig").Ecs;
 const Zecs = @import("zecs");
-const Rl = @import("raylib");
+const BoundingBox = @import("../math/bounding-box.zig").BoundingBox;
 const CELL_SIZE = @import("./renderer.zig").CELL_SIZE;
 
 pub fn createCamera(world: *Ecs) Zecs.Entity {
@@ -62,14 +63,34 @@ fn followPlayer(world: *Ecs, camera: Zecs.Entity) void {
 fn syncCameraMovements(world: *Ecs, camera: Zecs.Entity) void {
     var offset = world.get(camera, .Camera, .offset);
 
-    var position = world.pack(camera, .Transform);
+    var transform = world.pack(camera, .Transform);
 
     var screen_width = @intToFloat(f32, world.getResource(.screen_width));
     var screen_height = @intToFloat(f32, world.getResource(.screen_height));
 
-    var position_x = @intToFloat(f32, position.x.*) * CELL_SIZE;
-    var position_y = @intToFloat(f32, position.y.*) * CELL_SIZE;
+    var position_x = @intToFloat(f32, transform.x.*) * CELL_SIZE;
+    var position_y = @intToFloat(f32, transform.y.*) * CELL_SIZE;
 
     offset.x = -position_x + screen_width / 2;
     offset.y = -position_y + screen_height / 2;
+}
+
+pub fn getCameraBoundingBox(world: *Ecs, camera: Zecs.Entity) BoundingBox {
+    var transform = world.pack(camera, .Transform);
+
+    var screen_width = @intCast(i32, world.getResource(.screen_width));
+    var screen_height = @intCast(i32, world.getResource(.screen_height));
+
+    var screen_cells_width = @divTrunc(screen_width, CELL_SIZE);
+    var screen_cells_height = @divTrunc(screen_height, CELL_SIZE);
+
+    var half_width = @intCast(u32, @divTrunc(screen_cells_width, 2));
+    var half_height = @intCast(u32, @divTrunc(screen_cells_height, 2));
+
+    return BoundingBox{
+        .x = transform.x.* - @intCast(i32, half_width),
+        .y = transform.y.* - @intCast(i32, half_height),
+        .width = @intCast(u32, screen_cells_width),
+        .height = @intCast(u32, screen_cells_height),
+    };
 }

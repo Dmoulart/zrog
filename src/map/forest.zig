@@ -7,14 +7,38 @@ pub fn generate(world: *Ecs, offset_x: i32, offset_y: i32, width: u32, height: u
     var y: i32 = 0;
     var x: i32 = 0;
 
-    // Terrain
-    while (y < height) : (y += 1) {
-        while (x < width) : (x += 1) {
-            createGrass(world, offset_x + x, offset_y + y);
-        }
+    createTerrain(world, offset_x + x, offset_y + y, width, height);
 
-        x = 0;
-    }
+    // // Terrain
+    // while (y < height) : (y += 1) {
+    //     while (x < width) : (x += 1) {
+    //         createGrass(world, offset_x + x, offset_y + y);
+    //     }
+
+    //     x = 0;
+    // }
+}
+
+pub fn createTerrain(world: *Ecs, x: i32, y: i32, width: u32, height: u32) void {
+    var terrain = world.createEmpty();
+
+    world.attach(terrain, .Transform);
+    world.attach(terrain, .Sprite);
+    world.write(terrain, .Sprite, .{
+        .char = ".",
+        .color = rl.GREEN,
+    });
+    world.write(terrain, .Transform, .{
+        .x = x,
+        .y = y,
+        .z = 0,
+    });
+
+    world.attach(terrain, .Terrain);
+    world.write(terrain, .Terrain, .{
+        .width = width,
+        .height = height,
+    });
 }
 
 pub fn createGrass(world: *Ecs, x: i32, y: i32) void {

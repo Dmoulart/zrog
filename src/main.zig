@@ -9,7 +9,11 @@ const timestamp = std.time.milliTimestamp;
 const createCamera = @import("./graphics/camera.zig").createCamera;
 const createPlayer = @import("./player/create-player.zig").createPlayer;
 
+const prerender = @import("./graphics/renderer.zig").prerender;
 const render = @import("./graphics/renderer.zig").render;
+const renderTerrain = @import("./graphics/renderer.zig").renderTerrain;
+const postrender = @import("./graphics/renderer.zig").postrender;
+
 const updateCamera = @import("./graphics/camera.zig").updateCamera;
 const movement = @import("./physics/movement.zig").movement;
 const moveCommands = @import("./input/move-commands.zig").moveCommands;
@@ -58,7 +62,11 @@ fn loop(world: *Ecs) anyerror!void {
     world.addSystem(movement);
     world.addSystem(moveCommands);
     world.addSystem(updateCamera);
+
+    world.addSystem(prerender);
     world.addSystem(render);
+    world.addSystem(renderTerrain);
+    world.addSystem(postrender);
 
     // Main game loop
     while (!rl.WindowShouldClose()) {
