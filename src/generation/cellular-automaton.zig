@@ -10,6 +10,9 @@ pub const CellularAutomatonCells = enum(u8) {
 };
 
 pub fn CellularAutomaton(comptime width: comptime_int, comptime height: comptime_int) type {
+    assert(width > 0);
+    assert(height > 0);
+
     return struct {
         const Self = @This();
 
@@ -91,26 +94,35 @@ pub fn CellularAutomaton(comptime width: comptime_int, comptime height: comptime
         }
 
         pub fn step(self: *Self) void {
-            var y: usize = 1;
+            var y: usize = 0;
 
             var neighbors: [8]Cells = undefined;
 
             var next_cells: [width][height]Cells = undefined;
 
+            var limit_y: usize = height - 1;
+            var limit_x: usize = width - 1;
+
             while (y < height - 1) : (y += 1) {
-                var x: usize = 1;
+                var x: usize = 0;
+
+                var ym1 = if (y == 0) limit_y else y - 1;
+                var yp1 = if (y == limit_y) limit_y else y + 1;
 
                 while (x < width - 1) : (x += 1) {
-                    const left = self.get(x - 1, y);
-                    const right = self.get(x + 1, y);
+                    var xm1 = if (x == 0) limit_x else x - 1;
+                    var xp1 = if (x == limit_x) limit_x else x + 1;
 
-                    const top = self.get(x, y - 1);
-                    const top_left = self.get(x - 1, y - 1);
-                    const top_right = self.get(x + 1, y - 1);
+                    const left = self.get(xm1, y);
+                    const right = self.get(xp1, y);
 
-                    const bottom = self.get(x, y + 1);
-                    const bottom_left = self.get(x - 1, y + 1);
-                    const bottom_right = self.get(x + 1, y + 1);
+                    const top = self.get(x, ym1);
+                    const top_left = self.get(xm1, ym1);
+                    const top_right = self.get(xp1, ym1);
+
+                    const bottom = self.get(x, yp1);
+                    const bottom_left = self.get(xm1, yp1);
+                    const bottom_right = self.get(xp1, yp1);
 
                     neighbors = [_]Cells{
                         left,
