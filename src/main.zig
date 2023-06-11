@@ -48,8 +48,6 @@ pub fn main() !void {
         &world,
         0,
         0,
-        1000,
-        1000,
     );
 
     _ = createCamera(&world);

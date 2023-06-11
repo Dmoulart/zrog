@@ -1,143 +1,155 @@
 const std = @import("std");
 
-pub const CellularAutomaton = struct {
-    const Self = @This();
+pub const CellularAutomatonCells = enum(u8) {
+    dead = 0,
+    alive = 1,
+};
 
-    allocator: std.mem.Allocator,
+pub fn CellularAutomaton(comptime width: comptime_int, comptime height: comptime_int) type {
+    return struct {
+        const Self = @This();
 
-    cells: []Cells,
-    next_cells: []Cells,
+        pub const Cells = CellularAutomatonCells;
 
-    height: usize,
-    width: usize,
+        cells: [width][height]Cells = undefined,
 
-    pub const Cells = enum(u8) {
-        dead = 0,
-        alive = 1,
-    };
+        height: usize = height,
+        width: usize = width,
 
-    pub fn init(allocator: std.mem.Allocator, width: usize, height: usize) !Self {
-        var cells = try allocator.alloc(Cells, width * height);
-        var next_cells = try allocator.alloc(Cells, width * height);
+        pub fn init() Self {
+            var automaton = Self{};
 
-        var automaton = Self{
-            .allocator = allocator,
-            .cells = cells,
-            .next_cells = next_cells,
-            .width = width,
-            .height = height,
-        };
+            automaton.clear();
 
-        var y: usize = 0;
+            return automaton;
+        }
 
-        while (y < height) : (y += 1) {
+        pub fn set(self: *Self, x: usize, y: usize, state: Cells) void {
+            self.cells[x][y] = state;
+        }
+
+        pub fn get(self: *Self, x: usize, y: usize) Cells {
+            return self.cells[x][y];
+        }
+
+        pub fn getPtr(self: *Self, x: usize, y: usize) *Cells {
+            return &self.cells[x][y];
+        }
+
+        // Set all automaton cell's to dead
+        pub fn clear(self: *Self) void {
+            // is this a great idea ?
+            @setEvalBranchQuota(100_000);
+
             var x: usize = 0;
 
             while (x < width) : (x += 1) {
-                automaton.set(x, y, .dead);
-            }
-        }
+                var y: usize = 0;
 
-        return automaton;
-    }
+                var column: [height]Cells = undefined;
+                self.cells[x] = column;
 
-    pub fn set(self: *Self, x: usize, y: usize, state: Cells) void {
-        self.cells[y * self.width + x] = state;
-    }
-
-    pub fn get(self: *Self, x: usize, y: usize) *Cells {
-        return &self.cells[y * self.width + x];
-    }
-
-    pub fn map(self: *Self, function: *const fn (x: usize, y: usize, state: *Cells) Cells) void {
-        var y: usize = 0;
-        while (y < self.height - 1) : (y += 1) {
-            var x: usize = 0;
-
-            while (x < self.width - 1) : (x += 1) {
-                var cell = self.get(x, y);
-                cell.* = function(x, y, self.get(x, y));
-            }
-        }
-    }
-
-    pub fn each(self: *Self, param: anytype, function: *const fn (param: anytype, x: usize, y: usize, state: *Cells) void) void {
-        var y: usize = 0;
-        while (y < self.height - 1) : (y += 1) {
-            var x: usize = 0;
-
-            while (x < self.width - 1) : (x += 1) {
-                function(param, x, y, self.get(x, y));
-            }
-        }
-    }
-
-    pub fn update(self: *Self, n: u32) void {
-        var i: u32 = 0;
-        while (i < n) : (i += 1) {
-            self.step();
-        }
-    }
-
-    pub fn step(self: *Self) void {
-        var y: usize = 1;
-
-        var neighbors: [8]Cells = undefined;
-
-        var next_cells = self.allocator.alloc(Cells, self.width * self.height) catch unreachable;
-
-        while (y < self.height - 1) : (y += 1) {
-            var x: usize = 1;
-
-            while (x < self.width - 1) : (x += 1) {
-                const left = self.get(x - 1, y).*;
-                const right = self.get(x + 1, y).*;
-
-                const top = self.get(x, y - 1).*;
-                const top_left = self.get(x - 1, y - 1).*;
-                const top_right = self.get(x + 1, y - 1).*;
-
-                const bottom = self.get(x, y + 1).*;
-                const bottom_left = self.get(x - 1, y + 1).*;
-                const bottom_right = self.get(x + 1, y + 1).*;
-
-                neighbors = [_]Cells{
-                    left,
-                    right,
-                    top,
-                    top_left,
-                    top_right,
-                    bottom,
-                    bottom_left,
-                    bottom_right,
-                };
-
-                var alive_neighbors: u8 = 0;
-
-                for (neighbors) |neighbor| {
-                    alive_neighbors = if (neighbor == .alive) alive_neighbors + 1 else alive_neighbors;
-                }
-
-                var current_cell = self.get(x, y).*;
-
-                if (current_cell == .alive) {
-                    // If the cell is alive, then it stays alive if it has either 2 or 3 live neighbors.
-                    if (alive_neighbors < 2 or alive_neighbors > 3) {
-                        self.set(x, y, .dead);
-                    } else {
-                        self.set(x, y, .alive);
-                    }
-                } else {
-                    // If the cell is dead, then it springs to life only in the case that it has 3 live neighbors.
-                    if (alive_neighbors == 3) {
-                        self.set(x, y, .dead);
-                    } else {
-                        self.set(x, y, .alive);
-                    }
+                while (y < height) : (y += 1) {
+                    self.set(x, y, .dead);
                 }
             }
         }
 
-        self.cells = next_cells;
-    }
-};
+        pub fn map(self: *Self, function: *const fn (x: usize, y: usize, state: Cells) Cells) void {
+            var y: usize = 0;
+            while (y < height - 1) : (y += 1) {
+                var x: usize = 0;
+
+                while (x < width - 1) : (x += 1) {
+                    var cell = self.get(x, y);
+                    var state = function(x, y, cell);
+                    self.set(x, y, state);
+                }
+            }
+        }
+
+        pub fn each(self: *Self, param: anytype, function: *const fn (param: anytype, x: usize, y: usize, state: *Cells) void) void {
+            var y: usize = 0;
+            while (y < height - 1) : (y += 1) {
+                var x: usize = 0;
+
+                while (x < width - 1) : (x += 1) {
+                    function(param, x, y, self.getPtr(x, y));
+                }
+            }
+        }
+
+        pub fn update(self: *Self, n: u32) void {
+            var i: u32 = 0;
+            while (i < n) : (i += 1) {
+                self.step();
+            }
+        }
+
+        pub fn step(self: *Self) void {
+            var y: usize = 1;
+
+            var neighbors: [8]Cells = undefined;
+
+            var next_cells: [width][height]Cells = undefined;
+
+            while (y < height - 1) : (y += 1) {
+                var x: usize = 1;
+
+                while (x < width - 1) : (x += 1) {
+                    const left = self.get(x - 1, y);
+                    const right = self.get(x + 1, y);
+
+                    const top = self.get(x, y - 1);
+                    const top_left = self.get(x - 1, y - 1);
+                    const top_right = self.get(x + 1, y - 1);
+
+                    const bottom = self.get(x, y + 1);
+                    const bottom_left = self.get(x - 1, y + 1);
+                    const bottom_right = self.get(x + 1, y + 1);
+
+                    neighbors = [_]Cells{
+                        left,
+                        right,
+                        top,
+                        top_left,
+                        top_right,
+                        bottom,
+                        bottom_left,
+                        bottom_right,
+                    };
+
+                    var alive_neighbors: u8 = 0;
+
+                    for (neighbors) |neighbor| {
+                        alive_neighbors = if (neighbor == .alive) alive_neighbors + 1 else alive_neighbors;
+                    }
+
+                    var current_cell = self.get(x, y);
+
+                    if (current_cell == .alive) {
+                        // If the cell is alive, then it stays alive if it has either 2 or 3 live neighbors.
+                        if (alive_neighbors < 2 or alive_neighbors > 3) {
+                            next_cells[x][y] = .dead;
+                            // self.set(x, y, .dead);
+                        } else {
+                            next_cells[x][y] = .alive;
+                            // self.set(x, y, .alive);
+                        }
+                    } else {
+                        // If the cell is dead, then it springs to life only in the case that it has 3 live neighbors.
+                        if (alive_neighbors == 3) {
+                            next_cells[x][y] = .dead;
+                            // self.set(x, y, .dead);
+                        } else {
+                            next_cells[x][y] = .alive;
+                            // self.set(x, y, .alive);
+                        }
+                    }
+                }
+            }
+
+            self.cells = next_cells;
+        }
+    };
+}
