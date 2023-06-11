@@ -59,11 +59,9 @@ pub fn getTerrainBoundingBox(world: *Ecs, terrain: Zecs.Entity) BoundingBox {
 }
 
 pub fn createTrees(world: *Ecs, offset_x: i32, offset_y: i32) void {
-    automaton.map(liveOrDie);
+    automaton.fillWithLivingChance(50);
 
     automaton.update(12);
-
-    // automaton.each(world, mapLivingCellToTree);
 
     var cells_x: usize = 0;
     var cells_y: usize = 0;
@@ -83,15 +81,6 @@ pub fn createTrees(world: *Ecs, offset_x: i32, offset_y: i32) void {
             );
         }
     }
-}
-
-pub fn liveOrDie(x: usize, y: usize, state: Automaton.Cells) Automaton.Cells {
-    _ = x;
-    _ = state;
-    _ = y;
-
-    var alive = rnd.random().boolean();
-    return if (alive) .alive else .dead;
 }
 
 pub fn mapLivingCellToTree(world: *Ecs, x: usize, y: usize, state: *Automaton.Cells) void {

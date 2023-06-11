@@ -1,5 +1,8 @@
 const std = @import("std");
+const assert = std.debug.assert;
 const rl = @import("raylib");
+
+const RndGen = std.rand.DefaultPrng;
 
 pub const CellularAutomatonCells = enum(u8) {
     dead = 0,
@@ -149,9 +152,10 @@ pub fn CellularAutomaton(comptime width: comptime_int, comptime height: comptime
             self.cells = next_cells;
         }
 
-        // debug
-        pub fn debugFill(self: *Self) void {
-            const RndGen = std.rand.DefaultPrng;
+        // Fill the grid  by specifying a individual cell living chance percentage.
+        pub fn fillWithLivingChance(self: *Self, chance: u8) void {
+            assert(chance >= 0 and chance <= 100);
+
             var rnd = RndGen.init(0);
 
             var y: usize = 0;
@@ -160,15 +164,14 @@ pub fn CellularAutomaton(comptime width: comptime_int, comptime height: comptime
                 var x: usize = 0;
 
                 while (x < self.width - 1) : (x += 1) {
-                    var alive = rnd.random().boolean();
-                    var state: Cells = if (alive) .alive else .dead;
+                    var random_number = rnd.random().intRangeAtMost(u8, 0, 100);
+                    var alive = random_number <= chance;
 
-                    self.set(x, y, state);
+                    self.set(x, y, if (alive) .alive else .dead);
                 }
             }
         }
 
-        // draw
         pub fn debugDraw(self: *Self, camera: rl.Camera2D, size: c_int) void {
             rl.BeginDrawing();
 
