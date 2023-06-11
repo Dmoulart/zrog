@@ -84,12 +84,12 @@ pub fn getCameraBoundingBox(world: *Ecs, camera: Zecs.Entity) BoundingBox {
     var screen_cells_width = @divTrunc(screen_width, CELL_SIZE);
     var screen_cells_height = @divTrunc(screen_height, CELL_SIZE);
 
-    var half_width = @intCast(u32, @divTrunc(screen_cells_width, 2));
-    var half_height = @intCast(u32, @divTrunc(screen_cells_height, 2));
+    var half_width = @divTrunc(screen_cells_width, 2);
+    var half_height = @divTrunc(screen_cells_height, 2);
 
     return BoundingBox{
-        .x = transform.x.* - @intCast(i32, half_width),
-        .y = transform.y.* - @intCast(i32, half_height),
+        .x = transform.x.* - half_width,
+        .y = transform.y.* - half_height,
         .width = @intCast(u32, screen_cells_width),
         .height = @intCast(u32, screen_cells_height),
     };

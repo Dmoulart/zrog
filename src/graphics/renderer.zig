@@ -5,6 +5,7 @@ const Ecs = @import("../context.zig").Ecs;
 
 const pointIsInFieldOfView = @import("./camera.zig").pointIsInFieldOfView;
 const getCameraBoundingBox = @import("./camera.zig").getCameraBoundingBox;
+const getTerrainBoundingBox = @import("../map/forest.zig").getTerrainBoundingBox;
 
 pub const CELL_SIZE = 24;
 
@@ -52,7 +53,6 @@ fn drawTerrain(world: *Ecs, entity: Zecs.Entity) void {
 
     const sprite = world.pack(entity, .Sprite);
     const transform = world.pack(entity, .Transform);
-    const terrain = world.pack(entity, .Terrain);
 
     var start_x = @intCast(c_int, transform.x.*) * CELL_SIZE;
     var start_y = @intCast(c_int, transform.y.*) * CELL_SIZE;
@@ -60,22 +60,14 @@ fn drawTerrain(world: *Ecs, entity: Zecs.Entity) void {
     var x = start_x;
     var y = start_y;
 
-    var height = terrain.height.* * CELL_SIZE;
-    var width = terrain.width.* * CELL_SIZE;
+    var fov = getCameraBoundingBox(world, camera);
+    var terrain = getTerrainBoundingBox(world, entity);
 
-    var camera_bbox = getCameraBoundingBox(world, camera);
+    var end_x = @min(fov.endX(), terrain.endX()) * CELL_SIZE;
+    var end_y = @min(fov.endY(), terrain.endY()) * CELL_SIZE;
 
-    var cell_x = @divTrunc(x, CELL_SIZE);
-    var cell_y = @divTrunc(y, CELL_SIZE);
-
-    while (y < height) : (y += CELL_SIZE) {
-        cell_y = @divTrunc(y, CELL_SIZE);
-
-        while (x < width) : (x += CELL_SIZE) {
-            cell_x = @divTrunc(x, CELL_SIZE);
-
-            if (!camera_bbox.contains(cell_x, cell_y)) continue;
-
+    while (y < end_y) : (y += CELL_SIZE) {
+        while (x < end_x) : (x += CELL_SIZE) {
             rl.DrawText(sprite.char.*, x, y, CELL_SIZE, sprite.color.*);
         }
 
