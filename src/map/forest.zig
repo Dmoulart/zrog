@@ -14,12 +14,9 @@ const RndGen = std.rand.DefaultPrng;
 var rnd = RndGen.init(0);
 
 pub fn generate(world: *Ecs, offset_x: i32, offset_y: i32) void {
-    var y: i32 = 0;
-    var x: i32 = 0;
+    createTerrain(world, offset_x, offset_y);
 
-    createTerrain(world, offset_x + x, offset_y + y);
-
-    createTrees(world, offset_x + x, offset_y + y);
+    createTrees(world, offset_x, offset_y);
 }
 
 pub fn createTerrain(world: *Ecs, x: i32, y: i32) void {
