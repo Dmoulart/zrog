@@ -19,7 +19,7 @@ pub fn generate(world: *Ecs, offset_x: i32, offset_y: i32) void {
     createTrees(world, offset_x, offset_y);
 }
 
-pub fn createTerrain(world: *Ecs, x: i32, y: i32) void {
+pub fn createTerrain(world: *Ecs, offset_x: i32, offset_y: i32) void {
     var terrain = world.createEmpty();
 
     world.attach(terrain, .Transform);
@@ -27,8 +27,8 @@ pub fn createTerrain(world: *Ecs, x: i32, y: i32) void {
     world.attach(terrain, .Terrain);
 
     world.write(terrain, .Transform, .{
-        .x = x,
-        .y = y,
+        .x = offset_x,
+        .y = offset_y,
         .z = 0,
     });
     world.write(terrain, .Sprite, .{
