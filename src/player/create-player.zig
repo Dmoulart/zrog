@@ -8,6 +8,7 @@ pub fn createPlayer(world: *Ecs) Zecs.Entity {
         .Velocity,
         .Sprite,
         .Input,
+        .InChunk,
     });
 
     world.registerType(Player);

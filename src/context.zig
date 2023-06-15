@@ -24,24 +24,15 @@ pub const Ecs = Zecs.Context(.{
             "Camera",
             rl.Camera2D,
         ),
+        Zecs.Tag("Chunk"),
         Zecs.Component(
-            "Input",
-            struct { field: bool }, // Cannot make tag component :(
-        ),
-        Zecs.Component(
-            "Terrain",
+            "InChunk",
             struct {
-                height: u32,
-                width: u32,
+                chunk: Zecs.Entity,
             },
         ),
-        Zecs.Component(
-            "Chunk",
-            struct {
-                x: i32,
-                y: i32,
-            },
-        ),
+        Zecs.Tag("Input"),
+        Zecs.Tag("Terrain"),
     },
     .Resources = struct {
         dt: i64 = 0,

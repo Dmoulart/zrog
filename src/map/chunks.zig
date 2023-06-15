@@ -12,11 +12,14 @@ y: i32,
 
 bbox: BoundingBox,
 
+id: Zecs.Entity,
+
 terrain: [SIZE][SIZE]Zecs.Entity = undefined,
 entities: [SIZE][SIZE][MAX_ENTITY_PER_CELL]Zecs.Entity = undefined,
 
-pub fn init(x: i32, y: i32) Self {
+pub fn init(x: i32, y: i32, id: Zecs.Entity) Self {
     return Self{
+        .id = id,
         .x = x,
         .y = y,
         .bbox = BoundingBox{

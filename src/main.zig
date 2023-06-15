@@ -46,7 +46,8 @@ pub fn main() !void {
     world.setResource(.chunk, &chunk);
 
     _ = createCamera(&world);
-    _ = createPlayer(&world);
+    var player = createPlayer(&world);
+    world.set(player, .InChunk, .chunk, chunk.id);
 
     try loop(&world);
 }
@@ -69,7 +70,8 @@ fn loop(world: *Ecs) anyerror!void {
 
         var dt = timestamp() - loop_start;
 
-        std.debug.print("dt {}ms\n", .{dt});
+        std.debug.print("dt {}", .{dt});
+
         world.setResource(.dt, dt);
     }
 

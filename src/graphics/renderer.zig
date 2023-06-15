@@ -1,6 +1,7 @@
 const std = @import("std");
 const rl = @import("raylib");
 const Zecs = @import("zecs");
+
 const Ecs = @import("../context.zig").Ecs;
 
 const pointIsInFieldOfView = @import("./camera.zig").pointIsInFieldOfView;
@@ -22,13 +23,29 @@ pub fn prerender(world: *Ecs) void {
 }
 
 pub fn render(world: *Ecs) void {
-    _ = world;
-    // var drawables = world.query()
-    //     .all(.{ .Transform, .Sprite })
-    //     .not(.{.Terrain})
-    //     .execute();
+    var current_chunk = world.getResource(.chunk);
+    var camera = world.getResource(.camera);
 
-    // drawables.each(draw);
+    var drawables = world.query()
+        .all(.{ .Transform, .Sprite, .InChunk })
+        .not(.{.Terrain})
+        .execute()
+        .iterator();
+
+    var camera_bbox = getCameraBoundingBox(world, camera);
+
+    // how to make this faster ?
+    // 1) faster iterator
+    // 2) filter by chunk in the query (relationships ?)
+    // 3) some data structure that keep track of these drawables entities (kdtree ? quadtree ? )
+    while (drawables.next()) |drawable| {
+        var transform = world.pack(drawable, .Transform);
+        var owning_chunk = world.get(drawable, .InChunk, .chunk).*;
+
+        if (owning_chunk != current_chunk.?.id or !camera_bbox.contains(transform.x.*, transform.y.*)) continue;
+
+        draw(world, drawable);
+    }
 }
 
 pub fn renderTerrain(world: *Ecs) void {
