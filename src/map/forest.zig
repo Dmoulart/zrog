@@ -44,22 +44,12 @@ pub fn createTerrain(world: *Ecs, chunk: *Chunk) void {
 
     for (chunk.terrain) |*col, x| {
         for (col) |*entity, y| {
-            // register cell id
-            entity.* = world.create(Cell);
-            // give it some data
-            world.write(entity.*, .Sprite, .{
-                .char = "\"",
-                .color = rl.DARKGRAY,
-            });
-            world.write(
-                entity.*,
-                .Transform,
-                .{
-                    .x = chunk.x + @intCast(i32, x),
-                    .y = chunk.y + @intCast(i32, y),
-                },
+            entity.* = createGrass(
+                world,
+                chunk.x + @intCast(i32, x),
+                chunk.y + @intCast(i32, y),
+                chunk.id,
             );
-            world.set(entity.*, .InChunk, .chunk, chunk.id);
         }
     }
 }
@@ -83,7 +73,7 @@ pub fn createTrees(world: *Ecs, chunk: *Chunk) void {
 
             if (state == .dead) continue;
 
-            createTree(
+            _ = createTree(
                 world,
                 @intCast(i32, x + cell_offset_x),
                 @intCast(i32, y + cell_offset_y),
@@ -93,67 +83,38 @@ pub fn createTrees(world: *Ecs, chunk: *Chunk) void {
     }
 }
 
-pub fn createTree(world: *Ecs, x: i32, y: i32, chunk_id: Zecs.Entity) void {
-    var grass = world.create(Grass);
+pub fn createTree(world: *Ecs, x: i32, y: i32, chunk_id: Zecs.Entity) Zecs.Entity {
+    var tree = world.create(Grass);
 
-    world.write(grass, .Sprite, .{
+    world.write(tree, .Sprite, .{
         .char = "0",
         .color = rl.BLUE,
     });
-    world.write(grass, .Transform, .{
+    world.write(tree, .Transform, .{
         .x = x,
         .y = y,
         .z = 0,
     });
-    world.write(grass, .InChunk, .{
+    world.write(tree, .InChunk, .{
         .chunk = chunk_id,
     });
+
+    return tree;
 }
 
-// pub fn createTrees(world: *Ecs, offset_x: i32, offset_y: i32) void {
-//     automaton.fillWithLivingChance(10);
-
-//     automaton.update(12);
-
-//     var x: usize = 0;
-//     var y: usize = 0;
-
-//     var cell_offset_x = @intCast(usize, offset_x);
-//     var cell_offset_y = @intCast(usize, offset_y);
-
-//     while (y < automaton.height - 1) : (y += 1) {
-//         x = 0;
-
-//         while (x < automaton.width - 1) : (x += 1) {
-//             mapLivingCellToTree(
-//                 world,
-//                 x + cell_offset_x,
-//                 y + cell_offset_y,
-//                 automaton.getPtr(x, y),
-//             );
-//         }
-//     }
-// }
-
-// pub fn mapLivingCellToTree(world: *Ecs, x: usize, y: usize, state: *Automaton.Cells) void {
-//     if (state.* == .dead) return;
-
-//     createTree(world, @intCast(i32, x), @intCast(i32, y));
-// }
-
-pub fn createGrass(world: *Ecs, x: i32, y: i32) void {
-    var grass = world.createEmpty();
-
-    world.attach(grass, .Transform);
-    world.attach(grass, .Sprite);
+pub fn createGrass(world: *Ecs, x: i32, y: i32, chunk_id: Zecs.Entity) Zecs.Entity {
+    var grass = world.create(Cell);
 
     world.write(grass, .Sprite, .{
-        .char = ".",
-        .color = rl.GREEN,
+        .char = "\"",
+        .color = rl.DARKGRAY,
     });
     world.write(grass, .Transform, .{
         .x = x,
         .y = y,
         .z = 0,
     });
+    world.set(grass, .InChunk, .chunk, chunk_id);
+
+    return grass;
 }
