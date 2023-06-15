@@ -39,11 +39,13 @@ pub fn main() !void {
     rl.InitWindow(screen_width, screen_height, "Zrog");
     rl.SetTargetFPS(60);
 
-    Forest.generate(
+    var chunk = Forest.generate(
         &world,
         0,
         0,
     );
+
+    world.setResource(.chunk, &chunk);
 
     _ = createCamera(&world);
     _ = createPlayer(&world);

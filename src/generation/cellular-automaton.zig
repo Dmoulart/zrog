@@ -1,4 +1,5 @@
 const std = @import("std");
+const CHUNK_SIZE = @import("../map/chunks.zig").CHUNK_SIZE;
 const assert = std.debug.assert;
 const rl = @import("raylib");
 
@@ -204,3 +205,7 @@ pub fn CellularAutomaton(comptime width: comptime_int, comptime height: comptime
         }
     };
 }
+
+// The default map chunk automaton
+pub const MapAutomaton = CellularAutomaton(CHUNK_SIZE, CHUNK_SIZE);
+pub const map_automaton = MapAutomaton.init();

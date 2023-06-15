@@ -6,40 +6,98 @@ const Ecs = @import("../context.zig").Ecs;
 
 const BoundingBox = @import("../math/bounding-box.zig").BoundingBox;
 
-const Automaton = @import("./chunks.zig").MapAutomaton;
-var automaton = @import("./chunks.zig").automaton;
-const MAP_CHUNK_SIZE = @import("./chunks.zig").MAP_CHUNK_SIZE;
+const Automaton = @import("../generation/cellular-automaton.zig").MapAutomaton;
+var automaton = @import("../generation/cellular-automaton.zig").map_automaton;
+const Chunk = @import("./chunks.zig");
 
 const RndGen = std.rand.DefaultPrng;
 var rnd = RndGen.init(0);
 
-pub fn generate(world: *Ecs, offset_x: i32, offset_y: i32) void {
-    createTerrain(world, offset_x, offset_y);
+pub fn generate(world: *Ecs, offset_x: i32, offset_y: i32) Chunk {
+    var chunk = Chunk.init(offset_x, offset_y);
 
-    createTrees(world, offset_x, offset_y);
+    _ = createTerrain(world, &chunk);
+
+    // createTrees(world, offset_x, offset_y);
+
+    return chunk;
 }
+// pub fn generate(world: *Ecs, offset_x: i32, offset_y: i32) void {
+//     createTerrain(world, offset_x, offset_y);
 
-pub fn createTerrain(world: *Ecs, offset_x: i32, offset_y: i32) void {
+//     createTrees(world, offset_x, offset_y);
+// }
+
+pub fn createTerrain(world: *Ecs, chunk: *Chunk) Zecs.Entity {
     var terrain = world.createEmpty();
 
-    world.attach(terrain, .Transform);
-    world.attach(terrain, .Sprite);
-    world.attach(terrain, .Terrain);
+    const Cell = Ecs.Type(.{ .Sprite, .Transform });
+    world.registerType(Cell);
 
-    world.write(terrain, .Transform, .{
-        .x = offset_x,
-        .y = offset_y,
-        .z = 0,
-    });
-    world.write(terrain, .Sprite, .{
-        .char = "\"",
-        .color = rl.DARKGRAY,
-    });
-    world.write(terrain, .Terrain, .{
-        .width = MAP_CHUNK_SIZE,
-        .height = MAP_CHUNK_SIZE,
-    });
+    // world.attach(terrain, .Transform);
+    // world.attach(terrain, .Sprite);
+    // world.attach(terrain, .Terrain);
+
+    // world.write(terrain, .Transform, .{
+    //     .x = offset_x,
+    //     .y = offset_y,
+    //     .z = 0,
+    // });
+    // world.write(terrain, .Sprite, .{
+    //     .char = "\"",
+    //     .color = rl.DARKGRAY,
+    // });
+    // world.write(terrain, .Terrain, .{
+    //     .width = Chunk.SIZE,
+    //     .height = Chunk.SIZE,
+    // });
+
+    for (chunk.terrain) |*col, x| {
+        for (col) |*entity, y| {
+            // register cell id
+            entity.* = world.create(Cell);
+            // give it some data
+            world.write(entity.*, .Sprite, .{
+                .char = "\"",
+                .color = rl.DARKGRAY,
+            });
+            world.write(
+                entity.*,
+                .Transform,
+                .{
+                    .x = chunk.x + @intCast(i32, x),
+                    .y = chunk.y + @intCast(i32, y),
+                },
+            );
+        }
+    }
+
+    return terrain;
 }
+
+// pub fn createTerrain(world: *Ecs, offset_x: i32, offset_y: i32) Zecs.Entity {
+//     var terrain = world.createEmpty();
+
+//     world.attach(terrain, .Transform);
+//     world.attach(terrain, .Sprite);
+//     world.attach(terrain, .Terrain);
+
+//     world.write(terrain, .Transform, .{
+//         .x = offset_x,
+//         .y = offset_y,
+//         .z = 0,
+//     });
+//     world.write(terrain, .Sprite, .{
+//         .char = "\"",
+//         .color = rl.DARKGRAY,
+//     });
+//     world.write(terrain, .Terrain, .{
+//         .width = Chunk.SIZE,
+//         .height = Chunk.SIZE,
+//     });
+
+//     return terrain;
+// }
 
 pub fn getTerrainBoundingBox(world: *Ecs, terrain: Zecs.Entity) BoundingBox {
     var transform = world.pack(terrain, .Transform);
