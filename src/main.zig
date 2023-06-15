@@ -37,17 +37,16 @@ pub fn main() !void {
     rl.InitWindow(screen_width, screen_height, "Zrog");
     rl.SetTargetFPS(60);
 
+    // Set the current map chunk
     var chunk = Forest.generate(
         &world,
         0,
         0,
     );
-
     world.setResource(.chunk, &chunk);
 
     _ = createCamera(&world);
-    var player = createPlayer(&world);
-    world.set(player, .InChunk, .chunk, chunk.id);
+    _ = createPlayer(&world);
 
     try loop(&world);
 }

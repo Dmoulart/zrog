@@ -2,20 +2,24 @@ const Zecs = @import("zecs");
 const Ecs = @import("../context.zig").Ecs;
 const rl = @import("raylib");
 
-pub fn createPlayer(world: *Ecs) Zecs.Entity {
-    const Player = Ecs.Type(.{
-        .Transform,
-        .Velocity,
-        .Sprite,
-        .Input,
-        .InChunk,
-    });
+const Player = Ecs.Type(.{
+    .Transform,
+    .Velocity,
+    .Sprite,
+    .Input,
+    .InChunk,
+});
 
+pub fn createPlayer(world: *Ecs) Zecs.Entity {
     world.registerType(Player);
 
     var player = world.create(Player);
 
     world.setResource(.player, player);
+
+    // Place it on the current chunk
+    var chunk = world.getResource(.chunk);
+    world.set(player, .InChunk, .chunk, chunk.id);
 
     world.write(player, .Transform, .{
         .x = 10,
