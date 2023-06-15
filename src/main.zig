@@ -96,7 +96,7 @@ pub fn main() !void {
     };
 
     var chunks = Chunks.init(&map_chunks);
-    // world.setResource(.chunks, chunks);
+    world.setResource(.chunks, chunks);
 
     var first_chunk = &chunks.chunks[0][0].?;
 
@@ -126,7 +126,7 @@ fn loop(world: *Ecs) anyerror!void {
 
         var dt = timestamp() - loop_start;
 
-        std.debug.print("dt {}", .{dt});
+        std.debug.print("dt {} \n", .{dt});
 
         world.setResource(.dt, dt);
     }

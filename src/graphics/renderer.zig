@@ -41,8 +41,8 @@ pub fn render(world: *Ecs) void {
     // 3) some data structure that keep track of these drawables entities (kdtree ? quadtree ? )
     while (drawables.next()) |drawable| {
         var transform = world.pack(drawable, .Transform);
-        var owning_chunk = world.get(drawable, .InChunk, .chunk).*;
-        _ = owning_chunk;
+        // var owning_chunk = world.get(drawable, .InChunk, .chunk).*;
+        // _ = owning_chunk;
 
         // if (owning_chunk != current_chunk.?.id) continue;
         if (!camera_bbox.contains(transform.x.*, transform.y.*)) continue;
@@ -52,8 +52,14 @@ pub fn render(world: *Ecs) void {
 }
 
 pub fn renderTerrain(world: *Ecs) void {
-    var chunk = world.getResource(.player_chunk).?;
     const camera = world.getResource(.camera);
+
+    var chunk = world.getResource(.player_chunk).?;
+    var chunks = world.getResource(.chunks).?;
+
+    var visible_chunks = chunks.filterVisible(world, camera);
+
+    std.debug.print("chunks len {}\n", .{visible_chunks.len});
 
     var fov_bbox = getCameraBoundingBox(world, camera);
 

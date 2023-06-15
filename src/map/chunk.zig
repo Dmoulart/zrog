@@ -24,8 +24,8 @@ pub fn init(x: i32, y: i32, id: Zecs.Entity) Self {
         .x = x,
         .y = y,
         .bbox = BoundingBox{
-            .x = x,
-            .y = y,
+            .x = x * SIZE,
+            .y = y * SIZE,
             .width = SIZE,
             .height = SIZE,
         },
