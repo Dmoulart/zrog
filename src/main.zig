@@ -9,6 +9,10 @@ const timestamp = std.time.milliTimestamp;
 const createCamera = @import("./graphics/camera.zig").createCamera;
 const createPlayer = @import("./player/create-player.zig").createPlayer;
 
+const Chunks = @import("./map/chunks.zig");
+const Chunk = @import("./map/chunk.zig");
+const Forest = @import("./map/forest.zig");
+
 const prerender = @import("./graphics/renderer.zig").prerender;
 const render = @import("./graphics/renderer.zig").render;
 const renderTerrain = @import("./graphics/renderer.zig").renderTerrain;
@@ -17,8 +21,6 @@ const postrender = @import("./graphics/renderer.zig").postrender;
 const updateCamera = @import("./graphics/camera.zig").updateCamera;
 const movement = @import("./physics/movement.zig").movement;
 const moveCommands = @import("./input/move-commands.zig").moveCommands;
-
-const Forest = @import("./map/forest.zig");
 
 pub fn main() !void {
     // Creation
@@ -38,12 +40,67 @@ pub fn main() !void {
     rl.SetTargetFPS(60);
 
     // Set the current map chunk
-    var chunk = Forest.generate(
-        &world,
-        0,
-        0,
-    );
-    world.setResource(.chunk, &chunk);
+
+    var map_chunks: [3][3]?Chunk = [3][3]?Chunk{
+        [3]?Chunk{
+            Forest.generate(
+                &world,
+                0,
+                0,
+            ),
+            Forest.generate(
+                &world,
+                1,
+                0,
+            ),
+            Forest.generate(
+                &world,
+                2,
+                0,
+            ),
+        },
+        [3]?Chunk{
+            Forest.generate(
+                &world,
+                0,
+                1,
+            ),
+            Forest.generate(
+                &world,
+                1,
+                1,
+            ),
+            Forest.generate(
+                &world,
+                2,
+                1,
+            ),
+        },
+        [3]?Chunk{
+            Forest.generate(
+                &world,
+                0,
+                2,
+            ),
+            Forest.generate(
+                &world,
+                1,
+                2,
+            ),
+            Forest.generate(
+                &world,
+                2,
+                2,
+            ),
+        },
+    };
+
+    var chunks = Chunks.init(&map_chunks);
+    // world.setResource(.chunks, chunks);
+
+    var first_chunk = &chunks.chunks[0][0].?;
+
+    world.setResource(.player_chunk, first_chunk);
 
     _ = createCamera(&world);
     _ = createPlayer(&world);

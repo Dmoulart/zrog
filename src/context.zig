@@ -1,6 +1,8 @@
 const Zecs = @import("zecs");
 const rl = @import("raylib");
-const Chunk = @import("./map/chunks.zig");
+
+const Chunks = @import("./map/chunks.zig");
+const Chunk = @import("./map/chunk.zig");
 
 pub const Ecs = Zecs.Context(.{
     .components = .{
@@ -41,7 +43,8 @@ pub const Ecs = Zecs.Context(.{
         screen_height: c_int = 800,
         screen_width: c_int = 1200,
         player: Zecs.Entity = 0,
-        chunk: ?*Chunk = null,
+        chunks: ?Chunks = null,
+        player_chunk: ?*Chunk = null,
     },
     .capacity = 1_000_002,
 });

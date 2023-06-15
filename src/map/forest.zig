@@ -8,7 +8,7 @@ const BoundingBox = @import("../math/bounding-box.zig").BoundingBox;
 
 const Automaton = @import("../generation/cellular-automaton.zig").MapAutomaton;
 var automaton = @import("../generation/cellular-automaton.zig").map_automaton;
-const Chunk = @import("./chunks.zig");
+const Chunk = @import("./chunk.zig");
 
 const RndGen = std.rand.DefaultPrng;
 var rnd = RndGen.init(0);
@@ -26,6 +26,9 @@ const Cell = Ecs.Type(.{
 });
 
 pub fn generate(world: *Ecs, offset_x: i32, offset_y: i32) Chunk {
+    world.registerType(Cell);
+    world.registerType(Grass);
+
     var id = world.createEmpty();
     world.attach(id, .Chunk);
 
@@ -39,15 +42,12 @@ pub fn generate(world: *Ecs, offset_x: i32, offset_y: i32) Chunk {
 }
 
 pub fn createTerrain(world: *Ecs, chunk: *Chunk) void {
-    world.registerType(Cell);
-    world.registerType(Grass);
-
     for (chunk.terrain) |*col, x| {
         for (col) |*entity, y| {
             entity.* = createGrass(
                 world,
-                chunk.x + @intCast(i32, x),
-                chunk.y + @intCast(i32, y),
+                chunk.getChunkX() + @intCast(i32, x),
+                chunk.getChunkY() + @intCast(i32, y),
                 chunk.id,
             );
         }
@@ -62,12 +62,10 @@ pub fn createTrees(world: *Ecs, chunk: *Chunk) void {
     var x: usize = 0;
     var y: usize = 0;
 
-    var cell_offset_x = @intCast(usize, chunk.x);
-    var cell_offset_y = @intCast(usize, chunk.y);
+    var cell_offset_x = @intCast(usize, chunk.getChunkX());
+    var cell_offset_y = @intCast(usize, chunk.getChunkY());
 
     while (y < automaton.height - 1) : (y += 1) {
-        x = 0;
-
         while (x < automaton.width - 1) : (x += 1) {
             var state = automaton.get(x, y);
 
@@ -80,6 +78,8 @@ pub fn createTrees(world: *Ecs, chunk: *Chunk) void {
                 chunk.id,
             );
         }
+
+        x = 0;
     }
 }
 

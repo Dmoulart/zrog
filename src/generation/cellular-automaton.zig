@@ -1,5 +1,5 @@
 const std = @import("std");
-const Chunk = @import("../map/chunks.zig");
+const Chunk = @import("../map/chunk.zig");
 const assert = std.debug.assert;
 const rl = @import("raylib");
 

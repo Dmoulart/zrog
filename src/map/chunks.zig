@@ -1,32 +1,56 @@
 const Zecs = @import("zecs");
-const BoundingBox = @import("../math/bounding-box.zig").BoundingBox;
+
+const Chunk = @import("./chunk.zig");
+const Ecs = @import("../context.zig").Ecs;
+const getCameraBoundingBox = @import("../graphics/camera.zig").getCameraBoundingBox;
 
 const Self = @This();
 
-// The size of a map chunk in cells.
-pub const SIZE = 200;
-pub const MAX_ENTITY_PER_CELL = 10;
+chunks: [3][3]?Chunk,
 
-x: i32,
-y: i32,
-
-bbox: BoundingBox,
-
-id: Zecs.Entity,
-
-terrain: [SIZE][SIZE]Zecs.Entity = undefined,
-entities: [SIZE][SIZE][MAX_ENTITY_PER_CELL]Zecs.Entity = undefined,
-
-pub fn init(x: i32, y: i32, id: Zecs.Entity) Self {
+pub fn init(chunks: *[3][3]?Chunk) Self {
     return Self{
-        .id = id,
-        .x = x,
-        .y = y,
-        .bbox = BoundingBox{
-            .x = x,
-            .y = y,
-            .width = SIZE,
-            .height = SIZE,
-        },
+        .chunks = chunks.*,
     };
+}
+
+pub fn containsPoint(self: *Self, x: i32, y: i32) []*Chunk {
+    var chunks: []*Chunk = undefined;
+    var nb_chunks: usize = 0;
+
+    for (self.chunks) |*row| {
+        for (row) |*maybe_chunk| {
+            if (maybe_chunk) |chunk| {
+                if (chunk.bbox.contains(x, y)) {
+                    chunks[nb_chunks] = chunk;
+                    nb_chunks += 1;
+                }
+            }
+        }
+    }
+    return chunks;
+}
+
+pub fn getVisibleChunks(
+    self: *Self,
+    world: *Ecs,
+    camera: Zecs.Entity,
+) []*Chunk {
+    var camera_bbox = getCameraBoundingBox(world, camera);
+
+    var chunks: []*Chunk = undefined;
+    var nb_chunks: usize = 0;
+
+    for (self.chunks) |*row| {
+        for (row) |*maybe_chunk| {
+            if (maybe_chunk) |chunk| {
+                if (chunk.bbox.intersects(camera_bbox)) {
+                    chunks[nb_chunks] = chunk;
+                    nb_chunks += 1;
+                }
+            }
+        }
+    }
+
+    return chunks;
 }

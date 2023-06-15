@@ -23,7 +23,8 @@ pub fn prerender(world: *Ecs) void {
 }
 
 pub fn render(world: *Ecs) void {
-    var current_chunk = world.getResource(.chunk);
+    var current_chunk = world.getResource(.player_chunk);
+    _ = current_chunk;
     var camera = world.getResource(.camera);
 
     var drawables = world.query()
@@ -41,15 +42,17 @@ pub fn render(world: *Ecs) void {
     while (drawables.next()) |drawable| {
         var transform = world.pack(drawable, .Transform);
         var owning_chunk = world.get(drawable, .InChunk, .chunk).*;
+        _ = owning_chunk;
 
-        if (owning_chunk != current_chunk.?.id or !camera_bbox.contains(transform.x.*, transform.y.*)) continue;
+        // if (owning_chunk != current_chunk.?.id) continue;
+        if (!camera_bbox.contains(transform.x.*, transform.y.*)) continue;
 
         draw(world, drawable);
     }
 }
 
 pub fn renderTerrain(world: *Ecs) void {
-    var chunk = world.getResource(.chunk).?;
+    var chunk = world.getResource(.player_chunk).?;
     const camera = world.getResource(.camera);
 
     var fov_bbox = getCameraBoundingBox(world, camera);

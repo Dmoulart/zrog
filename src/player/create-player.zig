@@ -18,7 +18,7 @@ pub fn createPlayer(world: *Ecs) Zecs.Entity {
     world.setResource(.player, player);
 
     // Place it on the current chunk
-    var chunk = world.getResource(.chunk);
+    var chunk = world.getResource(.player_chunk);
     world.set(player, .InChunk, .chunk, chunk.?.id);
 
     world.write(player, .Transform, .{
