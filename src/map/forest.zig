@@ -34,24 +34,6 @@ pub fn createTerrain(world: *Ecs, chunk: *Chunk) Zecs.Entity {
     const Cell = Ecs.Type(.{ .Sprite, .Transform });
     world.registerType(Cell);
 
-    // world.attach(terrain, .Transform);
-    // world.attach(terrain, .Sprite);
-    // world.attach(terrain, .Terrain);
-
-    // world.write(terrain, .Transform, .{
-    //     .x = offset_x,
-    //     .y = offset_y,
-    //     .z = 0,
-    // });
-    // world.write(terrain, .Sprite, .{
-    //     .char = "\"",
-    //     .color = rl.DARKGRAY,
-    // });
-    // world.write(terrain, .Terrain, .{
-    //     .width = Chunk.SIZE,
-    //     .height = Chunk.SIZE,
-    // });
-
     for (chunk.terrain) |*col, x| {
         for (col) |*entity, y| {
             // register cell id

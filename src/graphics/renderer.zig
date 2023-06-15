@@ -31,6 +31,29 @@ pub fn render(world: *Ecs) void {
     // drawables.each(draw);
 }
 
+pub fn renderTerrain(world: *Ecs) void {
+    var chunk = world.getResource(.chunk).?;
+    const camera = world.getResource(.camera);
+
+    var fov_bbox = getCameraBoundingBox(world, camera);
+
+    var end_x = @min(fov_bbox.endX(), chunk.bbox.endX());
+    var end_y = @min(fov_bbox.endY(), chunk.bbox.endY());
+
+    var x: usize = if (fov_bbox.x >= 0) @intCast(usize, fov_bbox.x) else 0;
+    var y: usize = if (fov_bbox.y >= 0) @intCast(usize, fov_bbox.y) else 0;
+
+    var start_x = x;
+
+    while (y < end_y) : (y += 1) {
+        while (x < end_x) : (x += 1) {
+            draw(world, chunk.terrain[x][y]);
+        }
+
+        x = start_x;
+    }
+}
+
 fn draw(world: *Ecs, entity: Zecs.Entity) void {
     const sprite = world.pack(entity, .Sprite);
     const transform = world.pack(entity, .Transform);
@@ -39,79 +62,6 @@ fn draw(world: *Ecs, entity: Zecs.Entity) void {
     var y = @intCast(c_int, transform.y.*) * CELL_SIZE;
 
     rl.DrawText(sprite.char.*, x, y, CELL_SIZE, sprite.color.*);
-}
-
-pub fn renderTerrain(world: *Ecs) void {
-    var chunk = world.getResource(.chunk).?;
-    const camera = world.getResource(.camera);
-
-    var fov_bbox = getCameraBoundingBox(world, camera);
-    var terrain_bbox = chunk.bbox;
-
-    var end_x = @min(fov_bbox.endX(), terrain_bbox.endX());
-    var end_y = @min(fov_bbox.endY(), terrain_bbox.endY());
-
-    var cell_x: usize = 0;
-    var cell_y: usize = 0;
-
-    while (cell_y < end_y) : (cell_y += 1) {
-        while (cell_x < end_x) : (cell_x += 1) {
-            var cell = chunk.terrain[cell_x][cell_y];
-            var sprite = world.pack(cell, .Sprite);
-
-            var x = @intCast(c_int, cell_x) * CELL_SIZE;
-            var y = @intCast(c_int, cell_y) * CELL_SIZE;
-
-            rl.DrawText(sprite.char.*, x, y, CELL_SIZE, sprite.color.*);
-        }
-
-        cell_x = 0;
-    }
-
-    // for (chunk.terrain) |*row, cell_x| {
-    //     for (row) |_, cell_y| {
-    //         var cell = chunk.terrain[cell_x][cell_y];
-    //         var sprite = world.pack(cell, .Sprite);
-
-    //         var x = @intCast(c_int, cell_x) * CELL_SIZE;
-    //         var y = @intCast(c_int, cell_y) * CELL_SIZE;
-
-    //         rl.DrawText(sprite.char.*, x, y, CELL_SIZE, sprite.color.*);
-    //     }
-    // }
-
-    // var terrains = world.query()
-    //     .all(.{ .Transform, .Sprite, .Terrain })
-    //     .execute();
-
-    // terrains.each(drawTerrain);
-}
-
-fn drawTerrain(world: *Ecs, terrain_entity: Zecs.Entity) void {
-    const camera = world.getResource(.camera);
-
-    const sprite = world.pack(terrain_entity, .Sprite);
-    const transform = world.pack(terrain_entity, .Transform);
-
-    var start_x = @intCast(c_int, transform.x.*) * CELL_SIZE;
-    var start_y = @intCast(c_int, transform.y.*) * CELL_SIZE;
-
-    var x = start_x;
-    var y = start_y;
-
-    var fov = getCameraBoundingBox(world, camera);
-    var terrain = getTerrainBoundingBox(world, terrain_entity);
-
-    var end_x = @min(fov.endX(), terrain.endX()) * CELL_SIZE;
-    var end_y = @min(fov.endY(), terrain.endY()) * CELL_SIZE;
-
-    while (y < end_y) : (y += CELL_SIZE) {
-        while (x < end_x) : (x += CELL_SIZE) {
-            rl.DrawText(sprite.char.*, x, y, CELL_SIZE, sprite.color.*);
-        }
-
-        x = start_x;
-    }
 }
 
 pub fn postrender(_: *Ecs) void {

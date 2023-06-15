@@ -22,7 +22,6 @@ const Forest = @import("./map/forest.zig");
 
 pub fn main() !void {
     // Creation
-
     try Ecs.setup(std.heap.page_allocator);
     defer Ecs.unsetup();
 
@@ -32,7 +31,6 @@ pub fn main() !void {
     defer world.deinit();
 
     // Initialization
-
     const screen_width = world.getResource(.screen_width);
     const screen_height = world.getResource(.screen_height);
 
@@ -69,7 +67,10 @@ fn loop(world: *Ecs) anyerror!void {
 
         world.step();
 
-        world.setResource(.dt, timestamp() - loop_start);
+        var dt = timestamp() - loop_start;
+
+        std.debug.print("dt {}ms\n", .{dt});
+        world.setResource(.dt, dt);
     }
 
     rl.CloseWindow();
