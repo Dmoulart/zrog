@@ -43,9 +43,19 @@ fn draw(world: *Ecs, entity: Zecs.Entity) void {
 
 pub fn renderTerrain(world: *Ecs) void {
     var chunk = world.getResource(.chunk).?;
+    const camera = world.getResource(.camera);
 
-    for (chunk.terrain) |*row, cell_x| {
-        for (row) |_, cell_y| {
+    var fov_bbox = getCameraBoundingBox(world, camera);
+    var terrain_bbox = chunk.bbox;
+
+    var end_x = @min(fov_bbox.endX(), terrain_bbox.endX());
+    var end_y = @min(fov_bbox.endY(), terrain_bbox.endY());
+
+    var cell_x: usize = 0;
+    var cell_y: usize = 0;
+
+    while (cell_y < end_y) : (cell_y += 1) {
+        while (cell_x < end_x) : (cell_x += 1) {
             var cell = chunk.terrain[cell_x][cell_y];
             var sprite = world.pack(cell, .Sprite);
 
@@ -54,7 +64,21 @@ pub fn renderTerrain(world: *Ecs) void {
 
             rl.DrawText(sprite.char.*, x, y, CELL_SIZE, sprite.color.*);
         }
+
+        cell_x = 0;
     }
+
+    // for (chunk.terrain) |*row, cell_x| {
+    //     for (row) |_, cell_y| {
+    //         var cell = chunk.terrain[cell_x][cell_y];
+    //         var sprite = world.pack(cell, .Sprite);
+
+    //         var x = @intCast(c_int, cell_x) * CELL_SIZE;
+    //         var y = @intCast(c_int, cell_y) * CELL_SIZE;
+
+    //         rl.DrawText(sprite.char.*, x, y, CELL_SIZE, sprite.color.*);
+    //     }
+    // }
 
     // var terrains = world.query()
     //     .all(.{ .Transform, .Sprite, .Terrain })

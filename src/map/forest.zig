@@ -99,19 +99,14 @@ pub fn createTerrain(world: *Ecs, chunk: *Chunk) Zecs.Entity {
 //     return terrain;
 // }
 
-pub fn getTerrainBoundingBox(world: *Ecs, terrain: Zecs.Entity) BoundingBox {
-    var transform = world.pack(terrain, .Transform);
-
-    var width = world.get(terrain, .Terrain, .width);
-    var height = world.get(terrain, .Terrain, .height);
-
-    return BoundingBox{
-        .x = transform.x.*,
-        .y = transform.y.*,
-        .width = width.*,
-        .height = height.*,
-    };
-}
+// pub fn getChunkBoundingBox(world: *Ecs, chunk: *Chunk) BoundingBox {
+//     return BoundingBox{
+//         .x = transform.x.*,
+//         .y = transform.y.*,
+//         .width = width.*,
+//         .height = height.*,
+//     };
+// }
 
 pub fn createTrees(world: *Ecs, offset_x: i32, offset_y: i32) void {
     automaton.fillWithLivingChance(10);
