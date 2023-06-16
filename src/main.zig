@@ -124,6 +124,8 @@ fn loop(world: *Ecs) anyerror!void {
 
         world.step();
 
+        std.debug.print("\nentities count {} \n", .{world.entities.count});
+
         var dt = timestamp() - loop_start;
 
         std.debug.print("dt {} \n", .{dt});

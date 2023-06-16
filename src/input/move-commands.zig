@@ -10,10 +10,12 @@ pub fn moveCommands(world: *Ecs) void {
 }
 
 fn processMoveCommands(world: *Ecs, entity: Zecs.Entity) void {
-    var dt = world.getResource(.dt);
-    _ = dt;
-    var TIME_FACTOR = world.getResource(.TIME_FACTOR);
-    _ = TIME_FACTOR;
+    // var dt = world.getResource(.dt);
+    // _ = dt;
+    // var TIME_FACTOR = world.getResource(.TIME_FACTOR);
+    // _ = TIME_FACTOR;
+
+    // _ = chunks;
 
     var x: i32 = 0;
     var y: i32 = 0;
