@@ -4,7 +4,7 @@ const BoundingBox = @import("../math/bounding-box.zig").BoundingBox;
 const Self = @This();
 
 // The size of a map chunk in cells.
-pub const SIZE = 40;
+pub const SIZE = 60;
 pub const MAX_ENTITY_PER_CELL = 10;
 
 // in chunk size

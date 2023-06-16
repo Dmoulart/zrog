@@ -9,7 +9,10 @@ const ChunkGroup = [3][3]?Chunk;
 
 chunks: ChunkGroup,
 
-pub fn init(chunks: *[3][3]?Chunk) Self {
+// alloc ?
+visible_chunks_memory: [9]*Chunk = undefined,
+
+pub fn init(chunks: *ChunkGroup) Self {
     return Self{
         .chunks = chunks.*,
     };
@@ -37,23 +40,26 @@ pub fn filterVisible(
     world: *Ecs,
     camera: Zecs.Entity,
 ) []*Chunk {
-    var camera_bbox = getCameraBoundingBox(world, camera);
-    var memory: [9]*Chunk = undefined;
-    var buffer: []*Chunk = &memory;
+    // reinit memory
+    self.visible_chunks_memory = undefined;
 
+    var camera_bbox = getCameraBoundingBox(world, camera);
+
+    var buffer: []*Chunk = &self.visible_chunks_memory;
     var chunks: []*Chunk = buffer[0..];
-    var nb_chunks: usize = 0;
+
+    var count: usize = 0;
 
     for (self.chunks) |*row| {
         for (row) |*maybe_chunk| {
             if (maybe_chunk.*) |*chunk| {
                 if (chunk.bbox.intersects(&camera_bbox)) {
-                    chunks[nb_chunks] = chunk;
-                    nb_chunks += 1;
+                    chunks[count] = chunk;
+                    count += 1;
                 }
             }
         }
     }
 
-    return chunks[0..nb_chunks];
+    return chunks[0..count];
 }

@@ -58,27 +58,80 @@ pub fn renderTerrain(world: *Ecs) void {
     var chunks = world.getResource(.chunks).?;
 
     var visible_chunks = chunks.filterVisible(world, camera);
-
     std.debug.print("chunks len {}\n", .{visible_chunks.len});
 
     var fov_bbox = getCameraBoundingBox(world, camera);
 
-    var end_x = @min(fov_bbox.endX(), chunk.bbox.endX());
-    var end_y = @min(fov_bbox.endY(), chunk.bbox.endY());
+    fov_bbox.debugPrint("FOV");
 
-    var x: usize = if (fov_bbox.x >= 0) @intCast(usize, fov_bbox.x) else 0;
-    var y: usize = if (fov_bbox.y >= 0) @intCast(usize, fov_bbox.y) else 0;
+    for (visible_chunks) |visible_chunk| {
+        visible_chunk.bbox.debugPrint("CHUNK");
+        var intersection = fov_bbox.intersection(&visible_chunk.bbox);
 
-    var start_x = x;
+        var x = intersection.x;
+        var y = intersection.y;
 
-    while (y < end_y) : (y += 1) {
-        while (x < end_x) : (x += 1) {
-            draw(world, chunk.terrain[x][y]);
+        var end_x = @min(fov_bbox.endX(), chunk.bbox.endX());
+        var end_y = @min(fov_bbox.endY(), chunk.bbox.endY());
+
+        intersection.debugPrint("INTERSECTION");
+
+        while (y < end_y - 1) : (y += 1) {
+            while (x < end_x - 1) : (x += 1) {
+                draw(
+                    world,
+                    visible_chunk.terrain[@intCast(usize, x)][@intCast(usize, y)],
+                );
+            }
+
+            x = intersection.x;
         }
-
-        x = start_x;
     }
+
+    // var end_x = @min(fov_bbox.endX(), chunk.bbox.endX());
+    // var end_y = @min(fov_bbox.endY(), chunk.bbox.endY());
+
+    // var x: usize = if (fov_bbox.x >= 0) @intCast(usize, fov_bbox.x) else 0;
+    // var y: usize = if (fov_bbox.y >= 0) @intCast(usize, fov_bbox.y) else 0;
+
+    // var start_x = x;
+
+    // while (y < end_y) : (y += 1) {
+    //     while (x < end_x) : (x += 1) {
+    //         draw(world, chunk.terrain[x][y]);
+    //     }
+
+    //     x = start_x;
+    // }
 }
+
+// pub fn renderTerrain(world: *Ecs) void {
+//     const camera = world.getResource(.camera);
+
+//     var chunk = world.getResource(.player_chunk).?;
+//     var chunks = world.getResource(.chunks).?;
+
+//     var visible_chunks = chunks.filterVisible(world, camera);
+//     std.debug.print("chunks len {}\n", .{visible_chunks.len});
+
+//     var fov_bbox = getCameraBoundingBox(world, camera);
+
+//     var end_x = @min(fov_bbox.endX(), chunk.bbox.endX());
+//     var end_y = @min(fov_bbox.endY(), chunk.bbox.endY());
+
+//     var x: usize = if (fov_bbox.x >= 0) @intCast(usize, fov_bbox.x) else 0;
+//     var y: usize = if (fov_bbox.y >= 0) @intCast(usize, fov_bbox.y) else 0;
+
+//     var start_x = x;
+
+//     while (y < end_y) : (y += 1) {
+//         while (x < end_x) : (x += 1) {
+//             draw(world, chunk.terrain[x][y]);
+//         }
+
+//         x = start_x;
+//     }
+// }
 
 fn draw(world: *Ecs, entity: Zecs.Entity) void {
     const sprite = world.pack(entity, .Sprite);
