@@ -18,23 +18,6 @@ pub fn init(chunks: *ChunkGroup) Self {
     };
 }
 
-// pub fn containsPoint(self: *Self, x: i32, y: i32) []*Chunk {
-//     var chunks: []*Chunk = undefined;
-//     var nb_chunks: usize = 0;
-
-//     for (self.chunks) |*row| {
-//         for (row) |*maybe_chunk| {
-//             if (maybe_chunk) |chunk| {
-//                 if (chunk.bbox.contains(x, y)) {
-//                     chunks[nb_chunks] = chunk;
-//                     nb_chunks += 1;
-//                 }
-//             }
-//         }
-//     }
-//     return chunks;
-// }
-
 pub fn getChunkAtPosition(self: *Self, x: i32, y: i32) ?*Chunk {
     for (self.chunks) |*row| {
         for (row) |*maybe_chunk| {

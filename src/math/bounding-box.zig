@@ -37,19 +37,19 @@ pub const BoundingBox = struct {
         var other_end_y = other.endY();
 
         // Calculate intersection coordinates
-        const intersection_x = @max(self.x, other.x);
-        const intersection_y = @max(self.y, other.y);
+        const intersection_start_x = @max(self.x, other.x);
+        const intersection_start_y = @max(self.y, other.y);
 
         const intersection_end_x = @min(self_end_x, other_end_x);
         const intersection_end_y = @min(self_end_y, other_end_y);
 
         // Calculate intersection dimensions
-        const intersection_width = @intCast(u32, intersection_end_x - intersection_x);
-        const intersection_height = @intCast(u32, intersection_end_y - intersection_y);
+        const intersection_width = @intCast(u32, intersection_end_x - intersection_start_x);
+        const intersection_height = @intCast(u32, intersection_end_y - intersection_start_y);
 
         return BoundingBox{
-            .x = intersection_x,
-            .y = intersection_y,
+            .x = intersection_start_x,
+            .y = intersection_start_y,
             .width = intersection_width,
             .height = intersection_height,
         };
