@@ -4,7 +4,7 @@ const rl = @import("raylib");
 const Zecs = @import("zecs");
 const Ecs = @import("../context.zig").Ecs;
 
-const BoundingBox = @import("../math/bounding-box.zig").BoundingBox;
+const BoundingBox = @import("../math/bounding-box.zig");
 
 const Automaton = @import("../generation/cellular-automaton.zig").MapAutomaton;
 var automaton = @import("../generation/cellular-automaton.zig").map_automaton;

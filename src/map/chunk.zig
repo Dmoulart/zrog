@@ -1,5 +1,5 @@
 const Zecs = @import("zecs");
-const BoundingBox = @import("../math/bounding-box.zig").BoundingBox;
+const BoundingBox = @import("../math/bounding-box.zig");
 
 const Self = @This();
 

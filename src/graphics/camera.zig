@@ -1,7 +1,7 @@
 const std = @import("std");
 const Ecs = @import("../context.zig").Ecs;
 const Zecs = @import("zecs");
-const BoundingBox = @import("../math/bounding-box.zig").BoundingBox;
+const BoundingBox = @import("../math/bounding-box.zig");
 const CELL_SIZE = @import("./renderer.zig").CELL_SIZE;
 
 pub fn createCamera(world: *Ecs) Zecs.Entity {
@@ -10,6 +10,15 @@ pub fn createCamera(world: *Ecs) Zecs.Entity {
     world.attach(camera, .Camera);
     world.attach(camera, .Transform);
     world.attach(camera, .Velocity);
+
+    world.write(
+        camera,
+        .Transform,
+        .{
+            .x = 0,
+            .y = 0,
+        },
+    );
 
     world.write(
         camera,
@@ -56,8 +65,27 @@ fn followPlayer(world: *Ecs, camera: Zecs.Entity) void {
     var player_transform = world.pack(player, .Transform);
     var camera_transform = world.pack(camera, .Transform);
 
+    var chunks = world.getResource(.chunks).?;
+
+    // Increment position
     camera_transform.x.* = player_transform.x.*;
     camera_transform.y.* = player_transform.y.*;
+
+    var camera_bbox = getCameraBoundingBox(world, camera);
+    var chunks_bbox = chunks.getBoundingBox();
+
+    // Check world bounds, correct position if needed
+    if (camera_bbox.x <= chunks_bbox.x) {
+        camera_transform.x.* = chunks_bbox.x + @intCast(i32, camera_bbox.width / 2);
+    } else if (camera_bbox.endX() >= chunks_bbox.endX()) {
+        camera_transform.x.* = chunks_bbox.endX() - @intCast(i32, camera_bbox.width / 2);
+    }
+
+    if (camera_bbox.y <= chunks_bbox.y) {
+        camera_transform.y.* = chunks_bbox.y + @intCast(i32, camera_bbox.height / 2);
+    } else if (camera_bbox.endY() >= chunks_bbox.endY()) {
+        camera_transform.y.* = chunks_bbox.endY() - @intCast(i32, camera_bbox.height / 2);
+    }
 }
 
 fn syncCameraMovements(world: *Ecs, camera: Zecs.Entity) void {
