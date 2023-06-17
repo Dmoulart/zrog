@@ -52,14 +52,7 @@ pub fn CellularAutomaton(comptime width: comptime_int, comptime height: comptime
             var x: usize = 0;
 
             while (x < width) : (x += 1) {
-                var y: usize = 0;
-
-                var column: [height]Cells = undefined;
-                self.cells[x] = column;
-
-                while (y < height) : (y += 1) {
-                    self.set(x, y, .dead);
-                }
+                std.mem.set(Cells, &self.cells[x], .dead);
             }
         }
 

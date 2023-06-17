@@ -25,14 +25,14 @@ const Cell = Ecs.Type(.{
     .InChunk,
 });
 
-pub fn generate(world: *Ecs, offset_x: i32, offset_y: i32) Chunk {
+pub fn generate(world: *Ecs, chunk_x: i32, chunk_y: i32) Chunk {
     world.registerType(Cell);
     world.registerType(Grass);
 
     var id = world.createEmpty();
     world.attach(id, .Chunk);
 
-    var chunk = Chunk.init(offset_x, offset_y, id);
+    var chunk = Chunk.init(chunk_x, chunk_y, id);
 
     createTerrain(world, &chunk);
 
@@ -55,7 +55,7 @@ pub fn createTerrain(world: *Ecs, chunk: *Chunk) void {
 }
 
 pub fn createTrees(world: *Ecs, chunk: *Chunk) void {
-    automaton.fillWithLivingChance(10);
+    automaton.fillWithLivingChance(4);
 
     automaton.update(2);
 
