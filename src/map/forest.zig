@@ -55,7 +55,7 @@ pub fn createTerrain(world: *Ecs, chunk: *Chunk) void {
 }
 
 pub fn createTrees(world: *Ecs, chunk: *Chunk) void {
-    automaton.fillWithLivingChance(4);
+    automaton.fillWithLivingChanceOf(4);
 
     automaton.update(2);
 

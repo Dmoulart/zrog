@@ -151,7 +151,7 @@ pub fn CellularAutomaton(comptime width: comptime_int, comptime height: comptime
         }
 
         // Fill the grid  by specifying a individual cell living chance percentage.
-        pub fn fillWithLivingChance(self: *Self, chance: u8) void {
+        pub fn fillWithLivingChanceOf(self: *Self, chance: u8) void {
             assert(chance >= 0 and chance <= 100);
 
             var rnd = RndGen.init(0);
