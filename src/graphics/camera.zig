@@ -67,7 +67,7 @@ fn followPlayer(world: *Ecs, camera: Zecs.Entity) void {
 
     var chunks = world.getResource(.chunks).?;
 
-    // Increment position
+    // Increment position first
     camera_transform.x.* = player_transform.x.*;
     camera_transform.y.* = player_transform.y.*;
 
@@ -76,15 +76,15 @@ fn followPlayer(world: *Ecs, camera: Zecs.Entity) void {
 
     // Check world bounds, correct position if needed
     if (camera_bbox.x <= chunks_bbox.x) {
-        camera_transform.x.* = chunks_bbox.x + @intCast(i32, camera_bbox.width / 2);
+        camera_transform.x.* = chunks_bbox.x + camera_bbox.halfWidth();
     } else if (camera_bbox.endX() >= chunks_bbox.endX()) {
-        camera_transform.x.* = chunks_bbox.endX() - @intCast(i32, camera_bbox.width / 2);
+        camera_transform.x.* = chunks_bbox.endX() - camera_bbox.halfWidth();
     }
 
     if (camera_bbox.y <= chunks_bbox.y) {
-        camera_transform.y.* = chunks_bbox.y + @intCast(i32, camera_bbox.height / 2);
+        camera_transform.y.* = chunks_bbox.y + camera_bbox.halfHeight();
     } else if (camera_bbox.endY() >= chunks_bbox.endY()) {
-        camera_transform.y.* = chunks_bbox.endY() - @intCast(i32, camera_bbox.height / 2);
+        camera_transform.y.* = chunks_bbox.endY() - camera_bbox.halfHeight();
     }
 }
 
@@ -118,7 +118,7 @@ pub fn getCameraBoundingBox(world: *Ecs, camera: Zecs.Entity) BoundingBox {
     return BoundingBox{
         .x = transform.x.* - half_width,
         .y = transform.y.* - half_height,
-        .width = @intCast(u32, screen_cells_width),
-        .height = @intCast(u32, screen_cells_height),
+        .width = screen_cells_width,
+        .height = screen_cells_height,
     };
 }

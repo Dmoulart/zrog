@@ -6,8 +6,8 @@ const Self = @This();
 x: i32,
 y: i32,
 
-width: u32,
-height: u32,
+width: i32,
+height: i32,
 
 pub fn contains(self: *Self, x: i32, y: i32) bool {
     const x_end = self.endX();
@@ -43,8 +43,8 @@ pub fn intersection(self: *Self, other: *Self) Self {
     const intersection_end_y = @min(self_end_y, other_end_y);
 
     // Calculate intersection dimensions
-    const intersection_width = @intCast(u32, intersection_end_x - intersection_start_x);
-    const intersection_height = @intCast(u32, intersection_end_y - intersection_start_y);
+    const intersection_width = intersection_end_x - intersection_start_x;
+    const intersection_height = intersection_end_y - intersection_start_y;
 
     return Self{
         .x = intersection_start_x,
@@ -66,8 +66,8 @@ pub fn merge(self: *Self, other: *Self) Self {
     const union_end_x = @max(self_end_x, other_end_x);
     const union_end_y = @max(self_end_y, other_end_y);
 
-    const union_width = @intCast(u32, union_end_x - union_start_x);
-    const union_height = @intCast(u32, union_end_y - union_start_y);
+    const union_width = union_end_x - union_start_x;
+    const union_height = union_end_y - union_start_y;
 
     return Self{
         .x = union_start_x,
@@ -77,12 +77,20 @@ pub fn merge(self: *Self, other: *Self) Self {
     };
 }
 
+pub fn halfWidth(self: *Self) i32 {
+    return @divTrunc(self.width, 2);
+}
+
+pub fn halfHeight(self: *Self) i32 {
+    return @divTrunc(self.height, 2);
+}
+
 pub fn endX(self: *Self) i32 {
-    return self.x + @intCast(i32, self.width);
+    return self.x + self.width;
 }
 
 pub fn endY(self: *Self) i32 {
-    return self.y + @intCast(i32, self.height);
+    return self.y + self.height;
 }
 
 pub fn debugPrint(self: *Self, name: []const u8) void {
