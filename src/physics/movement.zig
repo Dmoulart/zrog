@@ -1,6 +1,7 @@
 const std = @import("std");
 const Zecs = @import("zecs");
 const Ecs = @import("../context.zig").Ecs;
+const Timer = @import("../perfs/timer.zig");
 
 pub fn movement(world: *Ecs) void {
     var movables = world.query().all(.{
@@ -12,6 +13,8 @@ pub fn movement(world: *Ecs) void {
 }
 
 pub fn move(world: *Ecs, entity: Zecs.Entity) void {
+    Timer.start("Move");
+
     var vel = world.pack(entity, .Velocity);
     // get out if there is no movement to achieve
     if (vel.x.* == 0 and vel.y.* == 0) return;
@@ -40,4 +43,6 @@ pub fn move(world: *Ecs, entity: Zecs.Entity) void {
     transform.y.* = movement_y;
 
     new_chunk.?.setFromWorldPosition(.beings, entity, movement_x, movement_y);
+
+    Timer.end();
 }

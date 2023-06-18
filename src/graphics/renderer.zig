@@ -1,6 +1,7 @@
 const std = @import("std");
 const rl = @import("raylib");
 const Zecs = @import("zecs");
+const Timer = @import("../perfs/timer.zig");
 
 const Ecs = @import("../context.zig").Ecs;
 
@@ -23,6 +24,7 @@ pub fn prerender(world: *Ecs) void {
 }
 
 pub fn render(world: *Ecs) void {
+    Timer.start("Draw");
     const camera = world.getResource(.camera);
 
     var chunks = world.getResource(.chunks);
@@ -48,6 +50,7 @@ pub fn render(world: *Ecs) void {
         var x = start_x;
         var y = start_y;
 
+        var i: i32 = 0;
         while (y < end_y) : (y += 1) {
             while (x < end_x) : (x += 1) {
                 draw(world, visible_chunk.terrain[x][y]);
@@ -59,11 +62,14 @@ pub fn render(world: *Ecs) void {
                 if (visible_chunk.get(.beings, x, y)) |being| {
                     draw(world, being);
                 }
+                i += 1;
             }
 
             x = start_x;
         }
+        std.debug.print("\ni {}", .{i});
     }
+    Timer.end();
 }
 
 fn draw(world: *Ecs, entity: Zecs.Entity) void {

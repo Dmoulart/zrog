@@ -1,4 +1,5 @@
 const std = @import("std");
+const Timer = @import("../perfs/timer.zig");
 
 const Zecs = @import("zecs");
 const Ecs = @import("../context.zig").Ecs;
@@ -10,12 +11,7 @@ pub fn moveCommands(world: *Ecs) void {
 }
 
 fn processMoveCommands(world: *Ecs, entity: Zecs.Entity) void {
-    // var dt = world.getResource(.dt);
-    // _ = dt;
-    // var TIME_FACTOR = world.getResource(.TIME_FACTOR);
-    // _ = TIME_FACTOR;
-
-    // _ = chunks;
+    Timer.start("Move commands");
 
     var x: i32 = 0;
     var y: i32 = 0;
@@ -41,4 +37,6 @@ fn processMoveCommands(world: *Ecs, entity: Zecs.Entity) void {
 
     vel.x.* = x;
     vel.y.* = y;
+
+    Timer.end();
 }

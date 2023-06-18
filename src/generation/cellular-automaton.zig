@@ -47,7 +47,7 @@ pub fn CellularAutomaton(comptime width: comptime_int, comptime height: comptime
         // Set all automaton cell's to dead
         pub fn clear(self: *Self) void {
             // is this a great idea ?
-            @setEvalBranchQuota(100_000);
+            @setEvalBranchQuota(10_000_000);
 
             var x: usize = 0;
 
