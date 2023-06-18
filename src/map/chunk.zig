@@ -7,7 +7,7 @@ const BoundingBox = @import("../math/bounding-box.zig");
 const Self = @This();
 
 // The size of a map chunk in cells.
-pub const SIZE = 85;
+pub const SIZE = 1250;
 
 pub const Data = enum {
     terrain,
@@ -41,14 +41,32 @@ pub fn init(x: i32, y: i32, id: Zecs.Entity) Self {
     };
 
     // Init terrain and props with 0 values (means no entitiy)
+    chunk.clear();
+    return chunk;
+}
+
+pub fn create(allocator: std.mem.Allocator, x: i32, y: i32, id: Zecs.Entity) *Self {
+    var chunk = allocator.create(Self) catch unreachable;
+
+    chunk.id = id;
+    chunk.x = x;
+    chunk.y = y;
+    chunk.bbox = BoundingBox{
+        .x = x * SIZE,
+        .y = y * SIZE,
+        .width = SIZE,
+        .height = SIZE,
+    };
+    chunk.clear();
+}
+
+pub fn clear(self: *Self) void {
     var cell_x: usize = 0;
     while (cell_x < SIZE) : (cell_x += 1) {
-        std.mem.set(Zecs.Entity, &chunk.terrain[cell_x], 0);
-        std.mem.set(Zecs.Entity, &chunk.props[cell_x], 0);
-        std.mem.set(Zecs.Entity, &chunk.beings[cell_x], 0);
+        std.mem.set(Zecs.Entity, &self.terrain[cell_x], 0);
+        std.mem.set(Zecs.Entity, &self.props[cell_x], 0);
+        std.mem.set(Zecs.Entity, &self.beings[cell_x], 0);
     }
-
-    return chunk;
 }
 
 pub fn setFromWorldPosition(self: *Self, comptime data_field: Data, entity: Zecs.Entity, x: i32, y: i32) void {

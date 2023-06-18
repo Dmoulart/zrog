@@ -39,68 +39,67 @@ pub fn main() !void {
     rl.InitWindow(screen_width, screen_height, "Zrog");
     rl.SetTargetFPS(60);
 
-    // Set the current map chunk
-    var map_chunks: [3][3]?Chunk = [3][3]?Chunk{
-        [3]?Chunk{
-            Forest.generate(
-                &world,
-                0,
-                0,
-            ),
-            Forest.generate(
-                &world,
-                1,
-                0,
-            ),
-            Forest.generate(
-                &world,
-                2,
-                0,
-            ),
-        },
-        [3]?Chunk{
-            Forest.generate(
-                &world,
-                0,
-                1,
-            ),
-            Forest.generate(
-                &world,
-                1,
-                1,
-            ),
-            Forest.generate(
-                &world,
-                2,
-                1,
-            ),
-        },
-        [3]?Chunk{
-            Forest.generate(
-                &world,
-                0,
-                2,
-            ),
-            Forest.generate(
-                &world,
-                1,
-                2,
-            ),
-            Forest.generate(
-                &world,
-                2,
-                2,
-            ),
-        },
-    };
+    // // Set the current map chunk
+    // var map_chunks: [3][3]?Chunk = [3][3]?Chunk{
+    //     [3]?Chunk{
+    //         Forest.generate(
+    //             &world,
+    //             0,
+    //             0,
+    //         ),
+    //         Forest.generate(
+    //             &world,
+    //             1,
+    //             0,
+    //         ),
+    //         Forest.generate(
+    //             &world,
+    //             2,
+    //             0,
+    //         ),
+    //     },
+    //     [3]?Chunk{
+    //         Forest.generate(
+    //             &world,
+    //             0,
+    //             1,
+    //         ),
+    //         Forest.generate(
+    //             &world,
+    //             1,
+    //             1,
+    //         ),
+    //         Forest.generate(
+    //             &world,
+    //             2,
+    //             1,
+    //         ),
+    //     },
+    //     [3]?Chunk{
+    //         Forest.generate(
+    //             &world,
+    //             0,
+    //             2,
+    //         ),
+    //         Forest.generate(
+    //             &world,
+    //             1,
+    //             2,
+    //         ),
+    //         Forest.generate(
+    //             &world,
+    //             2,
+    //             2,
+    //         ),
+    //     },
+    // };
+    // _ = map_chunks;
 
-    var chunks = Chunks{
-        .chunks = map_chunks,
-    };
+    var chunks = Chunks.create(std.heap.page_allocator);
 
     // where to store the chunks ?
-    world.setResource(._chunks, chunks);
-    world.setResource(.chunks, &chunks);
+    // world.setResource(._chunks, chunks);
+    world.setResource(.chunks, chunks);
 
     _ = createCamera(&world);
     _ = createPlayer(&world);

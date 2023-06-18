@@ -9,11 +9,29 @@ const BoundingBox = @import("../math/bounding-box.zig");
 const getCameraBoundingBox = @import("../graphics/camera.zig").getCameraBoundingBox;
 
 const Self = @This();
-const ChunkGroup = [3][3]?Chunk;
+const ChunkGroup = [3][3]?*Chunk;
 
-chunks: ChunkGroup,
+allocator: std.mem.Allocator,
+
+chunks: *ChunkGroup = undefined,
 
 visible_chunks_memory: [9]*Chunk = undefined,
+
+pub fn create(allocator: std.mem.Allocator) *Self {
+    var chunks = allocator.create(Self) catch unreachable;
+    chunks.allocator = allocator;
+
+    // var chunks_group = allocator.create(ChunkGroup) catch unreachable;
+    // chunks.chunks = chunks_group;
+
+    // var chunks_group = [3][3]?*Chunk{
+    //     [3]?*Chunk{
+    //         Chunk.create(allocator, x: i32, y: i32, id: Zecs.Entity)
+    //     },
+    // };
+
+    return chunks;
+}
 
 pub fn getChunkAtPosition(self: *Self, x: i32, y: i32) ?*Chunk {
     for (self.chunks) |*row| {
