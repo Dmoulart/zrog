@@ -29,11 +29,11 @@ pub fn intersects(self: *Self, other: *Self) bool {
 pub fn intersection(self: *Self, other: *Self) Self {
     assert(self.intersects(other));
 
-    var self_end_x = self.endX();
-    var self_end_y = self.endY();
+    const self_end_x = self.endX();
+    const self_end_y = self.endY();
 
-    var other_end_x = other.endX();
-    var other_end_y = other.endY();
+    const other_end_x = other.endX();
+    const other_end_y = other.endY();
 
     // Calculate intersection coordinates
     const intersection_start_x = @max(self.x, other.x);
@@ -60,6 +60,7 @@ pub fn merge(self: *Self, other: *Self) Self {
 
     const self_end_x = self.endX();
     const self_end_y = self.endY();
+
     const other_end_x = other.endX();
     const other_end_y = other.endY();
 
