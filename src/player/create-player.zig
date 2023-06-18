@@ -7,7 +7,6 @@ const Player = Ecs.Type(.{
     .Velocity,
     .Sprite,
     .Input,
-    .InChunk,
 });
 
 pub fn createPlayer(world: *Ecs) Zecs.Entity {
@@ -23,13 +22,9 @@ pub fn createPlayer(world: *Ecs) Zecs.Entity {
         .z = 1,
     };
 
-    // Place it on the current chunk
-    var chunk = world.getResource(.player_chunk).?;
-    // var chunks = world.getResource(.chunks);
-    // _ = chunks;
-
-    world.set(player, .InChunk, .chunk, chunk.id);
-    chunk.set(.beings, player, 10, 10);
+    var chunks = world.getResource(.chunks);
+    var chunk = chunks.getChunkAtPosition(start_position.x, start_position.y).?;
+    chunk.setFromWorldPosition(.beings, player, start_position.x, start_position.y);
 
     world.write(player, .Transform, start_position);
 

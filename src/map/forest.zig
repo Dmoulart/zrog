@@ -16,13 +16,11 @@ var rnd = RndGen.init(0);
 const Grass = Ecs.Type(.{
     .Transform,
     .Sprite,
-    .InChunk,
 });
 const Cell = Ecs.Type(.{
     .Sprite,
     .Transform,
     .Terrain,
-    .InChunk,
 });
 
 pub fn generate(world: *Ecs, chunk_x: i32, chunk_y: i32) Chunk {
@@ -48,7 +46,6 @@ pub fn createTerrain(world: *Ecs, chunk: *Chunk) void {
                 world,
                 chunk.getChunkX() + @intCast(i32, x),
                 chunk.getChunkY() + @intCast(i32, y),
-                chunk.id,
             );
         }
     }
@@ -78,7 +75,6 @@ pub fn createTrees(world: *Ecs, chunk: *Chunk) void {
                 world,
                 world_x,
                 world_y,
-                chunk.id,
             );
             // chunk.place(.props, world, tree);
 
@@ -89,7 +85,7 @@ pub fn createTrees(world: *Ecs, chunk: *Chunk) void {
     }
 }
 
-pub fn createTree(world: *Ecs, x: i32, y: i32, chunk_id: Zecs.Entity) Zecs.Entity {
+pub fn createTree(world: *Ecs, x: i32, y: i32) Zecs.Entity {
     var tree = world.create(Grass);
 
     world.write(tree, .Sprite, .{
@@ -101,14 +97,11 @@ pub fn createTree(world: *Ecs, x: i32, y: i32, chunk_id: Zecs.Entity) Zecs.Entit
         .y = y,
         .z = 0,
     });
-    world.write(tree, .InChunk, .{
-        .chunk = chunk_id,
-    });
 
     return tree;
 }
 
-pub fn createGrass(world: *Ecs, x: i32, y: i32, chunk_id: Zecs.Entity) Zecs.Entity {
+pub fn createGrass(world: *Ecs, x: i32, y: i32) Zecs.Entity {
     var grass = world.create(Cell);
 
     world.write(grass, .Sprite, .{
@@ -120,7 +113,6 @@ pub fn createGrass(world: *Ecs, x: i32, y: i32, chunk_id: Zecs.Entity) Zecs.Enti
         .y = y,
         .z = 0,
     });
-    world.set(grass, .InChunk, .chunk, chunk_id);
 
     return grass;
 }

@@ -3,7 +3,10 @@ const Zecs = @import("zecs");
 const Ecs = @import("../context.zig").Ecs;
 
 pub fn movement(world: *Ecs) void {
-    var movables = world.query().all(.{ .Transform, .Velocity, .InChunk }).execute();
+    var movables = world.query().all(.{
+        .Transform,
+        .Velocity,
+    }).execute();
 
     movables.each(move);
 }

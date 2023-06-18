@@ -40,7 +40,6 @@ pub fn main() !void {
     rl.SetTargetFPS(60);
 
     // Set the current map chunk
-
     var map_chunks: [3][3]?Chunk = [3][3]?Chunk{
         [3]?Chunk{
             Forest.generate(
@@ -99,16 +98,12 @@ pub fn main() !void {
         .chunks = map_chunks,
     };
 
+    // where to store the chunks ?
     world.setResource(._chunks, chunks);
     world.setResource(.chunks, &chunks);
 
-    var first_chunk = &chunks.chunks[0][0].?;
-
-    world.setResource(.player_chunk, first_chunk);
-
     _ = createCamera(&world);
     _ = createPlayer(&world);
-    // std.debug.print("player created", .{});
 
     try loop(&world);
 }
@@ -122,10 +117,6 @@ fn loop(world: *Ecs) anyerror!void {
     world.addSystem(render);
     world.addSystem(postrender);
 
-    var chunks = world.getResource(.chunks);
-
-    var first_chunk = &chunks.chunks[0][0].?;
-    std.debug.print("beings {any} !", .{first_chunk.beings});
     // Main game loop
     while (!rl.WindowShouldClose()) {
         var loop_start = timestamp();
@@ -133,8 +124,6 @@ fn loop(world: *Ecs) anyerror!void {
         world.step();
 
         var dt = timestamp() - loop_start;
-
-        // std.debug.print("dt {} \n", .{dt});
 
         world.setResource(.dt, dt);
     }

@@ -27,12 +27,6 @@ pub const Ecs = Zecs.Context(.{
             rl.Camera2D,
         ),
         Zecs.Tag("Chunk"),
-        Zecs.Component(
-            "InChunk",
-            struct {
-                chunk: Zecs.Entity,
-            },
-        ),
         Zecs.Tag("Input"),
         Zecs.Tag("Terrain"),
     },
@@ -43,9 +37,10 @@ pub const Ecs = Zecs.Context(.{
         TIME_FACTOR: i32 = 1,
         camera: Zecs.Entity = 0,
         player: Zecs.Entity = 0,
+        // chunk data
         _chunks: Chunks = undefined,
+        // chunk accessor
         chunks: *Chunks = undefined,
-        player_chunk: ?*Chunk = null,
     },
     .capacity = 1_000_002,
 });
