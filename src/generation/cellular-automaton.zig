@@ -154,7 +154,7 @@ pub fn CellularAutomaton(comptime width: comptime_int, comptime height: comptime
         pub fn fillWithLivingChanceOf(self: *Self, chance: u8) void {
             assert(chance >= 0 and chance <= 100);
 
-            var rnd = RndGen.init(0);
+            var rnd = RndGen.init(@intCast(u64, std.time.milliTimestamp()));
 
             var y: usize = 0;
 

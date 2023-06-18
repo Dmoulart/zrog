@@ -76,7 +76,6 @@ pub fn createTrees(world: *Ecs, chunk: *Chunk) void {
                 world_x,
                 world_y,
             );
-            // chunk.place(.props, world, tree);
 
             chunk.setFromWorldPosition(.props, tree, world_x, world_y);
         }
