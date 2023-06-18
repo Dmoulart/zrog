@@ -53,7 +53,7 @@ pub fn render(world: *Ecs) void {
         var i: i32 = 0;
         while (y < end_y) : (y += 1) {
             while (x < end_x) : (x += 1) {
-                draw(world, visible_chunk.terrain[x][y]);
+                draw(world, visible_chunk.get(.terrain, x, y).?);
 
                 if (visible_chunk.get(.props, x, y)) |prop| {
                     draw(world, prop);

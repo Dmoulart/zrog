@@ -23,9 +23,9 @@ bbox: BoundingBox,
 
 // id: Zecs.Entity,
 
-terrain: [SIZE][SIZE]Zecs.Entity = undefined,
-props: [SIZE][SIZE]Zecs.Entity = undefined,
-beings: [SIZE][SIZE]Zecs.Entity = undefined,
+terrain: [SIZE * SIZE]Zecs.Entity = undefined,
+props: [SIZE * SIZE]Zecs.Entity = undefined,
+beings: [SIZE * SIZE]Zecs.Entity = undefined,
 
 pub fn init(x: i32, y: i32, id: Zecs.Entity) Self {
     var chunk = Self{
@@ -65,9 +65,9 @@ pub fn create(allocator: std.mem.Allocator, x: i32, y: i32) *Self {
 pub fn clear(self: *Self) void {
     var cell_x: usize = 0;
     while (cell_x < SIZE) : (cell_x += 1) {
-        std.mem.set(Zecs.Entity, &self.terrain[cell_x], 0);
-        std.mem.set(Zecs.Entity, &self.props[cell_x], 0);
-        std.mem.set(Zecs.Entity, &self.beings[cell_x], 0);
+        std.mem.set(Zecs.Entity, &self.terrain, 0);
+        std.mem.set(Zecs.Entity, &self.props, 0);
+        std.mem.set(Zecs.Entity, &self.beings, 0);
     }
 }
 
@@ -84,7 +84,7 @@ pub fn set(self: *Self, comptime data_field: Data, entity: Zecs.Entity, chunk_x:
     assert(chunk_x < SIZE and chunk_y < SIZE);
 
     var data = comptime &@field(self, @tagName(data_field));
-    data[chunk_x][chunk_y] = entity;
+    data[chunk_x * SIZE + chunk_y] = entity;
 }
 
 pub fn getFromWorldPosition(self: *Self, comptime data_field: Data, x: i32, y: i32) ?Zecs.Entity {
@@ -99,7 +99,7 @@ pub fn get(self: *Self, comptime data_field: Data, chunk_x: usize, chunk_y: usiz
 
     assert(chunk_x < SIZE and chunk_y < SIZE);
 
-    var prop = data[chunk_x][chunk_y];
+    var prop = data[chunk_x * SIZE + chunk_y];
 
     return if (prop == 0) null else prop;
 }
@@ -118,7 +118,7 @@ pub fn delete(self: *Self, comptime data_field: Data, chunk_x: usize, chunk_y: u
 
     var data = comptime &@field(self, @tagName(data_field));
 
-    data[chunk_x][chunk_y] = 0;
+    data[chunk_x * SIZE + chunk_y] = 0;
 }
 
 pub fn getChunkX(self: *Self) i32 {

@@ -32,15 +32,29 @@ pub fn generate(world: *Ecs, chunk: *Chunk) void {
 }
 
 pub fn createTerrain(world: *Ecs, chunk: *Chunk) void {
-    for (chunk.terrain) |*col, x| {
-        for (col) |*entity, y| {
-            entity.* = createGrass(
+    var x: usize = 0;
+    var y: usize = 0;
+    while (y < Chunk.SIZE - 1) : (y += 1) {
+        while (x < Chunk.SIZE - 1) : (x += 1) {
+            chunk.set(.terrain, createGrass(
                 world,
                 chunk.getChunkX() + @intCast(i32, x),
                 chunk.getChunkY() + @intCast(i32, y),
-            );
+            ), x, y);
         }
+
+        x = 0;
     }
+    // for (0..Chunk.SIZE) |x| {
+
+    //     for (col) |*entity, y| {
+    //         entity.* = createGrass(
+    //             world,
+    //             chunk.getChunkX() + @intCast(i32, x),
+    //             chunk.getChunkY() + @intCast(i32, y),
+    //         );
+    //     }
+    // }
 }
 
 pub fn createTrees(world: *Ecs, chunk: *Chunk) void {
