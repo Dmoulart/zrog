@@ -14,22 +14,30 @@ pub fn movement(world: *Ecs) void {
     movables.each(move);
 }
 
-fn move(world: *Ecs, entity: Zecs.Entity) void {
-    var transform = world.pack(entity, .Transform);
+pub fn move(world: *Ecs, entity: Zecs.Entity) void {
     var vel = world.pack(entity, .Velocity);
-
+    // get out if there is no movement to achieve
     if (vel.x.* == 0 and vel.y.* == 0) return;
 
-    transform.x.* += vel.x.*;
-    transform.y.* += vel.y.*;
+    var transform = world.pack(entity, .Transform);
 
+    var movement_x = transform.x.* + vel.x.*;
+    var movement_y = transform.y.* + vel.y.*;
+
+    // collisions
     var chunks = world.getResource(.chunks).?;
+    var chunk = chunks.getChunkAtPosition(movement_x, movement_y);
+    // get out if we have reach the map edge
+    if (chunk == null) return;
 
-    if (chunks.getChunkAtPosition(transform.x.*, transform.y.*)) |chunk| {
-        var current_chunk_id = world.get(entity, .InChunk, .chunk);
+    var prop = chunk.?.getProp(movement_x, movement_y);
+    // get out if there is a prop on our way
+    if (prop != null) return;
 
-        if (current_chunk_id.* != chunk.id) {
-            current_chunk_id.* = chunk.id;
-        }
-    }
+    // update position
+    transform.x.* = movement_x;
+    transform.y.* = movement_y;
+
+    // update current chunk
+    chunks.updateEntityChunk(world, entity, transform.x.*, transform.y.*);
 }

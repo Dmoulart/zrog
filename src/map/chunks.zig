@@ -88,3 +88,13 @@ pub fn getByID(self: *Self, id: Zecs.Entity) ?*Chunk {
     }
     return null;
 }
+
+pub fn updateEntityChunk(self: *Self, world: *Ecs, entity: Zecs.Entity, x: i32, y: i32) void {
+    if (self.getChunkAtPosition(x, y)) |chunk| {
+        var current_chunk_id = world.get(entity, .InChunk, .chunk);
+
+        if (current_chunk_id.* != chunk.id) {
+            current_chunk_id.* = chunk.id;
+        }
+    }
+}

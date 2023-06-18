@@ -71,12 +71,14 @@ pub fn createTrees(world: *Ecs, chunk: *Chunk) void {
 
             if (state == .dead) continue;
 
-            _ = createTree(
+            var tree = createTree(
                 world,
                 @intCast(i32, x + cell_offset_x),
                 @intCast(i32, y + cell_offset_y),
                 chunk.id,
             );
+
+            chunk.place(world, tree);
         }
 
         x = 0;
