@@ -23,8 +23,7 @@ pub fn createPlayer(world: *Ecs) Zecs.Entity {
     };
 
     var chunks = world.getResource(.chunks);
-    var chunk = chunks.getChunkAtPosition(start_position.x, start_position.y).?;
-    chunk.setFromWorldPosition(.beings, player, start_position.x, start_position.y);
+    chunks.set(.beings, player, start_position.x, start_position.y);
 
     world.write(player, .Transform, start_position);
 

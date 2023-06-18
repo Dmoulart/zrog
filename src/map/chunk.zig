@@ -49,8 +49,6 @@ pub fn init(x: i32, y: i32, id: Zecs.Entity) Self {
         std.mem.set(Zecs.Entity, &chunk.beings[cell_x], 0);
     }
 
-    std.debug.print("chunk initialized", .{});
-
     return chunk;
 }
 

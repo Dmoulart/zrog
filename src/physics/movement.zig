@@ -40,9 +40,4 @@ pub fn move(world: *Ecs, entity: Zecs.Entity) void {
     transform.y.* = movement_y;
 
     new_chunk.?.setFromWorldPosition(.beings, entity, movement_x, movement_y);
-
-    // std.debug.print("new chunk {any}", .{new_chunk.?.getFromWorldPosition(.beings, movement_x, movement_y)});
-    // std.debug.print("\nold chunk {} new chunk {}\n", .{ old_chunk.?.id, new_chunk.?.id });
-    // update current chunk
-    // chunks.updateEntityChunk(world, entity, transform.x.*, transform.y.*);
 }
