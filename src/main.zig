@@ -99,7 +99,8 @@ pub fn main() !void {
         .chunks = map_chunks,
     };
 
-    world.setResource(.chunks, chunks);
+    world.setResource(._chunks, chunks);
+    world.setResource(.chunks, &chunks);
 
     var first_chunk = &chunks.chunks[0][0].?;
 
