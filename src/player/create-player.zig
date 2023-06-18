@@ -17,15 +17,21 @@ pub fn createPlayer(world: *Ecs) Zecs.Entity {
 
     world.setResource(.player, player);
 
-    // Place it on the current chunk
-    var chunk = world.getResource(.player_chunk);
-    world.set(player, .InChunk, .chunk, chunk.?.id);
-
-    world.write(player, .Transform, .{
+    var start_position = .{
         .x = 10,
         .y = 10,
         .z = 1,
-    });
+    };
+
+    // Place it on the current chunk
+    var chunk = world.getResource(.player_chunk).?;
+    // var chunks = world.getResource(.chunks);
+    // _ = chunks;
+
+    world.set(player, .InChunk, .chunk, chunk.id);
+    chunk.set(.beings, player, 10, 10);
+
+    world.write(player, .Transform, start_position);
 
     world.write(player, .Velocity, .{
         .x = 0,

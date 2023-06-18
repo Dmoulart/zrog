@@ -71,18 +71,23 @@ pub fn createTrees(world: *Ecs, chunk: *Chunk) void {
 
             if (state == .dead) continue;
 
+            var world_x = @intCast(i32, x + cell_offset_x);
+            var world_y = @intCast(i32, y + cell_offset_y);
+
             var tree = createTree(
                 world,
-                @intCast(i32, x + cell_offset_x),
-                @intCast(i32, y + cell_offset_y),
+                world_x,
+                world_y,
                 chunk.id,
             );
+            // chunk.place(.props, world, tree);
 
-            chunk.place(world, tree);
+            chunk.setFromWorldPosition(.props, tree, world_x, world_y);
         }
 
         x = 0;
     }
+    std.debug.print("chunk props {any}", .{chunk.props});
 }
 
 pub fn createTree(world: *Ecs, x: i32, y: i32, chunk_id: Zecs.Entity) Zecs.Entity {

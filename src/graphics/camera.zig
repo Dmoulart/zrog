@@ -65,7 +65,7 @@ fn followPlayer(world: *Ecs, camera: Zecs.Entity) void {
     var player_transform = world.pack(player, .Transform);
     var camera_transform = world.pack(camera, .Transform);
 
-    var chunks = world.getResource(.chunks).?;
+    var chunks = world.getResource(.chunks);
 
     // Increment position first
     camera_transform.x.* = player_transform.x.*;

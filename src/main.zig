@@ -117,7 +117,6 @@ fn loop(world: *Ecs) anyerror!void {
     world.addSystem(updateCamera);
 
     world.addSystem(prerender);
-    world.addSystem(renderTerrain);
     world.addSystem(render);
     world.addSystem(postrender);
 
@@ -126,8 +125,6 @@ fn loop(world: *Ecs) anyerror!void {
         var loop_start = timestamp();
 
         world.step();
-
-        std.debug.print("\nentities count {} \n", .{world.entities.count});
 
         var dt = timestamp() - loop_start;
 

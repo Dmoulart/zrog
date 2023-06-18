@@ -3,13 +3,7 @@ const Zecs = @import("zecs");
 const Ecs = @import("../context.zig").Ecs;
 
 pub fn movement(world: *Ecs) void {
-    var movables = world.query().all(
-        .{
-            .Transform,
-            .Velocity,
-            .InChunk,
-        },
-    ).execute();
+    var movables = world.query().all(.{ .Transform, .Velocity, .InChunk }).execute();
 
     movables.each(move);
 }
@@ -25,12 +19,12 @@ pub fn move(world: *Ecs, entity: Zecs.Entity) void {
     var movement_y = transform.y.* + vel.y.*;
 
     // collisions
-    var chunks = world.getResource(.chunks).?;
+    var chunks = world.getResource(.chunks);
     var chunk = chunks.getChunkAtPosition(movement_x, movement_y);
     // get out if we have reach the map edge
     if (chunk == null) return;
 
-    var prop = chunk.?.getProp(movement_x, movement_y);
+    var prop = chunk.?.getFromWorldPosition(.props, movement_x, movement_y);
     // get out if there is a prop on our way
     if (prop != null) return;
 

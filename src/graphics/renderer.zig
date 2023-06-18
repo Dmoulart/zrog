@@ -22,50 +22,50 @@ pub fn prerender(world: *Ecs) void {
     rl.BeginMode2D(camera_object);
 }
 
+// pub fn render(world: *Ecs) void {
+//     var camera = world.getResource(.camera);
+
+//     var chunks = world.getResource(.chunks);
+//     var visible_chunks = chunks.filterVisible(world, camera);
+
+//     var drawables = world.query()
+//         .all(.{ .Transform, .Sprite, .InChunk })
+//         .not(.{.Terrain})
+//         .execute()
+//         .iterator();
+
+//     var camera_bbox = getCameraBoundingBox(world, camera);
+
+//     // how to make this faster ?
+//     // 1) faster iterator
+//     // 2) filter by chunk in the query (relationships ?)
+//     // 3) some data structure that keep track of these drawables entities (kdtree ? quadtree ? )
+//     while (drawables.next()) |drawable| {
+//         var transform = world.pack(drawable, .Transform);
+
+//         var entity_chunk_id = world.get(drawable, .InChunk, .chunk).*;
+//         var is_in_visible_chunk = false;
+//         // visible chunks should be a set ?
+//         for (visible_chunks) |visible_chunk| {
+//             if (visible_chunk.id == entity_chunk_id) {
+//                 is_in_visible_chunk = true;
+//                 break;
+//             }
+//         }
+
+//         if (!is_in_visible_chunk) continue;
+
+//         // if (owning_chunk != current_chunk.?.id) continue;
+//         if (!camera_bbox.contains(transform.x.*, transform.y.*)) continue;
+
+//         draw(world, drawable);
+//     }
+// }
+
 pub fn render(world: *Ecs) void {
-    var camera = world.getResource(.camera);
-
-    var chunks = world.getResource(.chunks).?;
-    var visible_chunks = chunks.filterVisible(world, camera);
-
-    var drawables = world.query()
-        .all(.{ .Transform, .Sprite, .InChunk })
-        .not(.{.Terrain})
-        .execute()
-        .iterator();
-
-    var camera_bbox = getCameraBoundingBox(world, camera);
-
-    // how to make this faster ?
-    // 1) faster iterator
-    // 2) filter by chunk in the query (relationships ?)
-    // 3) some data structure that keep track of these drawables entities (kdtree ? quadtree ? )
-    while (drawables.next()) |drawable| {
-        var transform = world.pack(drawable, .Transform);
-
-        var entity_chunk_id = world.get(drawable, .InChunk, .chunk).*;
-        var is_in_visible_chunk = false;
-        // visible chunks should be a set ?
-        for (visible_chunks) |visible_chunk| {
-            if (visible_chunk.id == entity_chunk_id) {
-                is_in_visible_chunk = true;
-                break;
-            }
-        }
-
-        if (!is_in_visible_chunk) continue;
-
-        // if (owning_chunk != current_chunk.?.id) continue;
-        if (!camera_bbox.contains(transform.x.*, transform.y.*)) continue;
-
-        draw(world, drawable);
-    }
-}
-
-pub fn renderTerrain(world: *Ecs) void {
     const camera = world.getResource(.camera);
 
-    var chunks = world.getResource(.chunks).?;
+    var chunks = world.getResource(.chunks);
 
     var visible_chunks = chunks.filterVisible(world, camera);
     var fov_bbox = getCameraBoundingBox(world, camera);
@@ -73,24 +73,25 @@ pub fn renderTerrain(world: *Ecs) void {
     for (visible_chunks) |visible_chunk| {
         var intersection = fov_bbox.intersection(&visible_chunk.bbox);
 
-        var start_x = intersection.x - visible_chunk.bbox.x;
-        var start_y = intersection.y - visible_chunk.bbox.y;
+        var start_x = @intCast(usize, intersection.x - visible_chunk.bbox.x);
+        var start_y = @intCast(usize, intersection.y - visible_chunk.bbox.y);
 
-        var end_x = start_x + @intCast(i32, intersection.width);
-        var end_y = start_y + @intCast(i32, intersection.height);
+        var end_x = @intCast(usize, start_x + @intCast(usize, intersection.width));
+        var end_y = @intCast(usize, start_y + @intCast(usize, intersection.height));
 
         var x = start_x;
         var y = start_y;
 
         while (y < end_y) : (y += 1) {
             while (x < end_x) : (x += 1) {
-                draw(
-                    world,
-                    visible_chunk.terrain[@intCast(usize, x)][@intCast(usize, y)],
-                );
+                draw(world, visible_chunk.terrain[x][y]);
+
+                if (visible_chunk.get(.props, x, y)) |prop| {
+                    draw(world, prop);
+                }
             }
 
-            x = intersection.x - visible_chunk.bbox.x;
+            x = start_x;
         }
     }
 }

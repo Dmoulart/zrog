@@ -43,7 +43,7 @@ pub const Ecs = Zecs.Context(.{
         screen_height: c_int = 800,
         screen_width: c_int = 1200,
         player: Zecs.Entity = 0,
-        chunks: ?Chunks = null,
+        chunks: Chunks = undefined,
         player_chunk: ?*Chunk = null,
     },
     .capacity = 1_000_002,
