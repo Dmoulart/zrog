@@ -21,22 +21,71 @@ pub fn create(allocator: std.mem.Allocator) *Self {
     var chunks = allocator.create(Self) catch unreachable;
     chunks.allocator = allocator;
 
-    // var chunks_group = allocator.create(ChunkGroup) catch unreachable;
-    // chunks.chunks = chunks_group;
+    var chunk_group = allocator.create(ChunkGroup) catch unreachable;
 
-    // var chunks_group = [3][3]?*Chunk{
-    //     [3]?*Chunk{
-    //         Chunk.create(allocator, x: i32, y: i32, id: Zecs.Entity)
-    //     },
-    // };
+    var upper_left_chunk = Chunk.create(
+        allocator,
+        0,
+        0,
+    );
+    chunk_group[0][0] = upper_left_chunk;
+    var upper_middle_chunk = Chunk.create(
+        allocator,
+        1,
+        0,
+    );
+    chunk_group[1][0] = upper_middle_chunk;
+    var upper_right_chunk = Chunk.create(
+        allocator,
+        2,
+        0,
+    );
+    chunk_group[2][0] = upper_right_chunk;
+    var mid_left_chunk = Chunk.create(
+        allocator,
+        0,
+        1,
+    );
+    chunk_group[0][1] = mid_left_chunk;
+    var mid_middle_chunk = Chunk.create(
+        allocator,
+        1,
+        1,
+    );
+    chunk_group[1][1] = mid_middle_chunk;
+    var mid_right_chunk = Chunk.create(
+        allocator,
+        2,
+        1,
+    );
+    chunk_group[2][1] = mid_right_chunk;
+    var lower_left_chunk = Chunk.create(
+        allocator,
+        0,
+        2,
+    );
+    chunk_group[0][2] = lower_left_chunk;
+    var lower_middle_chunk = Chunk.create(
+        allocator,
+        1,
+        2,
+    );
+    chunk_group[1][2] = lower_middle_chunk;
+    var lower_right_chunk = Chunk.create(
+        allocator,
+        2,
+        2,
+    );
+    chunk_group[2][2] = lower_right_chunk;
 
+    chunks.chunks = chunk_group;
     return chunks;
 }
 
 pub fn getChunkAtPosition(self: *Self, x: i32, y: i32) ?*Chunk {
     for (self.chunks) |*row| {
         for (row) |*maybe_chunk| {
-            if (maybe_chunk.*) |*chunk| {
+            if (maybe_chunk.*) |chunk| {
                 if (chunk.bbox.contains(x, y)) return chunk;
             }
         }
@@ -86,7 +135,7 @@ pub fn filterVisible(
 
     for (self.chunks) |*row| {
         for (row) |*maybe_chunk| {
-            if (maybe_chunk.*) |*chunk| {
+            if (maybe_chunk.*) |chunk| {
                 if (chunk.bbox.intersects(&camera_bbox)) {
                     chunks[count] = chunk;
                     count += 1;
@@ -103,7 +152,7 @@ pub fn getBoundingBox(self: *Self) BoundingBox {
 
     for (self.chunks) |*row| {
         for (row) |*maybe_chunk| {
-            if (maybe_chunk.*) |*chunk| {
+            if (maybe_chunk.*) |chunk| {
                 if (chunks_bbox) |*bbox| {
                     chunks_bbox = chunk.bbox.merge(bbox);
                 } else {
@@ -123,13 +172,13 @@ pub fn getBoundingBox(self: *Self) BoundingBox {
     return chunks_bbox.?;
 }
 
-pub fn getByID(self: *Self, id: Zecs.Entity) ?*Chunk {
-    for (self.chunks) |*row| {
-        for (row) |*maybe_chunk| {
-            if (maybe_chunk.*) |*chunk| {
-                if (chunk.id == id) return chunk;
-            }
-        }
-    }
-    return null;
-}
+// pub fn getByID(self: *Self, id: Zecs.Entity) ?*Chunk {
+//     for (self.chunks) |*row| {
+//         for (row) |*maybe_chunk| {
+//             if (maybe_chunk.*) |*chunk| {
+//                 if (chunk.id == id) return chunk;
+//             }
+//         }
+//     }
+//     return null;
+// }
