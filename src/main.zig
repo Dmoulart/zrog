@@ -107,6 +107,7 @@ pub fn main() !void {
 
     _ = createCamera(&world);
     _ = createPlayer(&world);
+    // std.debug.print("player created", .{});
 
     try loop(&world);
 }
@@ -120,6 +121,10 @@ fn loop(world: *Ecs) anyerror!void {
     world.addSystem(render);
     world.addSystem(postrender);
 
+    var chunks = world.getResource(.chunks);
+
+    var first_chunk = &chunks.chunks[0][0].?;
+    std.debug.print("beings {any} !", .{first_chunk.beings});
     // Main game loop
     while (!rl.WindowShouldClose()) {
         var loop_start = timestamp();
@@ -128,7 +133,7 @@ fn loop(world: *Ecs) anyerror!void {
 
         var dt = timestamp() - loop_start;
 
-        std.debug.print("dt {} \n", .{dt});
+        // std.debug.print("dt {} \n", .{dt});
 
         world.setResource(.dt, dt);
     }

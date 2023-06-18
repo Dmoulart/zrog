@@ -18,20 +18,28 @@ pub fn move(world: *Ecs, entity: Zecs.Entity) void {
     var movement_x = transform.x.* + vel.x.*;
     var movement_y = transform.y.* + vel.y.*;
 
-    // collisions
     var chunks = world.getResource(.chunks);
-    var chunk = chunks.getChunkAtPosition(movement_x, movement_y);
-    // get out if we have reach the map edge
-    if (chunk == null) return;
 
-    var prop = chunk.?.getFromWorldPosition(.props, movement_x, movement_y);
+    var old_chunk = chunks.getChunkAtPosition(transform.x.*, transform.y.*);
+    var new_chunk = chunks.getChunkAtPosition(movement_x, movement_y);
+
+    // get out if we have reach the map edge
+    if (new_chunk == null) return;
+
+    var prop = new_chunk.?.getFromWorldPosition(.props, movement_x, movement_y);
     // get out if there is a prop on our way
     if (prop != null) return;
 
     // update position
+    old_chunk.?.deleteFromWorldPosition(.beings, transform.x.*, transform.y.*);
+
     transform.x.* = movement_x;
     transform.y.* = movement_y;
 
+    new_chunk.?.setFromWorldPosition(.beings, entity, movement_x, movement_y);
+
+    // std.debug.print("new chunk {any}", .{new_chunk.?.getFromWorldPosition(.beings, movement_x, movement_y)});
+    // std.debug.print("\nold chunk {} new chunk {}\n", .{ old_chunk.?.id, new_chunk.?.id });
     // update current chunk
-    chunks.updateEntityChunk(world, entity, transform.x.*, transform.y.*);
+    // chunks.updateEntityChunk(world, entity, transform.x.*, transform.y.*);
 }

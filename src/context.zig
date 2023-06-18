@@ -37,11 +37,11 @@ pub const Ecs = Zecs.Context(.{
         Zecs.Tag("Terrain"),
     },
     .Resources = struct {
+        screen_height: c_int = 800,
+        screen_width: c_int = 1200,
         dt: i64 = 0,
         TIME_FACTOR: i32 = 1,
         camera: Zecs.Entity = 0,
-        screen_height: c_int = 800,
-        screen_width: c_int = 1200,
         player: Zecs.Entity = 0,
         chunks: Chunks = undefined,
         player_chunk: ?*Chunk = null,

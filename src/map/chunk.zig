@@ -49,20 +49,10 @@ pub fn init(x: i32, y: i32, id: Zecs.Entity) Self {
         std.mem.set(Zecs.Entity, &chunk.beings[cell_x], 0);
     }
 
+    std.debug.print("chunk initialized", .{});
+
     return chunk;
 }
-
-// pub fn place(self: *Self, world: *Ecs, entity: Zecs.Entity) void {
-//     assert(world.contains(entity));
-
-//     var transform = world.pack(entity, .Transform);
-//     assert(self.bbox.contains(transform.x.*, transform.y.*));
-
-//     var x = @intCast(usize, transform.x.* - self.getChunkX());
-//     var y = @intCast(usize, transform.y.* - self.getChunkY());
-
-//     self.props[x][y] = entity;
-// }
 
 pub fn setFromWorldPosition(self: *Self, comptime data_field: Data, entity: Zecs.Entity, x: i32, y: i32) void {
     assert(self.bbox.contains(x, y));
@@ -77,7 +67,6 @@ pub fn set(self: *Self, comptime data_field: Data, entity: Zecs.Entity, chunk_x:
     assert(chunk_x < SIZE and chunk_y < SIZE);
 
     var data = comptime &@field(self, @tagName(data_field));
-
     data[chunk_x][chunk_y] = entity;
 }
 

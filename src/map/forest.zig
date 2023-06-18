@@ -87,7 +87,6 @@ pub fn createTrees(world: *Ecs, chunk: *Chunk) void {
 
         x = 0;
     }
-    std.debug.print("chunk props {any}", .{chunk.props});
 }
 
 pub fn createTree(world: *Ecs, x: i32, y: i32, chunk_id: Zecs.Entity) Zecs.Entity {

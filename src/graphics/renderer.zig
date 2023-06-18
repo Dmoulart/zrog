@@ -81,13 +81,18 @@ pub fn render(world: *Ecs) void {
 
         var x = start_x;
         var y = start_y;
-
+        // std.debug.print("beings {any} !", .{visible_chunk.beings});
         while (y < end_y) : (y += 1) {
             while (x < end_x) : (x += 1) {
                 draw(world, visible_chunk.terrain[x][y]);
 
                 if (visible_chunk.get(.props, x, y)) |prop| {
                     draw(world, prop);
+                }
+
+                if (visible_chunk.get(.beings, x, y)) |being| {
+                    std.debug.print("draw player !", .{});
+                    draw(world, being);
                 }
             }
 
