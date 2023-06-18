@@ -36,8 +36,14 @@ pub fn render(world: *Ecs) void {
         var start_x = @intCast(usize, intersection.x - visible_chunk.bbox.x);
         var start_y = @intCast(usize, intersection.y - visible_chunk.bbox.y);
 
-        var end_x = @intCast(usize, start_x + @intCast(usize, intersection.width));
-        var end_y = @intCast(usize, start_y + @intCast(usize, intersection.height));
+        var end_x = @intCast(
+            usize,
+            start_x + @intCast(usize, intersection.width),
+        );
+        var end_y = @intCast(
+            usize,
+            start_y + @intCast(usize, intersection.height),
+        );
 
         var x = start_x;
         var y = start_y;

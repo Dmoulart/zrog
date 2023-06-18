@@ -23,14 +23,18 @@ const Cell = Ecs.Type(.{
     .Terrain,
 });
 
-pub fn generate(world: *Ecs, chunk_x: i32, chunk_y: i32) Chunk {
+pub fn generate(world: *Ecs, map_x: i32, map_y: i32) Chunk {
     world.registerType(Cell);
     world.registerType(Grass);
 
     var id = world.createEmpty();
     world.attach(id, .Chunk);
 
-    var chunk = Chunk.init(chunk_x, chunk_y, id);
+    var chunk = Chunk.init(
+        map_x,
+        map_y,
+        id,
+    );
 
     createTerrain(world, &chunk);
 
@@ -77,7 +81,12 @@ pub fn createTrees(world: *Ecs, chunk: *Chunk) void {
                 world_y,
             );
 
-            chunk.setFromWorldPosition(.props, tree, world_x, world_y);
+            chunk.setFromWorldPosition(
+                .props,
+                tree,
+                world_x,
+                world_y,
+            );
         }
 
         x = 0;

@@ -7,8 +7,7 @@ const BoundingBox = @import("../math/bounding-box.zig");
 const Self = @This();
 
 // The size of a map chunk in cells.
-pub const SIZE = 80;
-// pub const MAX_ENTITY_PER_CELL = 10;
+pub const SIZE = 85;
 
 pub const Data = enum {
     terrain,
