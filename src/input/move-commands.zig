@@ -11,8 +11,6 @@ pub fn moveCommands(world: *Ecs) void {
 }
 
 fn processMoveCommands(world: *Ecs, entity: Zecs.Entity) void {
-    Timer.start("Move commands");
-
     var x: i32 = 0;
     var y: i32 = 0;
 
@@ -37,6 +35,4 @@ fn processMoveCommands(world: *Ecs, entity: Zecs.Entity) void {
 
     vel.x.* = x;
     vel.y.* = y;
-
-    Timer.end();
 }

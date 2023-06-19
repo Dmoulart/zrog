@@ -8,6 +8,7 @@ const Ecs = @import("../context.zig").Ecs;
 const BoundingBox = @import("../math/bounding-box.zig");
 const getCameraBoundingBox = @import("../graphics/camera.zig").getCameraBoundingBox;
 
+const Point = struct { x: usize, y: usize };
 const COORDS: [9]Point = [9]Point{ .{
     .x = 0,
     .y = 0,
@@ -38,15 +39,13 @@ const COORDS: [9]Point = [9]Point{ .{
 } };
 
 const Self = @This();
-const ChunkGroup = [3][3]?*Chunk;
+const ChunkGroup = [3][3]?Chunk;
 
 allocator: std.mem.Allocator,
 
 chunks: *ChunkGroup = undefined,
 
 visible_chunks_memory: [9]*Chunk = undefined,
-
-const Point = struct { x: usize, y: usize };
 
 pub fn create(allocator: std.mem.Allocator) *Self {
     var chunks = allocator.create(Self) catch unreachable;
@@ -55,8 +54,7 @@ pub fn create(allocator: std.mem.Allocator) *Self {
     var chunk_group = allocator.create(ChunkGroup) catch unreachable;
 
     for (COORDS) |point| {
-        chunk_group[point.x][point.y] = Chunk.create(
-            allocator,
+        chunk_group[point.x][point.y] = Chunk.init(
             @intCast(i32, point.x),
             @intCast(i32, point.y),
         );
@@ -69,7 +67,7 @@ pub fn create(allocator: std.mem.Allocator) *Self {
 pub fn getChunkAtPosition(self: *Self, x: i32, y: i32) ?*Chunk {
     for (self.chunks) |*row| {
         for (row) |*maybe_chunk| {
-            if (maybe_chunk.*) |chunk| {
+            if (maybe_chunk.*) |*chunk| {
                 if (chunk.bbox.contains(x, y)) return chunk;
             }
         }
@@ -119,7 +117,7 @@ pub fn filterVisible(
 
     for (self.chunks) |*row| {
         for (row) |*maybe_chunk| {
-            if (maybe_chunk.*) |chunk| {
+            if (maybe_chunk.*) |*chunk| {
                 if (chunk.bbox.intersects(&camera_bbox)) {
                     chunks[count] = chunk;
                     count += 1;
@@ -136,7 +134,7 @@ pub fn getBoundingBox(self: *Self) BoundingBox {
 
     for (self.chunks) |*row| {
         for (row) |*maybe_chunk| {
-            if (maybe_chunk.*) |chunk| {
+            if (maybe_chunk.*) |*chunk| {
                 if (chunks_bbox) |*bbox| {
                     chunks_bbox = chunk.bbox.merge(bbox);
                 } else {

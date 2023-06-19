@@ -22,6 +22,8 @@ const updateCamera = @import("./graphics/camera.zig").updateCamera;
 const movement = @import("./physics/movement.zig").movement;
 const moveCommands = @import("./input/move-commands.zig").moveCommands;
 
+const Timer = @import("./perfs/timer.zig");
+
 pub fn main() !void {
     // Creation
     try Ecs.setup(std.heap.page_allocator);
@@ -41,18 +43,20 @@ pub fn main() !void {
 
     var chunks = Chunks.create(std.heap.page_allocator);
 
-    for (chunks.chunks) |row| {
-        for (row) |chunk| {
-            Forest.generate(&world, chunk.?);
+    for (chunks.chunks) |*row| {
+        for (row) |*maybe_chunk| {
+            if (maybe_chunk.*) |*chunk| {
+                Forest.generate(&world, chunk);
+            }
         }
     }
 
-    // where to store the chunks ?
-    // world.setResource(._chunks, chunks);
     world.setResource(.chunks, chunks);
 
     _ = createCamera(&world);
+    Timer.start("create camera");
     _ = createPlayer(&world);
+    Timer.end();
 
     try loop(&world);
 }
