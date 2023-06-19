@@ -28,7 +28,7 @@ pub fn generate(world: *Ecs, chunk: *Chunk) void {
     world.registerType(Cell);
 
     createTerrain(world, chunk);
-    // createTrees(world, chunk);
+    createTrees(world, chunk);
 }
 
 pub fn createTerrain(world: *Ecs, chunk: *Chunk) void {
