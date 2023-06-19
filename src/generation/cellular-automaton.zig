@@ -19,7 +19,7 @@ pub fn CellularAutomaton(comptime width: comptime_int, comptime height: comptime
 
         pub const Cells = CellularAutomatonCells;
 
-        cells: [width][height]Cells = undefined,
+        cells: [width * height]Cells = undefined,
 
         height: usize = height,
         width: usize = width,
@@ -33,27 +33,23 @@ pub fn CellularAutomaton(comptime width: comptime_int, comptime height: comptime
         }
 
         pub fn set(self: *Self, x: usize, y: usize, state: Cells) void {
-            self.cells[x][y] = state;
+            var index = y * width + x;
+            self.cells[index] = state;
         }
 
         pub fn get(self: *Self, x: usize, y: usize) Cells {
-            return self.cells[x][y];
+            var index = y * width + x;
+            return self.cells[index];
         }
 
         pub fn getPtr(self: *Self, x: usize, y: usize) *Cells {
-            return &self.cells[x][y];
+            var index = y * width + x;
+            return &self.cells[index];
         }
 
         // Set all automaton cell's to dead
         pub fn clear(self: *Self) void {
-            // is this a great idea ?
-            @setEvalBranchQuota(10_000_000);
-
-            var x: usize = 0;
-
-            while (x < width) : (x += 1) {
-                std.mem.set(Cells, &self.cells[x], .dead);
-            }
+            std.mem.set(Cells, &self.cells, .dead);
         }
 
         pub fn map(self: *Self, function: *const fn (x: usize, y: usize, state: Cells) Cells) void {
@@ -92,7 +88,7 @@ pub fn CellularAutomaton(comptime width: comptime_int, comptime height: comptime
 
             var neighbors: [8]Cells = undefined;
 
-            var next_cells: [width][height]Cells = undefined;
+            var next_cells: [width * height]Cells = undefined;
 
             var limit_y: usize = height - 1;
             var limit_x: usize = width - 1;
@@ -139,10 +135,10 @@ pub fn CellularAutomaton(comptime width: comptime_int, comptime height: comptime
 
                     if (current_cell == .alive) {
                         // If the cell is alive, then it stays alive if it has either 2 or 3 live neighbors.
-                        next_cells[x][y] = if (alive_neighbors < 2 or alive_neighbors > 3) .dead else .alive;
+                        next_cells[x * width + y] = if (alive_neighbors < 2 or alive_neighbors > 3) .dead else .alive;
                     } else {
                         // If the cell is dead, then it springs to life only in the case that it has 3 live neighbors.
-                        next_cells[x][y] = if (alive_neighbors == 3) .alive else .dead;
+                        next_cells[x * width + y] = if (alive_neighbors == 3) .alive else .dead;
                     }
                 }
             }
