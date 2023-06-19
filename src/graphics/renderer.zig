@@ -38,14 +38,8 @@ pub fn render(world: *Ecs) void {
         var start_x = @intCast(usize, intersection.x - visible_chunk.bbox.x);
         var start_y = @intCast(usize, intersection.y - visible_chunk.bbox.y);
 
-        var end_x = @intCast(
-            usize,
-            start_x + @intCast(usize, intersection.width),
-        );
-        var end_y = @intCast(
-            usize,
-            start_y + @intCast(usize, intersection.height),
-        );
+        var end_x = @intCast(usize, start_x + @intCast(usize, intersection.width));
+        var end_y = @intCast(usize, start_y + @intCast(usize, intersection.height));
 
         var x = start_x;
         var y = start_y;
@@ -53,6 +47,7 @@ pub fn render(world: *Ecs) void {
         var i: i32 = 0;
         while (y < end_y) : (y += 1) {
             while (x < end_x) : (x += 1) {
+                std.debug.print("\n x {} y {} \n", .{ x, y });
                 draw(world, visible_chunk.get(.terrain, x, y).?);
 
                 if (visible_chunk.get(.props, x, y)) |prop| {

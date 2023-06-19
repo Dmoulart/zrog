@@ -26,9 +26,9 @@ const Cell = Ecs.Type(.{
 pub fn generate(world: *Ecs, chunk: *Chunk) void {
     world.registerType(Grass);
     world.registerType(Cell);
-    createTerrain(world, chunk);
 
-    // createTrees(world, chunk);
+    createTerrain(world, chunk);
+    createTrees(world, chunk);
 }
 
 pub fn createTerrain(world: *Ecs, chunk: *Chunk) void {
@@ -45,16 +45,6 @@ pub fn createTerrain(world: *Ecs, chunk: *Chunk) void {
 
         x = 0;
     }
-    // for (0..Chunk.SIZE) |x| {
-
-    //     for (col) |*entity, y| {
-    //         entity.* = createGrass(
-    //             world,
-    //             chunk.getChunkX() + @intCast(i32, x),
-    //             chunk.getChunkY() + @intCast(i32, y),
-    //         );
-    //     }
-    // }
 }
 
 pub fn createTrees(world: *Ecs, chunk: *Chunk) void {
