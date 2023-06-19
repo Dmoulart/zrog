@@ -42,5 +42,5 @@ pub const Ecs = Zecs.Context(.{
         // chunk accessor
         chunks: *Chunks = undefined,
     },
-    .capacity = 10_000_002,
+    .capacity = 200_002,
 });

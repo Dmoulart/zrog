@@ -40,7 +40,9 @@ pub fn main() !void {
 
     rl.InitWindow(screen_width, screen_height, "Zrog");
     rl.SetTargetFPS(60);
-    Timer.start("alloc chunks");
+
+    Timer.start("setup");
+
     var chunks = Chunks.create(std.heap.page_allocator);
     for (chunks.chunks) |*row| {
         for (row) |*maybe_chunk| {
@@ -49,13 +51,13 @@ pub fn main() !void {
             }
         }
     }
-    Timer.end();
 
     world.setResource(.chunks, chunks);
 
     _ = createCamera(&world);
-
     _ = createPlayer(&world);
+
+    Timer.end();
 
     try loop(&world);
 }

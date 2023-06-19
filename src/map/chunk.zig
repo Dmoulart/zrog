@@ -21,8 +21,6 @@ y: i32,
 
 bbox: BoundingBox,
 
-// id: Zecs.Entity,
-
 terrain: [SIZE * SIZE]Zecs.Entity = undefined,
 props: [SIZE * SIZE]Zecs.Entity = undefined,
 beings: [SIZE * SIZE]Zecs.Entity = undefined,
@@ -41,23 +39,6 @@ pub fn init(x: i32, y: i32) Self {
 
     // Init terrain and props with 0 values (means no entitiy)
     chunk.clear();
-    return chunk;
-}
-
-pub fn create(allocator: std.mem.Allocator, x: i32, y: i32) *Self {
-    var chunk = allocator.create(Self) catch unreachable;
-
-    // chunk.id = id;
-    chunk.x = x;
-    chunk.y = y;
-    chunk.bbox = BoundingBox{
-        .x = x * SIZE,
-        .y = y * SIZE,
-        .width = SIZE,
-        .height = SIZE,
-    };
-    chunk.clear();
-
     return chunk;
 }
 
