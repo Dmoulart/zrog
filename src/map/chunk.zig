@@ -27,9 +27,8 @@ terrain: [SIZE * SIZE]Zecs.Entity = undefined,
 props: [SIZE * SIZE]Zecs.Entity = undefined,
 beings: [SIZE * SIZE]Zecs.Entity = undefined,
 
-pub fn init(x: i32, y: i32, id: Zecs.Entity) Self {
+pub fn init(x: i32, y: i32) Self {
     var chunk = Self{
-        .id = id,
         .x = x,
         .y = y,
         .bbox = BoundingBox{

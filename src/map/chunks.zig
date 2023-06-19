@@ -8,6 +8,35 @@ const Ecs = @import("../context.zig").Ecs;
 const BoundingBox = @import("../math/bounding-box.zig");
 const getCameraBoundingBox = @import("../graphics/camera.zig").getCameraBoundingBox;
 
+const COORDS: [9]Point = [9]Point{ .{
+    .x = 0,
+    .y = 0,
+}, .{
+    .x = 1,
+    .y = 0,
+}, .{
+    .x = 2,
+    .y = 0,
+}, .{
+    .x = 0,
+    .y = 1,
+}, .{
+    .x = 1,
+    .y = 1,
+}, .{
+    .x = 2,
+    .y = 1,
+}, .{
+    .x = 0,
+    .y = 2,
+}, .{
+    .x = 1,
+    .y = 2,
+}, .{
+    .x = 2,
+    .y = 2,
+} };
+
 const Self = @This();
 const ChunkGroup = [3][3]?*Chunk;
 
@@ -17,66 +46,21 @@ chunks: *ChunkGroup = undefined,
 
 visible_chunks_memory: [9]*Chunk = undefined,
 
+const Point = struct { x: usize, y: usize };
+
 pub fn create(allocator: std.mem.Allocator) *Self {
     var chunks = allocator.create(Self) catch unreachable;
     chunks.allocator = allocator;
 
     var chunk_group = allocator.create(ChunkGroup) catch unreachable;
 
-    var upper_left_chunk = Chunk.create(
-        allocator,
-        0,
-        0,
-    );
-    chunk_group[0][0] = upper_left_chunk;
-    var upper_middle_chunk = Chunk.create(
-        allocator,
-        1,
-        0,
-    );
-    chunk_group[1][0] = upper_middle_chunk;
-    var upper_right_chunk = Chunk.create(
-        allocator,
-        2,
-        0,
-    );
-    chunk_group[2][0] = upper_right_chunk;
-    var mid_left_chunk = Chunk.create(
-        allocator,
-        0,
-        1,
-    );
-    chunk_group[0][1] = mid_left_chunk;
-    var mid_middle_chunk = Chunk.create(
-        allocator,
-        1,
-        1,
-    );
-    chunk_group[1][1] = mid_middle_chunk;
-    var mid_right_chunk = Chunk.create(
-        allocator,
-        2,
-        1,
-    );
-    chunk_group[2][1] = mid_right_chunk;
-    var lower_left_chunk = Chunk.create(
-        allocator,
-        0,
-        2,
-    );
-    chunk_group[0][2] = lower_left_chunk;
-    var lower_middle_chunk = Chunk.create(
-        allocator,
-        1,
-        2,
-    );
-    chunk_group[1][2] = lower_middle_chunk;
-    var lower_right_chunk = Chunk.create(
-        allocator,
-        2,
-        2,
-    );
-    chunk_group[2][2] = lower_right_chunk;
+    for (COORDS) |point| {
+        chunk_group[point.x][point.y] = Chunk.create(
+            allocator,
+            @intCast(i32, point.x),
+            @intCast(i32, point.y),
+        );
+    }
 
     chunks.chunks = chunk_group;
     return chunks;
