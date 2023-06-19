@@ -23,8 +23,10 @@ const movement = @import("./physics/movement.zig").movement;
 const moveCommands = @import("./input/move-commands.zig").moveCommands;
 
 const Timer = @import("./perfs/timer.zig");
+const Timers = @import("./perfs/timers.zig");
 
 pub fn main() !void {
+    Timers.start("init");
     // Creation
     try Ecs.setup(std.heap.page_allocator);
     defer Ecs.unsetup();
@@ -41,9 +43,10 @@ pub fn main() !void {
     rl.InitWindow(screen_width, screen_height, "Zrog");
     rl.SetTargetFPS(60);
 
-    Timer.start("setup");
+    Timers.start("generate");
 
     var chunks = Chunks.create(std.heap.page_allocator);
+
     for (chunks.chunks) |*row| {
         for (row) |*maybe_chunk| {
             if (maybe_chunk.*) |*chunk| {
@@ -54,10 +57,14 @@ pub fn main() !void {
 
     world.setResource(.chunks, chunks);
 
+    Timers.end("generate");
+
+    Timers.start("camera and player");
     _ = createCamera(&world);
     _ = createPlayer(&world);
+    Timers.end("camera and player");
 
-    Timer.end();
+    Timers.end("init");
 
     try loop(&world);
 }
