@@ -5,6 +5,7 @@ const rl = @import("raylib");
 const Player = Ecs.Type(.{
     .Transform,
     .Velocity,
+    .Speed,
     .Sprite,
     .Input,
 });
@@ -32,6 +33,9 @@ pub fn createPlayer(world: *Ecs) Zecs.Entity {
         .x = 0,
         .y = 0,
     });
+    // world.write(player, .Speed, .{
+    //     .value = 10,
+    // });
 
     world.write(player, .Sprite, .{
         .char = "@",

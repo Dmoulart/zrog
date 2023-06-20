@@ -78,6 +78,9 @@ fn loop(world: *Ecs) anyerror!void {
     // Main game loop
     while (!rl.WindowShouldClose()) {
         var loop_start = timestamp();
+        // update turn number
+        var turn = world.getResource(.turn);
+        world.setResource(.turn, turn + 1);
 
         world.step();
 

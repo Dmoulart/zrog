@@ -1,7 +1,9 @@
 const std = @import("std");
 const assert = std.debug.assert;
+
 const Zecs = @import("zecs");
 const Ecs = @import("../context.zig").Ecs;
+
 const BoundingBox = @import("../math/bounding-box.zig");
 
 const Self = @This();

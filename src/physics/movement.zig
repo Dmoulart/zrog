@@ -7,12 +7,21 @@ pub fn movement(world: *Ecs) void {
     var movables = world.query().all(.{
         .Transform,
         .Velocity,
+        .Speed,
     }).execute();
 
     movables.each(move);
 }
 
 pub fn move(world: *Ecs, entity: Zecs.Entity) void {
+    // var turn = world.getResource(.turn);
+    // var speed = world.pack(entity, .Speed);
+
+    // if (turn >= speed.last_move.* + @intCast(u128, speed.value.*)) {
+    //     return;
+    // } else {
+    //     speed.last_move.* = turn;
+    // }
     var vel = world.pack(entity, .Velocity);
     // get out if there is no movement to achieve
     if (vel.x.* == 0 and vel.y.* == 0) return;
