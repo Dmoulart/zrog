@@ -11,7 +11,7 @@ const createPlayer = @import("./player/create-player.zig").createPlayer;
 
 const Chunks = @import("./map/chunks.zig");
 const Chunk = @import("./map/chunk.zig");
-const Forest = @import("./map/forest.zig");
+const Moon = @import("./map/moon.zig");
 
 const prerender = @import("./graphics/renderer.zig").prerender;
 const render = @import("./graphics/renderer.zig").render;
@@ -46,7 +46,7 @@ pub fn main() !void {
     for (chunks.chunks) |*row| {
         for (row) |*maybe_chunk| {
             if (maybe_chunk.*) |*chunk| {
-                Forest.generate(&world, chunk);
+                Moon.generate(&world, chunk);
             }
         }
     }

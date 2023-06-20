@@ -13,7 +13,7 @@ const Chunk = @import("./chunk.zig");
 const RndGen = std.rand.DefaultPrng;
 var rnd = RndGen.init(0);
 
-const Grass = Ecs.Type(.{
+const Dust = Ecs.Type(.{
     .Transform,
     .Sprite,
 });
@@ -24,11 +24,11 @@ const Cell = Ecs.Type(.{
 });
 
 pub fn generate(world: *Ecs, chunk: *Chunk) void {
-    world.registerType(Grass);
+    world.registerType(Dust);
     world.registerType(Cell);
 
     createTerrain(world, chunk);
-    createTrees(world, chunk);
+    createRocks(world, chunk);
 }
 
 pub fn createTerrain(world: *Ecs, chunk: *Chunk) void {
@@ -37,7 +37,7 @@ pub fn createTerrain(world: *Ecs, chunk: *Chunk) void {
 
     while (y < Chunk.SIZE) : (y += 1) {
         while (x < Chunk.SIZE) : (x += 1) {
-            chunk.set(.terrain, createGrass(
+            chunk.set(.terrain, createDust(
                 world,
                 chunk.getChunkX() + @intCast(i32, x),
                 chunk.getChunkY() + @intCast(i32, y),
@@ -48,7 +48,7 @@ pub fn createTerrain(world: *Ecs, chunk: *Chunk) void {
     }
 }
 
-pub fn createTrees(world: *Ecs, chunk: *Chunk) void {
+pub fn createRocks(world: *Ecs, chunk: *Chunk) void {
     automaton.fillWithLivingChanceOf(4);
 
     automaton.update(2);
@@ -68,7 +68,7 @@ pub fn createTrees(world: *Ecs, chunk: *Chunk) void {
             var world_x = @intCast(i32, x + cell_offset_x);
             var world_y = @intCast(i32, y + cell_offset_y);
 
-            var tree = createTree(
+            var rock = createRock(
                 world,
                 world_x,
                 world_y,
@@ -76,7 +76,7 @@ pub fn createTrees(world: *Ecs, chunk: *Chunk) void {
 
             chunk.setFromWorldPosition(
                 .props,
-                tree,
+                rock,
                 world_x,
                 world_y,
             );
@@ -86,34 +86,34 @@ pub fn createTrees(world: *Ecs, chunk: *Chunk) void {
     }
 }
 
-pub fn createTree(world: *Ecs, x: i32, y: i32) Zecs.Entity {
-    var tree = world.create(Grass);
+pub fn createRock(world: *Ecs, x: i32, y: i32) Zecs.Entity {
+    var rock = world.create(Dust);
 
-    world.write(tree, .Sprite, .{
+    world.write(rock, .Sprite, .{
         .char = "0",
         .color = rl.BLUE,
     });
-    world.write(tree, .Transform, .{
+    world.write(rock, .Transform, .{
         .x = x,
         .y = y,
         .z = 0,
     });
 
-    return tree;
+    return rock;
 }
 
-pub fn createGrass(world: *Ecs, x: i32, y: i32) Zecs.Entity {
-    var grass = world.create(Cell);
+pub fn createDust(world: *Ecs, x: i32, y: i32) Zecs.Entity {
+    var dust = world.create(Cell);
 
-    world.write(grass, .Sprite, .{
+    world.write(dust, .Sprite, .{
         .char = "\"",
         .color = rl.DARKGRAY,
     });
-    world.write(grass, .Transform, .{
+    world.write(dust, .Transform, .{
         .x = x,
         .y = y,
         .z = 0,
     });
 
-    return grass;
+    return dust;
 }

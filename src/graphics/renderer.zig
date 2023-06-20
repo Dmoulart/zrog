@@ -6,7 +6,7 @@ const Ecs = @import("../context.zig").Ecs;
 
 const pointIsInFieldOfView = @import("./camera.zig").pointIsInFieldOfView;
 const getCameraBoundingBox = @import("./camera.zig").getCameraBoundingBox;
-const getTerrainBoundingBox = @import("../map/forest.zig").getTerrainBoundingBox;
+const getTerrainBoundingBox = @import("../map/moon.zig").getTerrainBoundingBox;
 
 const Chunk = @import("../map/chunk.zig");
 
