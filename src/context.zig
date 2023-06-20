@@ -26,6 +26,23 @@ pub const Ecs = Zecs.Context(.{
             "Camera",
             rl.Camera2D,
         ),
+        Zecs.Component(
+            "ScreenPosition",
+            struct {
+                x: c_int,
+                y: c_int,
+            },
+        ),
+        Zecs.Component(
+            "Panel",
+            struct {
+                width: c_int,
+                height: c_int,
+                background_color: rl.Color,
+                text: []const u8,
+            },
+        ),
+        Zecs.Tag("FPSCounter"),
         Zecs.Tag("Chunk"),
         Zecs.Tag("Input"),
         Zecs.Tag("Terrain"),

@@ -64,6 +64,10 @@ pub fn create(allocator: std.mem.Allocator) *Self {
     return chunks;
 }
 
+pub fn destroy(self: *Self) void {
+    self.allocator.destroy(self);
+}
+
 pub fn getChunkAtPosition(self: *Self, x: i32, y: i32) ?*Chunk {
     for (self.chunks) |*row| {
         for (row) |*maybe_chunk| {

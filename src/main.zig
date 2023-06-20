@@ -22,6 +22,9 @@ const updateCamera = @import("./graphics/camera.zig").updateCamera;
 const movement = @import("./physics/movement.zig").movement;
 const moveCommands = @import("./input/move-commands.zig").moveCommands;
 
+// const createFPSCounter = @import("./ui/fps-counter.zig").createFPSCounter;
+const renderUI = @import("./ui/ui-renderer.zig").renderUI;
+
 const Timer = @import("./perfs/timer.zig");
 const Timers = @import("./perfs/timers.zig");
 
@@ -37,15 +40,8 @@ pub fn main() !void {
     defer world.deinit();
 
     // Initialization
-    const screen_width = world.getResource(.screen_width);
-    const screen_height = world.getResource(.screen_height);
-
-    rl.InitWindow(screen_width, screen_height, "Zrog");
-    rl.SetTargetFPS(60);
-
-    Timers.start("generate");
-
     var chunks = Chunks.create(std.heap.page_allocator);
+    defer chunks.destroy();
 
     for (chunks.chunks) |*row| {
         for (row) |*maybe_chunk| {
@@ -54,17 +50,17 @@ pub fn main() !void {
             }
         }
     }
-
     world.setResource(.chunks, chunks);
 
-    Timers.end("generate");
+    const screen_width = world.getResource(.screen_width);
+    const screen_height = world.getResource(.screen_height);
 
-    Timers.start("camera and player");
+    rl.InitWindow(screen_width, screen_height, "Zrog");
+    rl.SetTargetFPS(60);
+
     _ = createCamera(&world);
     _ = createPlayer(&world);
-    Timers.end("camera and player");
-
-    Timers.end("init");
+    // _ = createFPSCounter(&world);
 
     try loop(&world);
 }
@@ -76,6 +72,7 @@ fn loop(world: *Ecs) anyerror!void {
 
     world.addSystem(prerender);
     world.addSystem(render);
+    world.addSystem(renderUI);
     world.addSystem(postrender);
 
     // Main game loop

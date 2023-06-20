@@ -84,7 +84,7 @@ fn followPlayer(world: *Ecs, camera: Zecs.Entity) void {
     if (camera_bbox.y <= chunks_bbox.y) {
         camera_transform.y.* = chunks_bbox.y + camera_bbox.halfHeight();
     } else if (camera_bbox.endY() >= chunks_bbox.endY()) {
-        camera_transform.y.* = chunks_bbox.endY() - camera_bbox.halfHeight();
+        camera_transform.y.* = chunks_bbox.endY() - camera_bbox.halfHeight() - 1; // should we - 1 this  ? there is a gap i'm not sure why
     }
 }
 
