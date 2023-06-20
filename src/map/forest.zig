@@ -34,8 +34,9 @@ pub fn generate(world: *Ecs, chunk: *Chunk) void {
 pub fn createTerrain(world: *Ecs, chunk: *Chunk) void {
     var x: usize = 0;
     var y: usize = 0;
-    while (y < Chunk.SIZE - 1) : (y += 1) {
-        while (x < Chunk.SIZE - 1) : (x += 1) {
+
+    while (y < Chunk.SIZE) : (y += 1) {
+        while (x < Chunk.SIZE) : (x += 1) {
             chunk.set(.terrain, createGrass(
                 world,
                 chunk.getChunkX() + @intCast(i32, x),

@@ -8,6 +8,8 @@ const pointIsInFieldOfView = @import("./camera.zig").pointIsInFieldOfView;
 const getCameraBoundingBox = @import("./camera.zig").getCameraBoundingBox;
 const getTerrainBoundingBox = @import("../map/forest.zig").getTerrainBoundingBox;
 
+const Chunk = @import("../map/chunk.zig");
+
 pub const CELL_SIZE = 24;
 
 pub fn prerender(world: *Ecs) void {
@@ -42,7 +44,6 @@ pub fn render(world: *Ecs) void {
         var x = start_x;
         var y = start_y;
 
-        var i: i32 = 0;
         while (y < end_y) : (y += 1) {
             while (x < end_x) : (x += 1) {
                 draw(world, visible_chunk.get(.terrain, x, y).?);
@@ -54,8 +55,6 @@ pub fn render(world: *Ecs) void {
                 if (visible_chunk.get(.beings, x, y)) |being| {
                     draw(world, being);
                 }
-
-                i += 1;
             }
 
             x = start_x;
