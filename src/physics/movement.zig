@@ -1,4 +1,6 @@
 const std = @import("std");
+const assert = @import("std").debug.assert;
+
 const Zecs = @import("zecs");
 const Ecs = @import("../context.zig").Ecs;
 const Timer = @import("../perfs/timer.zig");
@@ -14,16 +16,22 @@ pub fn movement(world: *Ecs) void {
 }
 
 pub fn move(world: *Ecs, entity: Zecs.Entity) void {
-    // var turn = world.getResource(.turn);
-    // var speed = world.pack(entity, .Speed);
+    // Check movement speed
+    var turn = world.getResource(.turn);
+    var speed = world.pack(entity, .Speed);
 
-    // if (turn >= speed.last_move.* + @intCast(u128, speed.value.*)) {
-    //     return;
-    // } else {
-    //     speed.last_move.* = turn;
-    // }
+    // between 0 and 1 for now
+    assert(speed.value.* >= 0 and speed.value.* <= 1);
+
+    var turn_nb_since_last_move: f32 = @intToFloat(f32, turn - speed.last_move.*);
+    var move_frequency_in_turn: f32 = speed.value.* * 10;
+
+    if (turn_nb_since_last_move <= move_frequency_in_turn) return;
+
+    speed.last_move.* = turn;
+
+    // Calculate movement
     var vel = world.pack(entity, .Velocity);
-    // get out if there is no movement to achieve
     if (vel.x.* == 0 and vel.y.* == 0) return;
 
     var transform = world.pack(entity, .Transform);
@@ -35,7 +43,6 @@ pub fn move(world: *Ecs, entity: Zecs.Entity) void {
 
     var old_chunk = chunks.getChunkAtPosition(transform.x.*, transform.y.*);
     var new_chunk = chunks.getChunkAtPosition(movement_x, movement_y);
-
     // get out if we have reach the map edge
     if (new_chunk == null) return;
 
@@ -43,7 +50,7 @@ pub fn move(world: *Ecs, entity: Zecs.Entity) void {
     // get out if there is a prop on our way
     if (prop != null) return;
 
-    // update position
+    // update chunk position
     old_chunk.?.deleteFromWorldPosition(.beings, transform.x.*, transform.y.*);
 
     transform.x.* = movement_x;

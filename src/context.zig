@@ -16,7 +16,7 @@ pub const Ecs = Zecs.Context(.{
             y: i32,
         }),
         Zecs.Component("Speed", struct {
-            value: i32, // How many time a position will be updated (10 = every turn)
+            value: f32, // How many time by turn a position will be updated (between 0 and 1)
             last_move: u128,
         }),
         Zecs.Component(
@@ -56,11 +56,8 @@ pub const Ecs = Zecs.Context(.{
         screen_width: c_int = 1200,
         dt: i64 = 0,
         turn: u128 = 0,
-        TIME_FACTOR: i32 = 1,
         camera: Zecs.Entity = 0,
         player: Zecs.Entity = 0,
-        // chunk data
-        _chunks: Chunks = undefined,
         // chunk accessor
         chunks: *Chunks = undefined,
     },

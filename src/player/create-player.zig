@@ -33,9 +33,10 @@ pub fn createPlayer(world: *Ecs) Zecs.Entity {
         .x = 0,
         .y = 0,
     });
-    // world.write(player, .Speed, .{
-    //     .value = 10,
-    // });
+    world.write(player, .Speed, .{
+        .value = 1,
+        .last_move = 0,
+    });
 
     world.write(player, .Sprite, .{
         .char = "@",
