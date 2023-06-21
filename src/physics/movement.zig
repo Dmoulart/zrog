@@ -20,13 +20,11 @@ pub fn move(world: *Ecs, entity: Zecs.Entity) void {
     var turn = world.getResource(.turn);
     var speed = world.pack(entity, .Speed);
 
-    // between 0 and 1 for now
-    assert(speed.value.* >= 0 and speed.value.* <= 1);
+    var move_freq = speed.move_freq.*;
 
     var turn_nb_since_last_move: f32 = @intToFloat(f32, turn - speed.last_move.*);
-    var move_frequency_in_turn: f32 = speed.value.* * 10;
 
-    if (turn_nb_since_last_move <= move_frequency_in_turn) return;
+    if (turn_nb_since_last_move <= move_freq) return;
 
     speed.last_move.* = turn;
 

@@ -16,7 +16,7 @@ pub const Ecs = Zecs.Context(.{
             y: i32,
         }),
         Zecs.Component("Speed", struct {
-            value: f32, // How many time by turn a position will be updated (between 0 and 1)
+            move_freq: f32, // Can move every n turn
             last_move: u128,
         }),
         Zecs.Component(

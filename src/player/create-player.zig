@@ -34,7 +34,7 @@ pub fn createPlayer(world: *Ecs) Zecs.Entity {
         .y = 0,
     });
     world.write(player, .Speed, .{
-        .value = 1,
+        .move_freq = 2,
         .last_move = 0,
     });
 
