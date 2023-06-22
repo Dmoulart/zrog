@@ -9,7 +9,7 @@ pub fn movement(world: *Ecs) void {
     var movables = world.query().all(.{
         .Transform,
         .Velocity,
-        .Speed,
+        .Mover,
     }).execute();
 
     movables.each(move);
@@ -18,7 +18,7 @@ pub fn movement(world: *Ecs) void {
 pub fn move(world: *Ecs, entity: Zecs.Entity) void {
     // Check movement speed
     var turn = world.getResource(.turn);
-    var speed = world.pack(entity, .Speed);
+    var speed = world.pack(entity, .Mover);
 
     var move_freq = speed.move_freq.*;
 
