@@ -69,10 +69,10 @@ fn loop(world: *Ecs) anyerror!void {
     world.addSystem(movement);
     world.addSystem(moveCommands);
     world.addSystem(updateCamera);
-    world.addSystem(fieldsOfview);
 
     world.addSystem(prerender);
     world.addSystem(render);
+    world.addSystem(fieldsOfview);
     world.addSystem(renderUI);
     world.addSystem(postrender);
 

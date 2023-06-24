@@ -1,14 +1,16 @@
-const IsBlockingFn = *const fn (i32, i32) bool;
-const MarkVisibleFn = *const fn (i32, i32) void;
+const Ecs = @import("../context.zig").Ecs;
+const IsBlockingFn = *const fn (*Ecs, i32, i32) bool;
+const MarkVisibleFn = *const fn (*Ecs, i32, i32) void;
 
 pub fn FieldOfView(comptime is_blocking: IsBlockingFn, comptime mark_visible: MarkVisibleFn) type {
     return struct {
         const Self = @This();
         origin_x: i32,
         origin_y: i32,
+        world: *Ecs,
 
         pub fn compute(self: *Self) void {
-            mark_visible(self.origin_x, self.origin_y);
+            mark_visible(self.world, self.origin_x, self.origin_y);
 
             for (range(4)) |_, i| {
                 var direction = @intToEnum(Quadrant.Direction, i);
@@ -25,80 +27,59 @@ pub fn FieldOfView(comptime is_blocking: IsBlockingFn, comptime mark_visible: Ma
                     .end_slope = 1,
                 };
 
-                scan(&first_row, &quadrant);
+                self.scan(&first_row, &quadrant);
             }
         }
 
-        pub fn scan(row: *Row, quadrant: *Quadrant) void {
+        pub fn scan(self: *Self, row: *Row, quadrant: *Quadrant) void {
             var prev_tile: ?Tile = null;
 
             var tiles = row.tiles();
 
             while (tiles.next()) |tile| {
-                if (isWall(tile, quadrant) or isSymmetric(row, tile)) {
-                    reveal(tile, quadrant);
+                if (self.isWall(tile, quadrant) or isSymmetric(row, tile)) {
+                    self.reveal(tile, quadrant);
                 }
 
-                if (isWall(prev_tile, quadrant) and isFloor(tile, quadrant)) {
+                if (self.isWall(prev_tile, quadrant) and self.isFloor(tile, quadrant)) {
                     row.start_slope = slope(tile);
                 }
 
-                if (isFloor(prev_tile, quadrant) and isWall(tile, quadrant)) {
+                if (self.isFloor(prev_tile, quadrant) and self.isWall(tile, quadrant)) {
                     var next_row = row.next();
                     next_row.end_slope = slope(tile);
-                    scan(&next_row, quadrant);
+                    self.scan(&next_row, quadrant);
                 }
 
                 prev_tile = tile;
             }
 
-            if (isFloor(prev_tile, quadrant)) {
+            if (self.isFloor(prev_tile, quadrant)) {
                 var next_row = row.next();
-                scan(&next_row, quadrant);
+                self.scan(&next_row, quadrant);
             }
         }
 
-        pub fn reveal(tile: Tile, quadrant: *Quadrant) void {
+        pub fn reveal(self: *Self, tile: Tile, quadrant: *Quadrant) void {
             var pos = quadrant.transform(tile);
-            mark_visible(pos.x, pos.y);
+            mark_visible(self.world, pos.x, pos.y);
         }
 
-        pub fn isWall(tile: ?Tile, quadrant: *Quadrant) bool {
+        pub fn isWall(self: *Self, tile: ?Tile, quadrant: *Quadrant) bool {
             return if (tile == null) false else |existing_tile| blk: {
                 var pos = quadrant.transform(existing_tile);
-                break :blk is_blocking(pos.x, pos.y);
+                break :blk is_blocking(self.world, pos.x, pos.y);
             };
         }
 
-        pub fn isFloor(tile: ?Tile, quadrant: *Quadrant) bool {
+        pub fn isFloor(self: *Self, tile: ?Tile, quadrant: *Quadrant) bool {
             return if (tile == null) false else |existing_tile| blk: {
                 var pos = quadrant.transform(existing_tile);
-                break :blk !is_blocking(pos.x, pos.y);
+                break :blk !is_blocking(self.world, pos.x, pos.y);
             };
         }
     };
 }
-// pub fn computeFieldOfView(
-//     origin_x: i32,
-//     origin_y: i32,
-//     is_blocking: IsBlockingFn,
-//     mark_visible: MarkVisibleFn,
-// ) void {
-//     _ = is_blocking;
-//     mark_visible(origin_x, origin_y);
-
-//     for (range(4)) |_, i| {
-//         var direction = @intToEnum(Quadrant.Direction, i);
-
-//         var quadrant = Quadrant{
-//             .cardinal = direction,
-//             .origin_x = origin_x,
-//             .origin_y = origin_y,
-//         };
-//         _ = quadrant;
-//     }
-//     // _ = is_blocking;
-// }
 
 const Quadrant = struct {
     const Self = @This();
