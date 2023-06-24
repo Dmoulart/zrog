@@ -46,6 +46,12 @@ pub const Ecs = Zecs.Context(.{
                 text: []const u8,
             },
         ),
+        Zecs.Component(
+            "Vision",
+            struct {
+                range: f32,
+            },
+        ),
         Zecs.Tag("FPSCounter"),
         Zecs.Tag("Chunk"),
         Zecs.Tag("Input"),
