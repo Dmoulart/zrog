@@ -8,7 +8,7 @@ pub fn FieldOfView(comptime is_blocking: IsBlockingFn, comptime mark_visible: Ma
         origin_y: i32,
 
         pub fn compute(self: *Self) void {
-            mark_visible(self.sorigin_x, self.sorigin_y);
+            mark_visible(self.origin_x, self.origin_y);
 
             for (range(4)) |_, i| {
                 var direction = @intToEnum(Quadrant.Direction, i);
@@ -39,30 +39,31 @@ pub fn FieldOfView(comptime is_blocking: IsBlockingFn, comptime mark_visible: Ma
                     reveal(tile, quadrant);
                 }
 
-                if (isWall(prev_tile, quadrant) and isFloor(tile, tile)) {
+                if (isWall(prev_tile, quadrant) and isFloor(tile, quadrant)) {
                     row.start_slope = slope(tile);
                 }
 
                 if (isFloor(prev_tile, quadrant) and isWall(tile, quadrant)) {
                     var next_row = row.next();
                     next_row.end_slope = slope(tile);
-                    scan(next_row, quadrant);
+                    scan(&next_row, quadrant);
                 }
 
                 prev_tile = tile;
             }
 
             if (isFloor(prev_tile, quadrant)) {
-                scan(row.next());
+                var next_row = row.next();
+                scan(&next_row, quadrant);
             }
         }
 
-        pub fn reveal(tile: *Tile, quadrant: *Quadrant) void {
+        pub fn reveal(tile: Tile, quadrant: *Quadrant) void {
             var pos = quadrant.transform(tile);
             mark_visible(pos.x, pos.y);
         }
 
-        pub fn isWall(tile: ?*Tile, quadrant: *Quadrant) bool {
+        pub fn isWall(tile: ?Tile, quadrant: *Quadrant) bool {
             return if (tile == null) false else |existing_tile| blk: {
                 var pos = quadrant.transform(existing_tile);
                 break :blk is_blocking(pos.x, pos.y);
@@ -77,27 +78,27 @@ pub fn FieldOfView(comptime is_blocking: IsBlockingFn, comptime mark_visible: Ma
         }
     };
 }
-pub fn computeFieldOfView(
-    origin_x: i32,
-    origin_y: i32,
-    is_blocking: IsBlockingFn,
-    mark_visible: MarkVisibleFn,
-) void {
-    _ = is_blocking;
-    mark_visible(origin_x, origin_y);
+// pub fn computeFieldOfView(
+//     origin_x: i32,
+//     origin_y: i32,
+//     is_blocking: IsBlockingFn,
+//     mark_visible: MarkVisibleFn,
+// ) void {
+//     _ = is_blocking;
+//     mark_visible(origin_x, origin_y);
 
-    for (range(4)) |_, i| {
-        var direction = @intToEnum(Quadrant.Direction, i);
+//     for (range(4)) |_, i| {
+//         var direction = @intToEnum(Quadrant.Direction, i);
 
-        var quadrant = Quadrant{
-            .cardinal = direction,
-            .origin_x = origin_x,
-            .origin_y = origin_y,
-        };
-        _ = quadrant;
-    }
-    // _ = is_blocking;
-}
+//         var quadrant = Quadrant{
+//             .cardinal = direction,
+//             .origin_x = origin_x,
+//             .origin_y = origin_y,
+//         };
+//         _ = quadrant;
+//     }
+//     // _ = is_blocking;
+// }
 
 const Quadrant = struct {
     const Self = @This();
@@ -116,7 +117,7 @@ const Quadrant = struct {
 
     // Convert a (row, col) tuple representing a position relative to the current quadrant
     // into an (x, y) tuple representing an absolute position in the grid.
-    pub fn transform(self: *Self, tile: *Tile) Coordinates {
+    pub fn transform(self: *Self, tile: Tile) Coordinates {
         var col = tile.col;
         var row = tile.depth;
 
@@ -152,7 +153,7 @@ pub const Tile = struct {
         curr: i32 = 0,
         depth: i32,
 
-        pub fn next(self: *@This()) ?@This() {
+        pub fn next(self: *@This()) ?Tile {
             return if (self.curr >= self.max) null else blk: {
                 self.curr += 1;
 
@@ -173,15 +174,16 @@ const Row = struct {
     start_slope: f32,
     end_slope: f32,
 
-    pub fn tiles(self: *Self) Tile.Iterator {
+    pub fn tiles(self: Self) Tile.Iterator {
         const depth = @intToFloat(f32, self.depth);
 
         const min_col = roundTiesUp(depth * self.start_slope);
         const max_col = roundTiesDown(depth * self.end_slope) + 1;
 
         return Tile.Iterator{
-            .min = min_col,
-            .max = max_col,
+            .depth = self.depth,
+            .min = @floatToInt(i32, min_col),
+            .max = @floatToInt(i32, max_col),
         };
     }
 
@@ -189,13 +191,13 @@ const Row = struct {
         return Self{
             .depth = self.depth + 1,
             .start_slope = self.start_slope,
-            .start_slope = self.end_slope,
+            .end_slope = self.end_slope,
         };
     }
 };
 
 fn slope(tile: Tile) f32 {
-    return @divFloor(2 * tile.col - 1, 2 * tile.depth);
+    return 2 * @intToFloat(f32, tile.col) - 1 / 2 * @intToFloat(f32, tile.depth);
 }
 
 fn roundTiesUp(n: f32) f32 {
@@ -206,8 +208,10 @@ fn roundTiesDown(n: f32) f32 {
     return @ceil(n - 0.5);
 }
 
-fn isSymmetric(row: Row, tile: Tile) bool {
-    return (tile.col >= row.depth * row.start_slope and tile.col <= row.depth * row.end_slope);
+fn isSymmetric(row: *Row, tile: Tile) bool {
+    var depth = @intToFloat(f32, row.depth);
+    var col = @intToFloat(f32, tile.col);
+    return (col >= depth * row.start_slope and col <= depth * row.end_slope);
 }
 
 // todo: make generic vec class ?

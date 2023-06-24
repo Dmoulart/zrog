@@ -22,8 +22,8 @@ const updateCamera = @import("./graphics/camera.zig").updateCamera;
 const movement = @import("./physics/movement.zig").movement;
 const moveCommands = @import("./input/move-commands.zig").moveCommands;
 
-// const createFPSCounter = @import("./ui/fps-counter.zig").createFPSCounter;
 const renderUI = @import("./ui/ui-renderer.zig").renderUI;
+const fieldsOfview = @import("./fov/fov-system.zig").fieldsOfview;
 
 const Timer = @import("./perfs/timer.zig");
 const Timers = @import("./perfs/timers.zig");
@@ -69,6 +69,7 @@ fn loop(world: *Ecs) anyerror!void {
     world.addSystem(movement);
     world.addSystem(moveCommands);
     world.addSystem(updateCamera);
+    world.addSystem(fieldsOfview);
 
     world.addSystem(prerender);
     world.addSystem(render);
@@ -86,7 +87,7 @@ fn loop(world: *Ecs) anyerror!void {
 
         var dt = timestamp() - loop_start;
 
-        std.debug.print("dt {}", .{dt});
+        // std.debug.print("dt {}\n", .{dt});
 
         world.setResource(.dt, dt);
     }
