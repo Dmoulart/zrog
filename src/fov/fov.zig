@@ -219,9 +219,7 @@ fn isSymmetric(row: *Row, tile: Tile) bool {
     var depth = @intToFloat(f32, row.depth);
     var col = @intToFloat(f32, tile.col);
 
-    var is_symetric = (col >= depth * row.start_slope and col <= depth * row.end_slope);
-
-    return is_symetric;
+    return (col >= depth * row.start_slope and col <= depth * row.end_slope);
 }
 
 // todo: make generic vec class ?
