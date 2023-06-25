@@ -54,9 +54,7 @@ pub fn render(world: *Ecs) void {
                 var global_x = visible_chunk.toGlobalX(@intCast(i32, x));
                 var global_y = visible_chunk.toGlobalY(@intCast(i32, y));
 
-                var hash_pos = hash(global_x, global_y);
-
-                if (!player_fov.contains(hash_pos)) {
+                if (!player_fov.contains(.{ .x = global_x, .y = global_y })) {
                     continue;
                 }
 
@@ -90,8 +88,4 @@ pub fn postrender(_: *Ecs) void {
     rl.EndMode2D();
 
     rl.EndDrawing();
-}
-
-fn hash(x: i32, y: i32) i32 {
-    return (x << 16) ^ y;
 }

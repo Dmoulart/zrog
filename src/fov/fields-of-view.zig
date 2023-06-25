@@ -1,18 +1,16 @@
 const std = @import("std");
 const assert = @import("std").debug.assert;
 
+const rl = @import("raylib");
 const Zecs = @import("zecs");
 const Ecs = @import("../context.zig").Ecs;
 
+const GeoSet = @import("../geo/geo-set.zig").GeoSet;
+pub const FieldsOfViews = std.AutoHashMap(Zecs.Entity, GeoSet);
+
 const FieldOfView = @import("./symetric-shadowcasting.zig").FieldOfView(isBlocking, markVisible);
 
-const rl = @import("raylib");
-
-pub const VisibleTiles = std.AutoHashMap(i32, void);
-pub const FieldsOfViews = std.AutoHashMap(Zecs.Entity, VisibleTiles);
-
 var is_ready = false;
-
 var fields_of_views: FieldsOfViews = undefined;
 
 fn setup(world: *Ecs) void {
@@ -46,7 +44,8 @@ fn compute(world: *Ecs, entity: Zecs.Entity) void {
     var entity_fov = fields_of_views.getOrPut(entity) catch unreachable;
 
     if (!entity_fov.found_existing) {
-        entity_fov.value_ptr.* = VisibleTiles.init(world.allocator);
+        // memory leak !
+        entity_fov.value_ptr.* = GeoSet.init(world.allocator);
     } else {
         entity_fov.value_ptr.clearRetainingCapacity();
     }
@@ -66,13 +65,8 @@ fn compute(world: *Ecs, entity: Zecs.Entity) void {
 fn markVisible(world: *Ecs, entity: Zecs.Entity, x: i32, y: i32) void {
     _ = world;
     var entity_fov = fields_of_views.getOrPut(entity) catch unreachable;
-    entity_fov.value_ptr.put(hash(x, y), {}) catch unreachable;
 
-    // rl.DrawText(".", x * 24, y * 24, 24, rl.RED);
-}
-
-fn hash(x: i32, y: i32) i32 {
-    return (x << 16) ^ y;
+    entity_fov.value_ptr.put(.{ .x = x, .y = y }, {}) catch unreachable;
 }
 
 fn isBlocking(world: *Ecs, x: i32, y: i32) bool {
