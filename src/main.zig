@@ -23,7 +23,7 @@ const movement = @import("./physics/movement.zig").movement;
 const moveCommands = @import("./input/move-commands.zig").moveCommands;
 
 const renderUI = @import("./ui/ui-renderer.zig").renderUI;
-const fieldsOfview = @import("./fov/fov-system.zig").fieldsOfview;
+const fieldsOfview = @import("./fov/fields-of-view.zig").fieldsOfview;
 
 const Timer = @import("./perfs/timer.zig");
 const Timers = @import("./perfs/timers.zig");

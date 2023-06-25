@@ -4,7 +4,7 @@ const assert = @import("std").debug.assert;
 const Zecs = @import("zecs");
 const Ecs = @import("../context.zig").Ecs;
 
-const FieldOfView = @import("./fov.zig").FieldOfView(isBlocking, markVisible);
+const FieldOfView = @import("./symetric-shadowcasting.zig").FieldOfView(isBlocking, markVisible);
 
 const rl = @import("raylib");
 
@@ -23,6 +23,7 @@ fn compute(world: *Ecs, entity: Zecs.Entity) void {
     var pos = world.pack(entity, .Transform);
     var range = world.get(entity, .Vision, .range);
 
+    // reuse struct ?
     var fov = FieldOfView{
         .origin_x = pos.x.*,
         .origin_y = pos.y.*,

@@ -6,7 +6,7 @@ const Ecs = @import("../context.zig").Ecs;
 const IsBlockingFn = *const fn (*Ecs, i32, i32) bool;
 const MarkVisibleFn = *const fn (*Ecs, i32, i32) void;
 
-//
+// Symetric shadowcasting
 // Field of view implementation based on : https://www.albertford.com/shadowcasting
 //
 pub fn FieldOfView(comptime is_blocking: IsBlockingFn, comptime mark_visible: MarkVisibleFn) type {
