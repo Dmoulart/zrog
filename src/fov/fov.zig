@@ -40,7 +40,7 @@ pub fn FieldOfView(comptime is_blocking: IsBlockingFn, comptime mark_visible: Ma
 
             var tiles = row.tiles();
 
-            print("\ntiles max ! {any}\n", .{tiles.max});
+            // print("\ntiles max ! {any}\n", .{tiles.max});
 
             while (tiles.next()) |tile| {
                 // std.debug.print("\ntiles curr ! {any}\n", .{tiles.curr});
@@ -56,7 +56,7 @@ pub fn FieldOfView(comptime is_blocking: IsBlockingFn, comptime mark_visible: Ma
                 }
 
                 if (self.isFloor(prev_tile, quadrant) and self.isWall(tile, quadrant)) {
-                    // print("prev tile is floor and tile is wall \n", .{});
+                    print("prev tile is floor and tile is wall \n", .{});
                     var next_row = row.next();
                     next_row.end_slope = slope(tile);
                     self.scan(&next_row, quadrant);
@@ -204,8 +204,16 @@ const Row = struct {
 };
 
 fn slope(tile: Tile) f32 {
-    return @intToFloat(f32, @divTrunc(2 * tile.col - 1, 2 * tile.depth));
-    // return 2 * @intToFloat(f32, tile.col) - 1 / 2 * @intToFloat(f32, tile.depth);
+    // const row_depth: i32 = tile.depth;
+    // const col: i32 = tile.col;
+    // const numerator: f32 = @intToFloat(f32, 2 * col - 1);
+    // const denominator: f32 = @intToFloat(f32, 2 * row_depth);
+
+    // return @divFloor(numerator, denominator);
+
+    // return @intToFloat(f32, @divTrunc(2 * tile.col - 1, 2 * tile.depth));
+
+    return (2 * @intToFloat(f32, tile.col) - 1) / (2 * @intToFloat(f32, tile.depth));
 }
 
 fn roundTiesUp(n: f32) i32 {
