@@ -49,7 +49,7 @@ pub fn createTerrain(world: *Ecs, chunk: *Chunk) void {
 }
 
 pub fn createRocks(world: *Ecs, chunk: *Chunk) void {
-    automaton.fillWithLivingChanceOf(4);
+    automaton.fillWithLivingChanceOf(40);
 
     automaton.update(2);
 

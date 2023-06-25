@@ -16,7 +16,7 @@ pub fn FieldOfView(comptime is_blocking: IsBlockingFn, comptime mark_visible: Ma
         pub fn compute(self: *Self) void {
             mark_visible(self.world, self.origin_x, self.origin_y);
 
-            for (range(1)) |_, i| {
+            for (range(4)) |_, i| {
                 var direction = @intToEnum(Quadrant.Direction, i);
 
                 var quadrant = Quadrant{
@@ -70,7 +70,7 @@ pub fn FieldOfView(comptime is_blocking: IsBlockingFn, comptime mark_visible: Ma
             if (self.isFloor(prev_tile, quadrant)) {
                 // print("\n prev tile is floor {}\n", .{self.isFloor(prev_tile, quadrant)});
                 var next_row = row.next();
-                // if (next_row.depth > 100) return;
+                if (next_row.depth > 100) return;
                 self.scan(&next_row, quadrant);
             }
         }
@@ -204,15 +204,6 @@ const Row = struct {
 };
 
 fn slope(tile: Tile) f32 {
-    // const row_depth: i32 = tile.depth;
-    // const col: i32 = tile.col;
-    // const numerator: f32 = @intToFloat(f32, 2 * col - 1);
-    // const denominator: f32 = @intToFloat(f32, 2 * row_depth);
-
-    // return @divFloor(numerator, denominator);
-
-    // return @intToFloat(f32, @divTrunc(2 * tile.col - 1, 2 * tile.depth));
-
     return (2 * @intToFloat(f32, tile.col) - 1) / (2 * @intToFloat(f32, tile.depth));
 }
 
