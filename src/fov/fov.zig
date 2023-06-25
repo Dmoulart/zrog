@@ -6,6 +6,9 @@ const Ecs = @import("../context.zig").Ecs;
 const IsBlockingFn = *const fn (*Ecs, i32, i32) bool;
 const MarkVisibleFn = *const fn (*Ecs, i32, i32) void;
 
+//
+// Field of view implementation based on : https://www.albertford.com/shadowcasting
+//
 pub fn FieldOfView(comptime is_blocking: IsBlockingFn, comptime mark_visible: MarkVisibleFn) type {
     return struct {
         const Self = @This();
@@ -37,6 +40,8 @@ pub fn FieldOfView(comptime is_blocking: IsBlockingFn, comptime mark_visible: Ma
             }
         }
 
+        // Scan a row and recursively scan all of its children.
+        // If you think of each quadrant as a tree of rows, this essentially is a depth-first tree traversal.
         pub fn scan(self: *Self, row: *Row, quadrant: *Quadrant) void {
             var prev_tile: ?Tile = null;
 
@@ -61,9 +66,9 @@ pub fn FieldOfView(comptime is_blocking: IsBlockingFn, comptime mark_visible: Ma
             }
 
             if (self.isFloor(prev_tile, quadrant)) {
-                var next_row = row.next();
+                if (row.depth + 1 >= self.range) return;
 
-                if (next_row.depth >= self.range) return;
+                var next_row = row.next();
 
                 self.scan(&next_row, quadrant);
             }
@@ -97,6 +102,9 @@ pub fn FieldOfView(comptime is_blocking: IsBlockingFn, comptime mark_visible: Ma
     };
 }
 
+// A Quadrant represents a 90 degree sector pointing north, south, east, or west.
+// Quadrants are traversed row by row.
+// For the east and west quadrants, these “rows” are vertical, not horizontal.
 const Quadrant = struct {
     const Self = @This();
 
@@ -172,6 +180,8 @@ pub const Tile = struct {
     };
 };
 
+// A Row represents a segment of tiles bound between a start and end slope.
+// Depth represents the distance between the row and the quadrant’s origin.
 const Row = struct {
     const Self = @This();
 
@@ -203,18 +213,27 @@ const Row = struct {
     }
 };
 
+// Checks if a given floor tile can be seen symmetrically from the origin.
+// It returns true if the central point of the tile is in the sector swept out by the row’s start and end slopes.
+// Otherwise, it returns false.
 fn slope(tile: Tile) f32 {
     return (2 * @intToFloat(f32, tile.col) - 1) / (2 * @intToFloat(f32, tile.depth));
 }
 
+// Round n to the nearest integer. If n ends in .5, rounds up.
+// there might be a problem with this one (see function utilisation above)
 fn roundTiesUp(n: f32) i32 {
     return @floatToInt(i32, @floor(n + 0.5));
 }
 
+// Round n to the nearest integer. If n ends in .5, rounds down
 fn roundTiesDown(n: f32) i32 {
     return @floatToInt(i32, @ceil(n - 0.5));
 }
 
+// Checks if a given floor tile can be seen symmetrically from the origin.
+// It returns true if the central point of the tile is in the sector swept out by the row’s start and end slopes.
+// Otherwise, it returns false.
 fn isSymmetric(row: *Row, tile: Tile) bool {
     var depth = @intToFloat(f32, row.depth);
     var col = @intToFloat(f32, tile.col);

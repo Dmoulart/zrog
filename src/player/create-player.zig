@@ -44,7 +44,7 @@ pub fn createPlayer(world: *Ecs) Zecs.Entity {
         .color = rl.WHITE,
     });
 
-    world.set(player, .Vision, .range, 25);
+    world.set(player, .Vision, .range, 30);
 
     return player;
 }
