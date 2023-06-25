@@ -1,6 +1,8 @@
 const std = @import("std");
 const print = std.debug.print;
+
 const Ecs = @import("../context.zig").Ecs;
+
 const IsBlockingFn = *const fn (*Ecs, i32, i32) bool;
 const MarkVisibleFn = *const fn (*Ecs, i32, i32) void;
 
@@ -10,6 +12,8 @@ pub fn FieldOfView(comptime is_blocking: IsBlockingFn, comptime mark_visible: Ma
 
         origin_x: i32,
         origin_y: i32,
+
+        range: i32,
 
         world: *Ecs,
 
@@ -40,23 +44,16 @@ pub fn FieldOfView(comptime is_blocking: IsBlockingFn, comptime mark_visible: Ma
 
             var tiles = row.tiles();
 
-            // print("\ntiles max ! {any}\n", .{tiles.max});
-
             while (tiles.next()) |tile| {
-                // std.debug.print("\ntiles curr ! {any}\n", .{tiles.curr});
-                // std.debug.print("next tile {}", .{i});
                 if (self.isWall(tile, quadrant) or isSymmetric(row, tile)) {
-                    // print("tile is wall or is symmetric \n", .{});
                     self.reveal(tile, quadrant);
                 }
 
                 if (self.isWall(prev_tile, quadrant) and self.isFloor(tile, quadrant)) {
-                    // print("prev tile is wall and tile is floor \n", .{});
                     row.start_slope = slope(tile);
                 }
 
                 if (self.isFloor(prev_tile, quadrant) and self.isWall(tile, quadrant)) {
-                    print("prev tile is floor and tile is wall \n", .{});
                     var next_row = row.next();
                     next_row.end_slope = slope(tile);
                     self.scan(&next_row, quadrant);
@@ -65,24 +62,25 @@ pub fn FieldOfView(comptime is_blocking: IsBlockingFn, comptime mark_visible: Ma
                 prev_tile = tile;
             }
 
-            // print("\n prev_tile {any}\n", .{prev_tile});
-
             if (self.isFloor(prev_tile, quadrant)) {
-                // print("\n prev tile is floor {}\n", .{self.isFloor(prev_tile, quadrant)});
                 var next_row = row.next();
-                if (next_row.depth > 100) return;
+
+                if (next_row.depth >= self.range) return;
+
                 self.scan(&next_row, quadrant);
             }
         }
 
         pub fn reveal(self: *Self, tile: Tile, quadrant: *Quadrant) void {
             var pos = quadrant.transform(tile);
+
             mark_visible(self.world, pos.x, pos.y);
         }
 
         pub fn isWall(self: *Self, tile: ?Tile, quadrant: *Quadrant) bool {
             if (tile) |existing_tile| {
                 var pos = quadrant.transform(existing_tile);
+
                 return is_blocking(self.world, pos.x, pos.y);
             }
 
@@ -93,7 +91,6 @@ pub fn FieldOfView(comptime is_blocking: IsBlockingFn, comptime mark_visible: Ma
             if (tile) |existing_tile| {
                 var pos = quadrant.transform(existing_tile);
 
-                // std.debug.print("\n is blocking {}\n", .{is_blocking(self.world, pos.x, pos.y)});
                 return !is_blocking(self.world, pos.x, pos.y);
             }
 
@@ -184,8 +181,6 @@ const Row = struct {
         const min_col = roundTiesUp(depth * self.start_slope);
         const max_col = roundTiesDown(depth * self.end_slope); // +1 ?
 
-        // std.debug.print("\nmin col {} \n max col {}", .{ min_col, max_col });
-
         return Tile.Iterator{
             .depth = self.depth,
             .min = min_col,
@@ -220,8 +215,6 @@ fn isSymmetric(row: *Row, tile: Tile) bool {
     var col = @intToFloat(f32, tile.col);
 
     var is_symetric = (col >= depth * row.start_slope and col <= depth * row.end_slope);
-
-    // print("\nis symetric {} \n", .{is_symetric});
 
     return is_symetric;
 }

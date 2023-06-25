@@ -49,7 +49,7 @@ pub const Ecs = Zecs.Context(.{
         Zecs.Component(
             "Vision",
             struct {
-                range: f32,
+                range: i32,
             },
         ),
         Zecs.Tag("FPSCounter"),

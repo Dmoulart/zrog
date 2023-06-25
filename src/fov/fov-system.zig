@@ -21,11 +21,15 @@ pub fn fieldsOfview(world: *Ecs) void {
 
 fn compute(world: *Ecs, entity: Zecs.Entity) void {
     var pos = world.pack(entity, .Transform);
+    var range = world.get(entity, .Vision, .range);
+
     var fov = FieldOfView{
         .origin_x = pos.x.*,
         .origin_y = pos.y.*,
+        .range = range.*,
         .world = world,
     };
+
     fov.compute();
 }
 
@@ -40,7 +44,7 @@ fn isBlocking(world: *Ecs, x: i32, y: i32) bool {
     var chunk = chunks.getChunkAtPosition(x, y);
     if (chunk == null) return true;
 
-    var prop = chunks.maybeGet(.props, x, y);
-    // std.debug.print("\nget prop {?}\n", .{prop});
+    var prop = chunk.?.getFromWorldPosition(.props, x, y);
+
     return prop != null;
 }
