@@ -1,10 +1,11 @@
 const std = @import("std");
 const print = std.debug.print;
 
+const Zecs = @import("zecs");
 const Ecs = @import("../context.zig").Ecs;
 
 const IsBlockingFn = *const fn (*Ecs, i32, i32) bool;
-const MarkVisibleFn = *const fn (*Ecs, i32, i32) void;
+const MarkVisibleFn = *const fn (*Ecs, Zecs.Entity, i32, i32) void;
 
 // Symetric shadowcasting
 // Field of view implementation based on : https://www.albertford.com/shadowcasting
@@ -16,12 +17,14 @@ pub fn FieldOfView(comptime is_blocking: IsBlockingFn, comptime mark_visible: Ma
         origin_x: i32,
         origin_y: i32,
 
+        entity: Zecs.Entity,
+
         range: i32,
 
         world: *Ecs,
 
         pub fn compute(self: *Self) void {
-            mark_visible(self.world, self.origin_x, self.origin_y);
+            mark_visible(self.world, self.entity, self.origin_x, self.origin_y);
 
             for (Quadrant.directions) |direction| {
                 var quadrant = Quadrant{
@@ -77,7 +80,7 @@ pub fn FieldOfView(comptime is_blocking: IsBlockingFn, comptime mark_visible: Ma
         pub fn reveal(self: *Self, tile: Tile, quadrant: *Quadrant) void {
             var pos = quadrant.transform(tile);
 
-            mark_visible(self.world, pos.x, pos.y);
+            mark_visible(self.world, self.entity, pos.x, pos.y);
         }
 
         pub fn isWall(self: *Self, tile: ?Tile, quadrant: *Quadrant) bool {

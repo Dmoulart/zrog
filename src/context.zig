@@ -4,6 +4,8 @@ const rl = @import("raylib");
 const Chunks = @import("./map/chunks.zig");
 const Chunk = @import("./map/chunk.zig");
 
+const FieldsOfViews = @import("./fov/fields-of-view.zig").FieldsOfViews;
+
 pub const Ecs = Zecs.Context(.{
     .components = .{
         Zecs.Component("Transform", struct {
@@ -66,6 +68,7 @@ pub const Ecs = Zecs.Context(.{
         player: Zecs.Entity = 0,
         // chunk accessor
         chunks: *Chunks = undefined,
+        fields_of_views: *FieldsOfViews = undefined,
     },
     .capacity = 200_002,
 });
