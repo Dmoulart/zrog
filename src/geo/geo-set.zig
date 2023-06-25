@@ -4,6 +4,27 @@ const Int = i32;
 
 const Point = struct { x: Int, y: Int };
 
+// Implement something more specific ?
+pub const GeoSet = std.AutoHashMap(
+    Point,
+    void,
+);
+
+test "can use geo set" {
+    var set = GeoSet.init(std.testing.allocator);
+    defer set.deinit();
+
+    try set.put(.{ .x = 10, .y = 10 }, {});
+
+    assert(set.contains(.{ .x = 10, .y = 10 }));
+    assert(!set.contains(.{ .x = 10, .y = 11 }));
+
+    try set.put(.{ .x = -10, .y = -10 }, {});
+
+    assert(set.contains(.{ .x = -10, .y = -10 }));
+    assert(!set.contains(.{ .x = -10, .y = -11 }));
+}
+
 // Todo: implement more specific/efficient method for geo hashing ?
 // const Context = struct {
 //     pub fn eql(self: Context, a: Point, b: Point) bool {
@@ -29,23 +50,3 @@ const Point = struct { x: Int, y: Int };
 // fn hashPoint(x: i32, y: i32) i32 {
 //     return (x << 16) ^ y;
 // }
-
-pub const GeoSet = std.AutoHashMap(
-    Point,
-    void,
-);
-
-test "can use geo set" {
-    var set = GeoSet.init(std.testing.allocator);
-    defer set.deinit();
-
-    try set.put(.{ .x = 10, .y = 10 }, {});
-
-    assert(set.contains(.{ .x = 10, .y = 10 }));
-    assert(!set.contains(.{ .x = 10, .y = 11 }));
-
-    try set.put(.{ .x = -10, .y = -10 }, {});
-
-    assert(set.contains(.{ .x = -10, .y = -10 }));
-    assert(!set.contains(.{ .x = -10, .y = -11 }));
-}
