@@ -1,4 +1,5 @@
 const std = @import("std");
+const assert = @import("std").debug.assert;
 const rl = @import("raylib");
 const Zecs = @import("zecs");
 
@@ -30,10 +31,14 @@ pub fn render(world: *Ecs) void {
     var chunks = world.getResource(.chunks);
 
     var visible_chunks = chunks.filterVisible(world, camera);
-    var fov_bbox = getCameraBoundingBox(world, camera);
+    var camera_bbox = getCameraBoundingBox(world, camera);
+
+    var fields_of_views = world.getResource(.fields_of_views);
+    var player = world.getResource(.player);
+    var player_fov = fields_of_views.get(player).?;
 
     for (visible_chunks) |visible_chunk| {
-        var intersection = fov_bbox.intersection(&visible_chunk.bbox);
+        var intersection = camera_bbox.intersection(&visible_chunk.bbox);
 
         var start_x = @intCast(usize, intersection.x - visible_chunk.bbox.x);
         var start_y = @intCast(usize, intersection.y - visible_chunk.bbox.y);
@@ -46,6 +51,15 @@ pub fn render(world: *Ecs) void {
 
         while (y < end_y) : (y += 1) {
             while (x < end_x) : (x += 1) {
+                var global_x = visible_chunk.toGlobalX(@intCast(i32, x));
+                var global_y = visible_chunk.toGlobalY(@intCast(i32, y));
+
+                var hash_pos = hash(global_x, global_y);
+
+                if (!player_fov.contains(hash_pos)) {
+                    continue;
+                }
+
                 draw(world, visible_chunk.get(.terrain, x, y).?);
 
                 if (visible_chunk.get(.props, x, y)) |prop| {
@@ -76,4 +90,8 @@ pub fn postrender(_: *Ecs) void {
     rl.EndMode2D();
 
     rl.EndDrawing();
+}
+
+fn hash(x: i32, y: i32) i32 {
+    return (x << 16) ^ y;
 }

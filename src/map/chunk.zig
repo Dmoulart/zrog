@@ -53,6 +53,7 @@ pub fn clear(self: *Self) void {
     }
 }
 
+// todo : rename world to global ?
 pub fn setFromWorldPosition(self: *Self, comptime data_field: Data, entity: Zecs.Entity, x: i32, y: i32) void {
     assert(self.bbox.contains(x, y));
 
@@ -69,6 +70,7 @@ pub fn set(self: *Self, comptime data_field: Data, entity: Zecs.Entity, chunk_x:
     data[chunk_x * SIZE + chunk_y] = entity;
 }
 
+// todo : rename world to global ?
 pub fn getFromWorldPosition(self: *Self, comptime data_field: Data, x: i32, y: i32) ?Zecs.Entity {
     var chunk_x = self.toChunkX(x);
     var chunk_y = self.toChunkY(y);
@@ -117,4 +119,12 @@ pub fn toChunkX(self: *Self, x: i32) usize {
 
 pub fn toChunkY(self: *Self, y: i32) usize {
     return @intCast(usize, y - self.getChunkY());
+}
+
+pub fn toGlobalX(self: *Self, x: i32) i32 {
+    return x + self.bbox.x;
+}
+
+pub fn toGlobalY(self: *Self, y: i32) i32 {
+    return y + self.bbox.y;
 }

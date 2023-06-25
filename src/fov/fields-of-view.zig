@@ -43,6 +43,14 @@ fn compute(world: *Ecs, entity: Zecs.Entity) void {
     var pos = world.pack(entity, .Transform);
     var range = world.get(entity, .Vision, .range);
 
+    var entity_fov = fields_of_views.getOrPut(entity) catch unreachable;
+
+    if (!entity_fov.found_existing) {
+        entity_fov.value_ptr.* = VisibleTiles.init(world.allocator);
+    } else {
+        entity_fov.value_ptr.clearRetainingCapacity();
+    }
+
     // reuse struct ?
     var fov = FieldOfView{
         .origin_x = pos.x.*,
@@ -56,12 +64,8 @@ fn compute(world: *Ecs, entity: Zecs.Entity) void {
 }
 
 fn markVisible(world: *Ecs, entity: Zecs.Entity, x: i32, y: i32) void {
+    _ = world;
     var entity_fov = fields_of_views.getOrPut(entity) catch unreachable;
-
-    if (!entity_fov.found_existing) {
-        entity_fov.value_ptr.* = VisibleTiles.init(world.allocator);
-    }
-
     entity_fov.value_ptr.put(hash(x, y), {}) catch unreachable;
 
     // rl.DrawText(".", x * 24, y * 24, 24, rl.RED);
