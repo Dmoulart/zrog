@@ -9,10 +9,12 @@ const FieldOfView = @import("./fov.zig").FieldOfView(isBlocking, markVisible);
 const rl = @import("raylib");
 
 pub fn fieldsOfview(world: *Ecs) void {
-    var fieldsOfView = world.query().all(.{
-        .Transform,
-        .Vision,
-    }).execute();
+    var fieldsOfView = world.query().all(
+        .{
+            .Transform,
+            .Vision,
+        },
+    ).execute();
 
     fieldsOfView.each(compute);
 }
@@ -35,7 +37,10 @@ fn markVisible(world: *Ecs, x: i32, y: i32) void {
 fn isBlocking(world: *Ecs, x: i32, y: i32) bool {
     var chunks = world.getResource(.chunks);
 
-    var prop = chunks.get(.props, x, y);
+    var chunk = chunks.getChunkAtPosition(x, y);
+    if (chunk == null) return true;
 
+    var prop = chunks.maybeGet(.props, x, y);
+    // std.debug.print("\nget prop {?}\n", .{prop});
     return prop != null;
 }

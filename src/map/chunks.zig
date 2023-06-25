@@ -88,6 +88,14 @@ pub fn get(self: *Self, comptime data_field: Chunk.Data, world_x: i32, world_y: 
     return chunk.?.getFromWorldPosition(data_field, world_x, world_y);
 }
 
+pub fn maybeGet(self: *Self, comptime data_field: Chunk.Data, world_x: i32, world_y: i32) ?Zecs.Entity {
+    var chunk = self.getChunkAtPosition(world_x, world_y);
+
+    if (chunk == null) return null;
+
+    return chunk.?.getFromWorldPosition(data_field, world_x, world_y);
+}
+
 pub fn set(self: *Self, comptime data_field: Chunk.Data, entity: Zecs.Entity, world_x: i32, world_y: i32) void {
     var chunk = self.getChunkAtPosition(world_x, world_y);
 
