@@ -20,9 +20,7 @@ pub fn FieldOfView(comptime is_blocking: IsBlockingFn, comptime mark_visible: Ma
         pub fn compute(self: *Self) void {
             mark_visible(self.world, self.origin_x, self.origin_y);
 
-            for (range(4)) |_, i| {
-                var direction = @intToEnum(Quadrant.Direction, i);
-
+            for (Quadrant.directions) |direction| {
                 var quadrant = Quadrant{
                     .cardinal = direction,
                     .origin_x = self.origin_x,
@@ -109,6 +107,13 @@ const Quadrant = struct {
         west,
     };
 
+    pub const directions = [_]Direction{
+        .north,
+        .east,
+        .south,
+        .west,
+    };
+
     cardinal: Direction,
 
     origin_x: i32,
@@ -178,8 +183,8 @@ const Row = struct {
     pub fn tiles(self: Self) Tile.Iterator {
         const depth = @intToFloat(f32, self.depth);
 
-        const min_col = roundTiesUp(depth * self.start_slope);
-        const max_col = roundTiesDown(depth * self.end_slope); // +1 ?
+        const min_col = roundTiesUp(depth * self.start_slope) - 1; // need this to avoid a hole between west and north, but why ?
+        const max_col = roundTiesDown(depth * self.end_slope);
 
         return Tile.Iterator{
             .depth = self.depth,
