@@ -33,21 +33,51 @@ const Grid = @import("./geo//pathfinding/a-star.zig").Grid;
 
 pub fn main() !void {
     var grid = [10][10]u8{
-        [10]u8{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        [10]u8{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        [10]u8{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        [10]u8{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        [10]u8{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        [10]u8{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        [10]u8{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        [10]u8{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        [10]u8{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        [10]u8{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        [_]u8{ 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 },
+        [_]u8{ 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 },
+        [_]u8{ 1, 0, 1, 0, 0, 0, 1, 0, 0, 0 },
+        [_]u8{ 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 },
+        [_]u8{ 0, 0, 1, 0, 0, 1, 0, 1, 0, 0 },
+        [_]u8{ 0, 0, 1, 1, 1, 0, 0, 0, 0, 0 },
+        [_]u8{ 0, 0, 1, 0, 1, 0, 1, 0, 0, 0 },
+        [_]u8{ 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 },
+        [_]u8{ 0, 0, 0, 1, 0, 1, 0, 0, 0, 0 },
+        [_]u8{ 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
     };
 
-    var path = try astar(&grid, .{ .x = 0, .y = 0 }, .{ .x = 4, .y = 4 }, std.heap.page_allocator);
+    var start_x: u8 = 0;
+    var start_y: u8 = 0;
+
+    var end_x: u8 = 4;
+    var end_y: u8 = 4;
+    var path = try astar(&grid, .{ .x = start_x, .y = start_y }, .{ .x = end_x, .y = end_y }, std.heap.page_allocator);
 
     std.debug.print("path {any}", .{path.items});
+    var y: usize = 0;
+    while (y < 10) : (y += 1) {
+        std.debug.print("\n", .{});
+        var x: usize = 0;
+        while (x < 10) : (x += 1) {
+            var is_path = false;
+            for (path.items) |node| {
+                if (node.x == x and node.y == y) {
+                    is_path = true;
+                    break;
+                }
+            }
+            if (grid[@intCast(usize, x)][@intCast(usize, y)] == 1) {
+                std.debug.print("x ", .{});
+            } else if (x == start_x and y == start_y) {
+                std.debug.print("S ", .{});
+            } else if (x == end_x and y == end_y) {
+                std.debug.print("E ", .{});
+            } else if (is_path) {
+                std.debug.print("o ", .{});
+            } else {
+                std.debug.print(". ", .{});
+            }
+        }
+    }
 }
 
 pub fn main2() !void {

@@ -1,6 +1,6 @@
 const std = @import("std");
 const ArrayList = std.ArrayList;
-const NodeList = std.ArrayList(Node);
+const NodeList = std.ArrayList(*Node);
 const print = std.debug.print;
 
 const Position = struct {
@@ -9,7 +9,7 @@ const Position = struct {
     x: i32,
     y: i32,
 
-    pub fn equals(self: *Self, other: Self) bool {
+    pub fn equals(self: *Self, other: *Self) bool {
         return self.x == other.x and self.y == other.y;
     }
 
@@ -77,8 +77,32 @@ pub const Node = struct {
         };
     }
 
-    pub fn equals(self: *Self, other: Self) bool {
-        return self.position.equals(other.position);
+    pub fn create(parent: ?*Self, position: Position, allocator: std.mem.Allocator) *Self {
+        var node = allocator.create(Node) catch unreachable;
+        node.position = position;
+        node.parent = parent;
+        node.g = 0;
+        node.f = 0;
+        node.h = 0;
+
+        return node;
+    }
+
+    pub fn equals(self: *Self, other: *Self) bool {
+        return self.position.equals(&other.position);
+    }
+
+    pub fn clone(self: *Self) Self {
+        return Self{
+            .position = Position{
+                .x = self.position.x,
+                .y = self.position.y,
+            },
+            .parent = self.parent,
+            .g = self.g,
+            .h = self.h,
+            .f = self.f,
+        };
     }
 };
 
@@ -86,8 +110,8 @@ const GRID_SIZE = 10;
 pub const Grid = [GRID_SIZE][GRID_SIZE]u8;
 
 pub fn astar(grid: *Grid, start: Position, end: Position, allocator: std.mem.Allocator) !ArrayList(Position) {
-    const start_node = Node.init(null, start);
-    const end_node = Node.init(null, end);
+    const start_node = Node.create(null, start, allocator);
+    const end_node = Node.create(null, end, allocator);
 
     var open_list = NodeList.init(allocator);
     var closed_list = NodeList.init(allocator);
@@ -99,10 +123,10 @@ pub fn astar(grid: *Grid, start: Position, end: Position, allocator: std.mem.All
         print("\nopen list", .{});
 
         // Get the current node
-        var current_node = &open_list.items[0];
+        var current_node = open_list.items[0];
 
         var i: usize = 0;
-        for (open_list.items) |*node| {
+        for (open_list.items) |node| {
             // print("\nOPEN LIST ITEMS\n", .{});
             if (node.f < current_node.f) {
                 current_node = node;
@@ -113,11 +137,11 @@ pub fn astar(grid: *Grid, start: Position, end: Position, allocator: std.mem.All
 
         // Add to close list
         _ = open_list.orderedRemove(current_index);
-        try closed_list.append(current_node.*);
+        try closed_list.append(current_node);
 
         // Found goal
         if (current_node.equals(end_node)) {
-            print("\nFOUND {}\n", .{current_node});
+            // print("\nFOUND {}\n", .{current_node});
             var path = ArrayList(Position).init(allocator);
             var current: ?*Node = current_node;
 
@@ -153,18 +177,18 @@ pub fn astar(grid: *Grid, start: Position, end: Position, allocator: std.mem.All
                 continue;
             }
 
-            var new_node = Node.init(current_node, node_position);
+            var new_node = Node.create(current_node, node_position, allocator);
             print("\ncurrent_node x:{} y:{}\n", .{ current_node.position.x, current_node.position.y });
             print("\new_node x:{} y:{}\n", .{ new_node.position.x, new_node.position.y });
             print("\new_node parent x:{} y:{}\n", .{ new_node.parent.?.position.x, new_node.parent.?.position.y });
             try children.append(new_node);
         }
 
-        childloop: for (children.items) |*child| {
+        childloop: for (children.items) |child| {
             // print("\nchildren {any}\n", .{children.items});
             // Child is in the closed list
-            for (closed_list.items) |*closed_child| {
-                if (child.equals(closed_child.*)) continue :childloop;
+            for (closed_list.items) |closed_child| {
+                if (child.equals(closed_child)) continue :childloop;
             }
 
             child.g = current_node.g + 1;
@@ -172,11 +196,11 @@ pub fn astar(grid: *Grid, start: Position, end: Position, allocator: std.mem.All
             child.f = child.g + child.h;
 
             // Child is already in the open list
-            for (open_list.items) |*open_node| {
-                if (child.equals(open_node.*) and child.g > open_node.g) continue :childloop;
+            for (open_list.items) |open_node| {
+                if (child.equals(open_node) and child.g > open_node.g) continue :childloop;
             }
 
-            try open_list.append(child.*);
+            try open_list.append(child);
         }
     }
 
