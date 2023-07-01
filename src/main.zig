@@ -28,7 +28,29 @@ const fieldsOfview = @import("./fov/fields-of-view.zig").fieldsOfview;
 const Timer = @import("./perfs/timer.zig");
 const Timers = @import("./perfs/timers.zig");
 
+const astar = @import("./geo//pathfinding/a-star.zig").astar;
+const Grid = @import("./geo//pathfinding/a-star.zig").Grid;
+
 pub fn main() !void {
+    var grid = [10][10]u8{
+        [10]u8{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        [10]u8{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        [10]u8{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        [10]u8{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        [10]u8{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        [10]u8{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        [10]u8{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        [10]u8{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        [10]u8{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        [10]u8{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    };
+
+    var path = try astar(&grid, .{ .x = 0, .y = 0 }, .{ .x = 4, .y = 4 }, std.heap.page_allocator);
+
+    std.debug.print("path {any}", .{path.items});
+}
+
+pub fn main2() !void {
     Timers.start("init");
     // Creation
     try Ecs.setup(std.heap.page_allocator);

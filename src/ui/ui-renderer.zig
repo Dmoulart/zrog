@@ -15,4 +15,20 @@ pub fn renderUI(world: *Ecs) void {
         @intCast(c_int, fov_bbox.x * CELL_SIZE),
         @intCast(c_int, fov_bbox.y * CELL_SIZE),
     );
+
+    drawPanel(world);
+}
+
+fn drawPanel(world: *Ecs) void {
+    _ = world;
+    // const camera = world.getResource(.camera);
+    // var fov_bbox = getCameraBoundingBox(world, camera);
+
+    // rl.DrawRectangle(
+    //     @intCast(c_int, fov_bbox.x * CELL_SIZE),
+    //     @intCast(c_int, fov_bbox.y * CELL_SIZE),
+    //     500,
+    //     500,
+    //     rl.BLACK,
+    // );
 }
