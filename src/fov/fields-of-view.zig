@@ -27,12 +27,10 @@ pub fn fieldsOfview(world: *Ecs) void {
         setup(world);
     }
 
-    var fieldsOfView = world.query().all(
-        .{
-            .Transform,
-            .Vision,
-        },
-    ).execute();
+    var fieldsOfView = world.query().all(.{ .Transform, .Vision })
+        .onEnter(createEntityVisibleTiles)
+        .onExit(destroyEntityVisibleTiles)
+        .execute();
 
     fieldsOfView.each(compute);
 }
@@ -41,14 +39,9 @@ fn compute(world: *Ecs, entity: Zecs.Entity) void {
     var pos = world.pack(entity, .Transform);
     var range = world.get(entity, .Vision, .range);
 
-    var entity_fov = fields_of_views.getOrPut(entity) catch unreachable;
+    var entity_fov = fields_of_views.get(entity).?;
 
-    if (!entity_fov.found_existing) {
-        // memory leak !
-        entity_fov.value_ptr.* = GeoSet.init(world.allocator);
-    } else {
-        entity_fov.value_ptr.clearRetainingCapacity();
-    }
+    entity_fov.clearRetainingCapacity();
 
     // reuse struct ?
     var fov = FieldOfView{
@@ -78,4 +71,15 @@ fn isBlocking(world: *Ecs, x: i32, y: i32) bool {
     var prop = chunk.?.getFromWorldPosition(.props, x, y);
 
     return prop != null;
+}
+
+fn createEntityVisibleTiles(world: *Ecs, entity: Zecs.Entity) void {
+    fields_of_views.put(entity, GeoSet.init(world.allocator)) catch unreachable;
+}
+
+fn destroyEntityVisibleTiles(_: *Ecs, entity: Zecs.Entity) void {
+    std.debug.print("destroy !", .{});
+    var visible_tiles = fields_of_views.get(entity).?;
+    visible_tiles.deinit();
+    _ = fields_of_views.remove(entity);
 }

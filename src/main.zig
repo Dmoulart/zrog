@@ -60,7 +60,6 @@ pub fn main() !void {
 
     _ = createCamera(&world);
     _ = createPlayer(&world);
-    // _ = createFPSCounter(&world);
 
     try loop(&world);
 }
@@ -79,6 +78,7 @@ fn loop(world: *Ecs) anyerror!void {
     // Main game loop
     while (!rl.WindowShouldClose()) {
         var loop_start = timestamp();
+
         // update turn number
         var turn = world.getResource(.turn);
         world.setResource(.turn, turn + 1);
@@ -86,8 +86,6 @@ fn loop(world: *Ecs) anyerror!void {
         world.step();
 
         var dt = timestamp() - loop_start;
-
-        // std.debug.print("dt {}\n", .{dt});
 
         world.setResource(.dt, dt);
     }
