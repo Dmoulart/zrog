@@ -109,7 +109,12 @@ pub const Node = struct {
 const GRID_SIZE = 10;
 pub const Grid = [GRID_SIZE][GRID_SIZE]u8;
 
-pub fn astar(grid: *Grid, start: Position, end: Position, allocator: std.mem.Allocator) !ArrayList(Position) {
+pub fn astar(
+    grid: *Grid,
+    start: Position,
+    end: Position,
+    allocator: std.mem.Allocator,
+) !ArrayList(Position) {
     const start_node = Node.create(null, start, allocator);
     const end_node = Node.create(null, end, allocator);
 

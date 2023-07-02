@@ -50,7 +50,9 @@ pub fn main() !void {
 
     var end_x: u8 = 4;
     var end_y: u8 = 4;
+    Timers.start("path");
     var path = try astar(&grid, .{ .x = start_x, .y = start_y }, .{ .x = end_x, .y = end_y }, std.heap.page_allocator);
+    Timers.end("path");
 
     var y: usize = 0;
     while (y < 10) : (y += 1) {
