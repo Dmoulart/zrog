@@ -120,14 +120,12 @@ pub fn astar(grid: *Grid, start: Position, end: Position, allocator: std.mem.All
 
     while (open_list.items.len > 0) {
         var current_index: usize = 0;
-        print("\nopen list", .{});
 
         // Get the current node
         var current_node = open_list.items[0];
 
         var i: usize = 0;
         for (open_list.items) |node| {
-            // print("\nOPEN LIST ITEMS\n", .{});
             if (node.f < current_node.f) {
                 current_node = node;
                 current_index = i;
@@ -141,19 +139,10 @@ pub fn astar(grid: *Grid, start: Position, end: Position, allocator: std.mem.All
 
         // Found goal
         if (current_node.equals(end_node)) {
-            // print("\nFOUND {}\n", .{current_node});
             var path = ArrayList(Position).init(allocator);
             var current: ?*Node = current_node;
 
             while (current) |node| {
-                // print("curr x: {} y: {} \n", .{
-                //     node.position.x,
-                //     node.position.y,
-                // });
-                // print("\n parent  x: {} y: {} \n", .{
-                //     node.parent.?.position.x,
-                //     node.parent.?.position.y,
-                // });
                 try path.append(node.position);
                 current = node.parent;
             }
@@ -164,8 +153,6 @@ pub fn astar(grid: *Grid, start: Position, end: Position, allocator: std.mem.All
         var children = NodeList.init(allocator);
 
         for (neighbors) |new_position| {
-            print("\nneighbors\n", .{});
-
             var node_position = current_node.position.add(new_position);
 
             // make sure within range
@@ -178,14 +165,11 @@ pub fn astar(grid: *Grid, start: Position, end: Position, allocator: std.mem.All
             }
 
             var new_node = Node.create(current_node, node_position, allocator);
-            print("\ncurrent_node x:{} y:{}\n", .{ current_node.position.x, current_node.position.y });
-            print("\new_node x:{} y:{}\n", .{ new_node.position.x, new_node.position.y });
-            print("\new_node parent x:{} y:{}\n", .{ new_node.parent.?.position.x, new_node.parent.?.position.y });
+
             try children.append(new_node);
         }
 
         childloop: for (children.items) |child| {
-            // print("\nchildren {any}\n", .{children.items});
             // Child is in the closed list
             for (closed_list.items) |closed_child| {
                 if (child.equals(closed_child)) continue :childloop;
