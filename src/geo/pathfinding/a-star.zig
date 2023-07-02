@@ -1,9 +1,10 @@
 const std = @import("std");
+const print = std.debug.print;
+const assert = std.debug.assert;
 const ArrayList = std.ArrayList;
 const NodeList = std.ArrayList(*Node);
-const print = std.debug.print;
 
-const Position = struct {
+pub const Position = struct {
     const Self = @This();
 
     x: i32,
@@ -106,17 +107,21 @@ pub const Node = struct {
     }
 };
 
-const GRID_SIZE = 10;
-pub const Grid = [GRID_SIZE][GRID_SIZE]u8;
-
 pub fn astar(
-    grid: *Grid,
+    grid: anytype, // can be an 2D array or slice
     start: Position,
     end: Position,
+    path: []Position, // The slice we'll write the end path to
     allocator: std.mem.Allocator,
-) !ArrayList(Position) {
+) ![]Position {
     const start_node = Node.create(null, start, allocator);
     const end_node = Node.create(null, end, allocator);
+
+    const GRID_WIDTH = grid.len;
+    const GRID_HEIGHT = grid[0].len;
+
+    assert(start_node.position.x >= 0 and start_node.position.x <= GRID_WIDTH);
+    assert(start_node.position.y >= 0 and start_node.position.y <= GRID_HEIGHT);
 
     var open_list = NodeList.init(allocator);
     var closed_list = NodeList.init(allocator);
@@ -144,12 +149,13 @@ pub fn astar(
 
         // Found goal
         if (current_node.equals(end_node)) {
-            var path = ArrayList(Position).init(allocator);
             var current: ?*Node = current_node;
+            var path_index: usize = 0;
 
             while (current) |node| {
-                try path.append(node.position);
+                path[path_index] = node.position;
                 current = node.parent;
+                path_index += 1;
             }
 
             return path;
@@ -161,7 +167,7 @@ pub fn astar(
             var node_position = current_node.position.add(new_position);
 
             // make sure within range
-            if (node_position.x >= GRID_SIZE or node_position.x < 0 or node_position.y >= GRID_SIZE or node_position.y < 0) {
+            if (node_position.x >= GRID_WIDTH or node_position.x < 0 or node_position.y >= GRID_HEIGHT or node_position.y < 0) {
                 continue;
             }
 
@@ -193,5 +199,5 @@ pub fn astar(
         }
     }
 
-    return ArrayList(Position).init(allocator);
+    return path;
 }

@@ -29,6 +29,7 @@ const Timer = @import("./perfs/timer.zig");
 const Timers = @import("./perfs/timers.zig");
 
 const astar = @import("./geo//pathfinding/a-star.zig").astar;
+const Position = @import("./geo//pathfinding/a-star.zig").Position;
 const Grid = @import("./geo//pathfinding/a-star.zig").Grid;
 
 pub fn main() !void {
@@ -51,7 +52,15 @@ pub fn main() !void {
     var end_x: u8 = 4;
     var end_y: u8 = 4;
     Timers.start("path");
-    var path = try astar(&grid, .{ .x = start_x, .y = start_y }, .{ .x = end_x, .y = end_y }, std.heap.page_allocator);
+
+    var path_positions: [15]Position = undefined;
+    var path = try astar(
+        &grid,
+        .{ .x = start_x, .y = start_y },
+        .{ .x = end_x, .y = end_y },
+        path_positions[0..],
+        std.heap.page_allocator,
+    );
     Timers.end("path");
 
     var y: usize = 0;
@@ -60,7 +69,7 @@ pub fn main() !void {
         var x: usize = 0;
         while (x < 10) : (x += 1) {
             var is_path = false;
-            for (path.items) |node| {
+            for (path) |node| {
                 if (node.x == x and node.y == y) {
                     is_path = true;
                     break;
