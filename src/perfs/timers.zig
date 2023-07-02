@@ -1,10 +1,11 @@
 const std = @import("std");
+const print = @import("std").debug.print;
 const Self = @This();
 
 name: []const u8,
 
-before: i64 = 0,
-after: i64 = 0,
+before: i128 = 0,
+after: i128 = 0,
 
 var instances: *std.StringHashMap(Self) = undefined;
 var is_ready = false;
@@ -23,7 +24,7 @@ pub fn setup() void {
 }
 
 pub fn startTimer(self: *Self) void {
-    self.before = std.time.milliTimestamp();
+    self.before = std.time.nanoTimestamp();
 }
 
 pub fn start(timer_name: []const u8) void {
@@ -47,17 +48,20 @@ pub fn end(timer_name: []const u8) void {
     if (instances.getPtr(timer_name)) |timer| {
         timer.endTimer();
     } else {
-        std.log.warn("Trying to end a timer which doesn't exist. Timer name : {s}", .{timer_name});
+        print("Trying to end a timer which doesn't exist. Timer name : {s}", .{timer_name});
     }
 }
 
 pub fn endTimer(self: *Self) void {
-    self.after = std.time.milliTimestamp();
+    self.after = std.time.nanoTimestamp();
 
-    std.debug.print("\n", .{});
-    std.debug.print("\n{s} Results : {} ms", .{ self.name, self.after - self.before });
-    std.debug.print("\n", .{});
-    std.debug.print("\n", .{});
+    var duration = self.after - self.before;
+    var ms = @intToFloat(f64, duration) / 1_000_000;
+
+    print("\n", .{});
+    print("\n{s} Results : {d:.4} ms", .{ self.name, ms });
+    print("\n", .{});
+    print("\n", .{});
 
     self.before = 0;
     self.after = 0;

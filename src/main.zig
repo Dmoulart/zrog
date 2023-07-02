@@ -51,15 +51,20 @@ pub fn main() !void {
 
     var end_x: u8 = 4;
     var end_y: u8 = 4;
-    Timers.start("path");
 
     var path_positions: [15]Position = undefined;
+
+    var buffer: [10_000]u8 = undefined;
+    var fba = std.heap.FixedBufferAllocator.init(&buffer);
+    const allocator = fba.allocator();
+
+    Timers.start("path");
     var path = try astar(
         &grid,
         .{ .x = start_x, .y = start_y },
         .{ .x = end_x, .y = end_y },
         path_positions[0..],
-        std.heap.page_allocator,
+        allocator,
     );
     Timers.end("path");
 
