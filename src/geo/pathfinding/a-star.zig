@@ -122,9 +122,12 @@ pub fn astar(
     // what is the maximum number of node we need to create ?
     try nodes.ensureTotalCapacity((GRID_WIDTH * GRID_HEIGHT) * 2);
     defer nodes.deinit();
-    
-    const start_node = Node.create(null, start, allocator);
-    const end_node = Node.create(null, end, allocator);
+
+    var start_node = nodes.addOne();
+    var end_node = nodes.addOne();
+    start_node.* = Node.init(null, start);
+    end_node.* = Node.init(null, end);
+    // const end_node = Node.create(null, end, allocator);
 
     defer allocator.destroy(start_node);
     defer allocator.destroy(end_node);
