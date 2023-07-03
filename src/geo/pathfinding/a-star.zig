@@ -107,7 +107,7 @@ pub fn astar(
     const GRID_HEIGHT = grid[0].len;
 
     var nodes = ArrayList(Node).init(allocator);
-    // Ths should never resize !
+    // Ths should never resize to avoid pointer invalidation !
     // what is the maximum number of node we need to create ?
     try nodes.ensureTotalCapacity((GRID_WIDTH * GRID_HEIGHT) * 2);
     defer nodes.deinit();
@@ -176,7 +176,6 @@ pub fn astar(
                 continue;
             }
 
-            // try nodes.append();
             var new_node = try nodes.addOne();
             new_node.* = Node.init(current_node, node_position);
             try children.append(new_node);
