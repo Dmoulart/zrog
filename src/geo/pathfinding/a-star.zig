@@ -114,17 +114,29 @@ pub fn astar(
     path: []Position, // The slice we'll write the end path to
     allocator: std.mem.Allocator,
 ) ![]Position {
+    const GRID_WIDTH = grid.len;
+    const GRID_HEIGHT = grid[0].len;
+
+    var nodes = ArrayList(Node).init(allocator);
+    // Ths should never resize !
+    // what is the maximum number of node we need to create ?
+    try nodes.ensureTotalCapacity((GRID_WIDTH * GRID_HEIGHT) * 2);
+    defer nodes.deinit();
+    
     const start_node = Node.create(null, start, allocator);
     const end_node = Node.create(null, end, allocator);
 
-    const GRID_WIDTH = grid.len;
-    const GRID_HEIGHT = grid[0].len;
+    defer allocator.destroy(start_node);
+    defer allocator.destroy(end_node);
 
     assert(start_node.position.x >= 0 and start_node.position.x <= GRID_WIDTH);
     assert(start_node.position.y >= 0 and start_node.position.y <= GRID_HEIGHT);
 
     var open_list = NodeList.init(allocator);
     var closed_list = NodeList.init(allocator);
+
+    defer open_list.deinit();
+    defer closed_list.deinit();
 
     try open_list.append(start_node);
 
@@ -175,8 +187,9 @@ pub fn astar(
                 continue;
             }
 
-            var new_node = Node.create(current_node, node_position, allocator);
-
+            // try nodes.append();
+            var new_node = try nodes.addOne();
+            new_node.* = Node.init(current_node, node_position);
             try children.append(new_node);
         }
 
