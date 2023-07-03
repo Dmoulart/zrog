@@ -161,7 +161,7 @@ pub fn astar(
             return path;
         }
 
-        var children = NodeList.init(allocator);
+        var children = try std.BoundedArray(*Node, neighbors.len).init(0);
 
         for (neighbors) |new_position| {
             var node_position = current_node.position.add(new_position);
@@ -180,7 +180,7 @@ pub fn astar(
             try children.append(new_node);
         }
 
-        childloop: for (children.items) |child| {
+        childloop: for (children.slice()) |child| {
             // Child is in the closed list
             for (closed_list.items) |closed_child| {
                 if (child.equals(closed_child)) continue :childloop;
