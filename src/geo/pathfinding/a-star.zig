@@ -201,3 +201,37 @@ pub fn astar(
 
     return path;
 }
+
+test "Astar" {
+    var grid = [10][10]u8{
+        [_]u8{ 0, 0, 1, 0, 1, 0, 0, 1, 1, 0 },
+        [_]u8{ 0, 0, 1, 0, 1, 0, 1, 0, 0, 0 },
+        [_]u8{ 1, 0, 1, 0, 1, 0, 1, 0, 0, 0 },
+        [_]u8{ 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 },
+        [_]u8{ 0, 0, 1, 0, 0, 1, 0, 1, 0, 0 },
+        [_]u8{ 0, 0, 1, 1, 1, 0, 0, 0, 0, 0 },
+        [_]u8{ 0, 0, 1, 0, 1, 0, 1, 0, 1, 0 },
+        [_]u8{ 0, 0, 1, 0, 0, 0, 0, 0, 1, 0 },
+        [_]u8{ 0, 0, 1, 0, 0, 1, 0, 0, 1, 0 },
+        [_]u8{ 0, 0, 0, 1, 0, 0, 0, 0, 1, 0 },
+    };
+
+    var start_x: u8 = 0;
+    var start_y: u8 = 0;
+
+    var end_x: u8 = 4;
+    var end_y: u8 = 4;
+
+    var path_positions: [200]Position = undefined;
+
+    const allocator = std.testing.allocator;
+    var path = try astar(
+        &grid,
+        .{ .x = start_x, .y = start_y },
+        .{ .x = end_x, .y = end_y },
+        path_positions[0..],
+        allocator,
+    );
+
+    try std.testing.expect(path.len > 0);
+}
