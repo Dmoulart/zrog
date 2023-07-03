@@ -78,17 +78,6 @@ pub const Node = struct {
         };
     }
 
-    pub fn create(parent: ?*Self, position: Position, allocator: std.mem.Allocator) *Self {
-        var node = allocator.create(Node) catch unreachable;
-        node.position = position;
-        node.parent = parent;
-        node.g = 0;
-        node.f = 0;
-        node.h = 0;
-
-        return node;
-    }
-
     pub fn equals(self: *Self, other: *Self) bool {
         return self.position.equals(&other.position);
     }
@@ -123,14 +112,11 @@ pub fn astar(
     try nodes.ensureTotalCapacity((GRID_WIDTH * GRID_HEIGHT) * 2);
     defer nodes.deinit();
 
-    var start_node = nodes.addOne();
-    var end_node = nodes.addOne();
+    var start_node = nodes.addOneAssumeCapacity();
+    var end_node = nodes.addOneAssumeCapacity();
+
     start_node.* = Node.init(null, start);
     end_node.* = Node.init(null, end);
-    // const end_node = Node.create(null, end, allocator);
-
-    defer allocator.destroy(start_node);
-    defer allocator.destroy(end_node);
 
     assert(start_node.position.x >= 0 and start_node.position.x <= GRID_WIDTH);
     assert(start_node.position.y >= 0 and start_node.position.y <= GRID_HEIGHT);
