@@ -15,10 +15,10 @@ var rnd = RndGen.init(0);
 
 const Dust = Ecs.Type(.{
     .Transform,
-    .Sprite,
+    .Glyph,
 });
 const Cell = Ecs.Type(.{
-    .Sprite,
+    .Glyph,
     .Transform,
     .Terrain,
 });
@@ -89,7 +89,7 @@ pub fn createRocks(world: *Ecs, chunk: *Chunk) void {
 pub fn createRock(world: *Ecs, x: i32, y: i32) Zecs.Entity {
     var rock = world.create(Dust);
 
-    world.write(rock, .Sprite, .{
+    world.write(rock, .Glyph, .{
         .char = "0",
         .color = rl.BLUE,
     });
@@ -105,7 +105,7 @@ pub fn createRock(world: *Ecs, x: i32, y: i32) Zecs.Entity {
 pub fn createDust(world: *Ecs, x: i32, y: i32) Zecs.Entity {
     var dust = world.create(Cell);
 
-    world.write(dust, .Sprite, .{
+    world.write(dust, .Glyph, .{
         .char = "\"",
         .color = rl.DARKGRAY,
     });

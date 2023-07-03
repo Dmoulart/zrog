@@ -203,6 +203,69 @@ pub fn astar(
     return path;
 }
 
+pub fn bench() !void {
+    var grid = [10][10]u8{
+        [_]u8{ 0, 0, 1, 0, 1, 0, 0, 1, 1, 0 },
+        [_]u8{ 0, 0, 1, 0, 1, 0, 1, 0, 0, 0 },
+        [_]u8{ 1, 0, 1, 0, 1, 0, 1, 0, 0, 0 },
+        [_]u8{ 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 },
+        [_]u8{ 0, 0, 1, 0, 0, 1, 0, 1, 0, 0 },
+        [_]u8{ 0, 0, 1, 1, 1, 0, 0, 0, 0, 0 },
+        [_]u8{ 0, 0, 1, 0, 1, 0, 1, 0, 1, 0 },
+        [_]u8{ 0, 0, 1, 0, 0, 0, 0, 0, 1, 0 },
+        [_]u8{ 0, 0, 1, 0, 0, 1, 0, 0, 1, 0 },
+        [_]u8{ 0, 0, 0, 1, 0, 0, 0, 0, 1, 0 },
+    };
+
+    var start_x: u8 = 0;
+    var start_y: u8 = 0;
+
+    var end_x: u8 = 4;
+    var end_y: u8 = 4;
+
+    var path_positions: [15]Position = undefined;
+
+    var buffer: [10_000]u8 = undefined;
+    var fba = std.heap.FixedBufferAllocator.init(&buffer);
+    const allocator = fba.allocator();
+
+    // Timers.start("path");
+    var path = try astar(
+        &grid,
+        .{ .x = start_x, .y = start_y },
+        .{ .x = end_x, .y = end_y },
+        path_positions[0..],
+        allocator,
+    );
+    // Timers.end("path");
+
+    var y: usize = 0;
+    while (y < 10) : (y += 1) {
+        std.debug.print("\n", .{});
+        var x: usize = 0;
+        while (x < 10) : (x += 1) {
+            var is_path = false;
+            for (path) |node| {
+                if (node.x == x and node.y == y) {
+                    is_path = true;
+                    break;
+                }
+            }
+            if (grid[@intCast(usize, x)][@intCast(usize, y)] == 1) {
+                std.debug.print("x ", .{});
+            } else if (x == start_x and y == start_y) {
+                std.debug.print("S ", .{});
+            } else if (x == end_x and y == end_y) {
+                std.debug.print("E ", .{});
+            } else if (is_path) {
+                std.debug.print("o ", .{});
+            } else {
+                std.debug.print(". ", .{});
+            }
+        }
+    }
+}
+
 test "Astar" {
     var grid = [10][10]u8{
         [_]u8{ 0, 0, 1, 0, 1, 0, 0, 1, 1, 0 },

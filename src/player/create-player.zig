@@ -6,7 +6,7 @@ const Player = Ecs.Type(.{
     .Transform,
     .Velocity,
     .Mover,
-    .Sprite,
+    .Glyph,
     .Input,
     .Vision,
 });
@@ -39,7 +39,7 @@ pub fn createPlayer(world: *Ecs) Zecs.Entity {
         .last_move = 0,
     });
 
-    world.write(player, .Sprite, .{
+    world.write(player, .Glyph, .{
         .char = "@",
         .color = rl.WHITE,
     });

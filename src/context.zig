@@ -22,7 +22,7 @@ pub const Ecs = Zecs.Context(.{
             last_move: u128,
         }),
         Zecs.Component(
-            "Sprite",
+            "Glyph",
             struct {
                 char: *const [1:0]u8,
                 color: rl.Color,
