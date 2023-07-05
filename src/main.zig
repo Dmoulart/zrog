@@ -13,6 +13,8 @@ const Chunks = @import("./map/chunks.zig");
 const Chunk = @import("./map/chunk.zig");
 const Moon = @import("./map/moon.zig");
 
+const followPlayer = @import("./battle/follow-player.zig").followPlayer;
+
 const prerender = @import("./graphics/renderer.zig").prerender;
 const render = @import("./graphics/renderer.zig").render;
 const renderTerrain = @import("./graphics/renderer.zig").renderTerrain;
@@ -69,6 +71,7 @@ pub fn main() !void {
 }
 
 fn loop(world: *Ecs) anyerror!void {
+    world.addSystem(followPlayer);
     world.addSystem(movement);
     world.addSystem(moveCommands);
     world.addSystem(updateCamera);
@@ -78,6 +81,32 @@ fn loop(world: *Ecs) anyerror!void {
     world.addSystem(render);
     world.addSystem(renderUI);
     world.addSystem(postrender);
+
+    var enemy = world.createEmpty();
+    world.attach(enemy, .Transform);
+    world.write(enemy, .Transform, .{
+        .x = 0,
+        .y = 0,
+    });
+    world.attach(enemy, .Velocity);
+    world.write(enemy, .Velocity, .{
+        .x = 0,
+        .y = 0,
+    });
+    world.attach(enemy, .Glyph);
+    world.write(enemy, .Glyph, .{
+        .char = "g",
+        .color = rl.WHITE,
+    });
+    world.attach(enemy, .Mover);
+    world.write(enemy, .Mover, .{
+        .move_freq = 2,
+        .last_move = 0,
+    });
+    world.attach(enemy, .Enemy);
+
+    var chunks = world.getResource(.chunks);
+    chunks.set(.beings, enemy, 0, 0);
 
     // Main game loop
     while (!rl.WindowShouldClose()) {

@@ -88,6 +88,16 @@ pub fn get(self: *Self, comptime data_field: Data, chunk_x: usize, chunk_y: usiz
     return if (prop == 0) null else prop;
 }
 
+pub fn has(self: *Self, comptime data_field: Data, chunk_x: usize, chunk_y: usize) bool {
+    var data = comptime &@field(self, @tagName(data_field));
+
+    assert(chunk_x < SIZE and chunk_y < SIZE);
+
+    var prop = data[chunk_x * SIZE + chunk_y];
+
+    return prop != 0;
+}
+
 pub fn deleteFromWorldPosition(self: *Self, comptime data_field: Data, x: i32, y: i32) void {
     assert(self.bbox.contains(x, y));
 
@@ -103,6 +113,30 @@ pub fn delete(self: *Self, comptime data_field: Data, chunk_x: usize, chunk_y: u
     var data = comptime &@field(self, @tagName(data_field));
 
     data[chunk_x * SIZE + chunk_y] = 0;
+}
+
+pub fn generateCollisionGrid(self: *Self) [SIZE][SIZE]u8 {
+    var grid: [SIZE][SIZE]u8 = undefined;
+
+    for (grid) |*row, x| {
+        _ = row;
+        var col: [SIZE]u8 = undefined;
+        for (col) |_, y| {
+            const obstacle = self.has(.props, x, y) or self.has(.beings, x, y);
+            col[y] = if (obstacle) 1 else 0;
+        }
+        grid[x] = col;
+    }
+    // while (cell_y < SIZE) : (cell_y += 1) {
+    //     var row: [SIZE]u8 = undefined;
+    //     std.mem.set(Zecs.Entity, &row, 0);
+
+    //     // std.mem.set(Zecs.Entity, &self.props, 0);
+    //     // std.mem.set(Zecs.Entity, &self.beings, 0);
+    //     cell_x = 0;
+    // }
+
+    return grid;
 }
 
 pub fn getChunkX(self: *Self) i32 {

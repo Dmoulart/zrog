@@ -109,7 +109,7 @@ pub fn astar(
     var nodes = ArrayList(Node).init(allocator);
     // Ths should never resize to avoid pointer invalidation !
     // what is the maximum number of node we need to create ?
-    try nodes.ensureTotalCapacity((GRID_WIDTH * GRID_HEIGHT) * 2);
+    try nodes.ensureTotalCapacity((GRID_WIDTH * GRID_HEIGHT) * 4);
     defer nodes.deinit();
 
     var start_node = nodes.addOneAssumeCapacity();

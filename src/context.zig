@@ -58,6 +58,7 @@ pub const Ecs = Zecs.Context(.{
         Zecs.Tag("Chunk"),
         Zecs.Tag("Input"),
         Zecs.Tag("Terrain"),
+        Zecs.Tag("Enemy"),
     },
     .Resources = struct {
         screen_height: c_int = 800,
