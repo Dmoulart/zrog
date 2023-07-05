@@ -24,7 +24,6 @@ pub fn follow(world: *Ecs, entity: Zecs.Entity) void {
     var chunk = chunks.getChunkAtPosition(0, 0).?;
 
     var grid = chunk.generateCollisionGrid();
-    std.debug.print("\n astar grid {any}\n", .{grid});
 
     var start_pos = world.pack(entity, .Transform);
 

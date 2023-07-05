@@ -78,6 +78,16 @@ pub const Node = struct {
         };
     }
 
+    pub fn create(parent: ?*Self, position: Position, allocator: std.mem.Allocator) !*Self {
+        var node = try allocator.create(Self);
+        node.position = position;
+        node.parent = parent;
+        node.g = 0;
+        node.h = 0;
+        node.f = 0;
+        return node;
+    }
+
     pub fn equals(self: *Self, other: *Self) bool {
         return self.position.equals(&other.position);
     }
@@ -107,26 +117,33 @@ pub fn astar(
     const GRID_WIDTH = grid.len;
     const GRID_HEIGHT = grid[0].len;
 
-    var nodes = ArrayList(Node).init(allocator);
-    // Ths should never resize to avoid pointer invalidation !
-    // what is the maximum number of node we need to create ?
-    try nodes.ensureTotalCapacity((GRID_WIDTH * GRID_HEIGHT) * 2);
-    defer nodes.deinit();
+    // Keep a reference to all node pointers so
+    // we can clean it at the end of the function.
+    // it feels wrong, but leaks feels wronger
+    var nodes = ArrayList(*Node).init(allocator);
+    defer {
+        for (nodes.items) |node| {
+            allocator.destroy(node);
+        }
+        nodes.deinit();
+    }
+    try nodes.ensureTotalCapacity((GRID_WIDTH * GRID_HEIGHT));
 
-    var start_node = nodes.addOneAssumeCapacity();
-    var end_node = nodes.addOneAssumeCapacity();
+    var start_node = try Node.create(null, start, allocator);
+    var end_node = try Node.create(null, end, allocator);
 
-    start_node.* = Node.init(null, start);
-    end_node.* = Node.init(null, end);
+    nodes.appendAssumeCapacity(start_node);
+    nodes.appendAssumeCapacity(end_node);
 
     assert(start_node.position.x >= 0 and start_node.position.x <= GRID_WIDTH);
     assert(start_node.position.y >= 0 and start_node.position.y <= GRID_HEIGHT);
 
     var open_list = NodeList.init(allocator);
     var closed_list = NodeList.init(allocator);
-
-    defer open_list.deinit();
-    defer closed_list.deinit();
+    defer {
+        open_list.deinit();
+        closed_list.deinit();
+    }
 
     try open_list.append(start_node);
 
@@ -182,8 +199,9 @@ pub fn astar(
                 continue;
             }
 
-            var new_node = nodes.addOneAssumeCapacity();
-            new_node.* = Node.init(current_node, node_position);
+            var new_node = try Node.create(current_node, node_position, allocator);
+
+            try nodes.append(new_node);
             try children.append(new_node);
         }
 
