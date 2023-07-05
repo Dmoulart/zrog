@@ -101,15 +101,16 @@ pub fn astar(
     start: Position,
     end: Position,
     path: []Position, // The slice we'll write the end path to
+    limit: u32,
     allocator: std.mem.Allocator,
-) ![]Position {
+) !?[]Position {
     const GRID_WIDTH = grid.len;
     const GRID_HEIGHT = grid[0].len;
 
     var nodes = ArrayList(Node).init(allocator);
     // Ths should never resize to avoid pointer invalidation !
     // what is the maximum number of node we need to create ?
-    try nodes.ensureTotalCapacity((GRID_WIDTH * GRID_HEIGHT) * 4);
+    try nodes.ensureTotalCapacity((GRID_WIDTH * GRID_HEIGHT) * 2);
     defer nodes.deinit();
 
     var start_node = nodes.addOneAssumeCapacity();
@@ -129,13 +130,18 @@ pub fn astar(
 
     try open_list.append(start_node);
 
+    var tries: u32 = 0;
     while (open_list.items.len > 0) {
-        var current_index: usize = 0;
+        tries += 1;
 
+        if (tries >= limit) return null;
+
+        var current_index: usize = 0;
         // Get the current node
         var current_node = open_list.items[0];
 
         var i: usize = 0;
+
         for (open_list.items) |node| {
             if (node.f < current_node.f) {
                 current_node = node;
@@ -176,7 +182,7 @@ pub fn astar(
                 continue;
             }
 
-            var new_node = try nodes.addOne();
+            var new_node = nodes.addOneAssumeCapacity();
             new_node.* = Node.init(current_node, node_position);
             try children.append(new_node);
         }
@@ -200,7 +206,7 @@ pub fn astar(
         }
     }
 
-    return path;
+    return null;
 }
 
 pub fn bench() !void {
@@ -223,7 +229,7 @@ pub fn bench() !void {
     var end_x: u8 = 4;
     var end_y: u8 = 4;
 
-    var path_positions: [15]Position = undefined;
+    var path_positions: [200]Position = undefined;
 
     var buffer: [10_000]u8 = undefined;
     var fba = std.heap.FixedBufferAllocator.init(&buffer);
@@ -235,6 +241,7 @@ pub fn bench() !void {
         .{ .x = start_x, .y = start_y },
         .{ .x = end_x, .y = end_y },
         path_positions[0..],
+        10_000,
         allocator,
     );
     // Timers.end("path");
@@ -294,8 +301,9 @@ test "Astar" {
         .{ .x = start_x, .y = start_y },
         .{ .x = end_x, .y = end_y },
         path_positions[0..],
+        10_000,
         allocator,
     );
 
-    try std.testing.expect(path.len > 0);
+    try std.testing.expect(path.?.len > 0);
 }

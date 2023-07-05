@@ -118,23 +118,16 @@ pub fn delete(self: *Self, comptime data_field: Data, chunk_x: usize, chunk_y: u
 pub fn generateCollisionGrid(self: *Self) [SIZE][SIZE]u8 {
     var grid: [SIZE][SIZE]u8 = undefined;
 
-    for (grid) |*row, x| {
-        _ = row;
+    for (grid) |_, x| {
         var col: [SIZE]u8 = undefined;
+
         for (col) |_, y| {
-            const obstacle = self.has(.props, x, y) or self.has(.beings, x, y);
+            const obstacle = self.has(.props, x, y); // or self.has(.beings, x, y);
             col[y] = if (obstacle) 1 else 0;
         }
+
         grid[x] = col;
     }
-    // while (cell_y < SIZE) : (cell_y += 1) {
-    //     var row: [SIZE]u8 = undefined;
-    //     std.mem.set(Zecs.Entity, &row, 0);
-
-    //     // std.mem.set(Zecs.Entity, &self.props, 0);
-    //     // std.mem.set(Zecs.Entity, &self.beings, 0);
-    //     cell_x = 0;
-    // }
 
     return grid;
 }

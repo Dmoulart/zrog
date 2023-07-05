@@ -24,8 +24,7 @@ pub fn follow(world: *Ecs, entity: Zecs.Entity) void {
     var chunk = chunks.getChunkAtPosition(0, 0).?;
 
     var grid = chunk.generateCollisionGrid();
-
-    std.debug.print("\ncoll grid {any}\n", .{grid});
+    std.debug.print("\n astar grid {any}\n", .{grid});
 
     var start_pos = world.pack(entity, .Transform);
 
@@ -34,7 +33,7 @@ pub fn follow(world: *Ecs, entity: Zecs.Entity) void {
 
     var path_positions: [200]Position = undefined;
 
-    var path = findPath(
+    var result = findPath(
         &grid,
         .{
             .x = start_pos.x.*,
@@ -45,14 +44,17 @@ pub fn follow(world: *Ecs, entity: Zecs.Entity) void {
             .y = end_pos.y.*,
         },
         path_positions[0..],
+        10_000,
         world.allocator,
     ) catch unreachable;
 
-    var first_move_x = path[0].x - start_pos.x.*;
-    var first_move_y = path[0].y - start_pos.y.*;
+    if (result) |path| {
+        var first_move_x = path[0].x - start_pos.x.*;
+        var first_move_y = path[0].y - start_pos.y.*;
 
-    world.set(entity, .Velocity, .x, first_move_x);
-    world.set(entity, .Velocity, .y, first_move_y);
+        world.set(entity, .Velocity, .x, first_move_x);
+        world.set(entity, .Velocity, .y, first_move_y);
+    }
 
     // std.debug.print("\npath {any}\n", .{path});
 }
