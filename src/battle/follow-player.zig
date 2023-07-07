@@ -22,8 +22,10 @@ pub fn followPlayer(world: *Ecs) void {
 pub fn follow(world: *Ecs, entity: Zecs.Entity) void {
     var chunks = world.getResource(.chunks);
     var chunk = chunks.getChunkAtPosition(0, 0).?;
+    _ = chunk;
 
-    var grid = chunk.generateCollisionGrid();
+    // var grid = chunk.generateCollisionGrid(.{ .x = 0, .y = 0 });
+    var grid = chunks.generateCollisionGrid();
 
     var start_pos = world.pack(entity, .Transform);
 

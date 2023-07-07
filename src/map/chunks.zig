@@ -8,6 +8,8 @@ const Ecs = @import("../context.zig").Ecs;
 const BoundingBox = @import("../math/bounding-box.zig");
 const getCameraBoundingBox = @import("../graphics/camera.zig").getCameraBoundingBox;
 
+const GlobalCollisionGrid = [Chunk.SIZE * 9][Chunk.SIZE * 9]u8;
+
 const Point = struct { x: usize, y: usize };
 const COORDS: [9]Point = [9]Point{ .{
     .x = 0,
@@ -139,6 +141,73 @@ pub fn filterVisible(
     }
 
     return chunks[0..count];
+}
+
+pub fn generateCollisionGrid(self: *Self) GlobalCollisionGrid {
+    var grid: GlobalCollisionGrid = undefined;
+
+    for (self.chunks) |*row| {
+        for (row) |*maybe_chunk| {
+            if (maybe_chunk.*) |*chunk| {
+                var chunk_grid = chunk.generateCollisionGrid(.{
+                    .x = 0,
+                    .y = 0,
+                });
+
+                for (chunk_grid) |*grid_row, x| {
+                    var col: [Chunk.SIZE * 9]u8 = undefined;
+                    for (grid_row) |_, y| {
+                        var global_x = @intCast(usize, (@intCast(usize, chunk.x + 1) * Chunk.SIZE) + x);
+                        var global_y = @intCast(usize, (@intCast(usize, chunk.y + 1) * Chunk.SIZE) + y);
+                        grid[global_x][global_y] = chunk_grid[x][y];
+                    }
+
+                    grid[x] = col;
+                }
+            }
+        }
+    }
+    std.debug.print("grid {any}", .{grid});
+    return grid;
+
+    // var len = Chunk.SIZE * Chunk.SIZE;
+
+    // var i: u32 = 0;
+
+    // while(len <= i){
+    //     for(self.chunks) |chunk|{
+    //         chunk.props[i]
+    //     }
+    // }
+
+    // for (self.chunks) |chunk| {
+    //     var col: [Chunk.SIZE * 9]u8 = undefined;
+    //     _ = col;
+    //     var chunk_grid = chunk.generateCollisionGrid(.{
+    //         .x = chunk.x,
+    //         .x = chunk.y,
+    //     });
+    //     _ = chunk_grid;
+
+    //     for(chunk.grid){
+
+    //     }
+    // }
+
+    // var grid: [SIZE][SIZE]u8 = undefined;
+
+    // for (grid) |_, x| {
+    //     var col: [SIZE]u8 = undefined;
+
+    //     for (col) |_, y| {
+    //         const obstacle = self.has(.props, x + offset.x, offset.y); // or self.has(.beings, x, y);
+    //         col[y] = if (obstacle) 1 else 0;
+    //     }
+
+    //     grid[x] = col;
+    // }
+
+    // return grid;
 }
 
 pub fn getBoundingBox(self: *Self) BoundingBox {

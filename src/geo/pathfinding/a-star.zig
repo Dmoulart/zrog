@@ -127,6 +127,7 @@ pub fn astar(
         }
         nodes.deinit();
     }
+    // estimate the total capacity to gain a little perf boost.
     try nodes.ensureTotalCapacity((GRID_WIDTH * GRID_HEIGHT));
 
     var start_node = try Node.create(null, start, allocator);
