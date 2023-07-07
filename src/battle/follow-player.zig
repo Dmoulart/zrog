@@ -45,7 +45,7 @@ pub fn follow(world: *Ecs, entity: Zecs.Entity) void {
             .y = end_pos.y.*,
         },
         path_positions[0..],
-        100_000,
+        10_000,
         world.allocator,
     ) catch unreachable;
 
