@@ -32,7 +32,7 @@ pub fn follow(world: *Ecs, entity: Zecs.Entity) void {
     var player = world.getResource(.player);
     var end_pos = world.pack(player, .Transform);
 
-    var path_positions: [200]Position = undefined;
+    var path_positions: [1000]Position = undefined;
 
     var result = findPath(
         &grid,
@@ -45,7 +45,7 @@ pub fn follow(world: *Ecs, entity: Zecs.Entity) void {
             .y = end_pos.y.*,
         },
         path_positions[0..],
-        10_000,
+        100_000,
         world.allocator,
     ) catch unreachable;
 

@@ -151,7 +151,6 @@ pub fn astar(
     var tries: u32 = 0;
     while (open_list.items.len > 0) {
         tries += 1;
-
         if (tries >= limit) return null;
 
         var current_index: usize = 0;

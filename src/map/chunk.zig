@@ -121,15 +121,11 @@ pub fn delete(self: *Self, comptime data_field: Data, chunk_x: usize, chunk_y: u
 pub fn generateCollisionGrid(self: *Self, offset: Vector(u8)) CollisionGrid {
     var grid: [SIZE][SIZE]u8 = undefined;
 
-    for (grid) |_, x| {
-        var col: [SIZE]u8 = undefined;
-
+    for (grid) |*col, x| {
         for (col) |_, y| {
             const obstacle = self.has(.props, x + offset.x, offset.y); // or self.has(.beings, x, y);
             col[y] = if (obstacle) 1 else 0;
         }
-
-        grid[x] = col;
     }
 
     return grid;
