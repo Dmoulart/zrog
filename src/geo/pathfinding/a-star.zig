@@ -152,8 +152,10 @@ pub fn astar(
     var tries: u32 = 0;
 
     while (open_list.items.len > 0) : (tries += 1) {
-        if (tries >= limit) return null;
-
+        if (tries >= limit) {
+            print("\nlimit reached \n", .{});
+            return null;
+        }
         var current_index: usize = 0;
 
         var current_node = open_list.items[0];

@@ -29,16 +29,23 @@ pub fn follow(world: *Ecs, entity: Zecs.Entity) void {
     var player = world.getResource(.player);
     var end_pos = world.pack(player, .Transform);
 
-    std.debug.print("\n start \n", .{});
+    // std.debug.print("\n start \n", .{});
 
-    if (start_pos.x.* == end_pos.x.* and start_pos.y.* == end_pos.y.*) {
+    if (adjacent(start_pos.x.*, start_pos.y.*, end_pos.x.*, end_pos.y.*)) {
         world.set(entity, .Velocity, .x, 0);
         world.set(entity, .Velocity, .y, 0);
         std.debug.print("\n start and pos EQUALS \n", .{});
         return;
     }
 
-    std.debug.print("\nstart and pos not EQUALS\n", .{});
+    std.debug.print("\nstart x:{} y:{} end x:{} y:{}\n", .{
+        start_pos.x.*,
+        start_pos.y.*,
+        end_pos.x.*,
+        end_pos.y.*,
+    });
+
+    // std.debug.print("\ngrid {any}\n", .{grid});
 
     var result = findPath(
         &grid,
@@ -75,9 +82,9 @@ pub fn follow(world: *Ecs, entity: Zecs.Entity) void {
     }
 }
 
-// fn isAdjacent(x_a: i32, y_a: i32, x_b: i32, y_b: i32) bool {
-//     var x_diff = x_b - x_a;
-//     var y_diff = y_b - y_a;
+fn adjacent(x_a: i32, y_a: i32, x_b: i32, y_b: i32) bool {
+    var x_diff = x_b - x_a;
+    var y_diff = y_b - y_a;
 
-//     return x_diff >= -1 and x_diff <= 1 and y_diff >= -1 and y_diff <= 1;
-// }
+    return x_diff >= -1 and x_diff <= 1 and y_diff >= -1 and y_diff <= 1;
+}
