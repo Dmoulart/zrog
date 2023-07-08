@@ -112,11 +112,9 @@ pub fn astar(
     grid: anytype, // can be an 2D array or slice
     start: Position,
     end: Position,
-    path: []Position, // The slice we'll write the end path to
     limit: u32,
     allocator: std.mem.Allocator,
 ) !?ArrayList(Position) {
-    _ = path;
     const GRID_WIDTH = grid.len;
     const GRID_HEIGHT = grid[0].len;
 
@@ -178,26 +176,11 @@ pub fn astar(
         if (current_node.equals(end_node)) {
             var path_list = ArrayList(Position).init(allocator);
             var current: ?*Node = current_node;
-            // var path_index: usize = 0;
-            // _ = path_index;
-            // _ = path_index;
 
             while (current) |node| {
-                // path[path_index] = node.position;
                 try path_list.append(node.position);
                 current = node.parent;
-                // path_index += 1;
             }
-
-            // var path_len = path_index;
-
-            // var reversed_index: usize = 0;
-            // // reverse path
-            // while (reversed_index < path_len) : (reversed_index += 1) {
-            //     var tmp = path[path_index];
-            //     pat
-            //     path_index -= 1;
-            // }
 
             return path_list;
         }
@@ -328,17 +311,15 @@ test "Astar" {
     var end_x: u8 = 4;
     var end_y: u8 = 4;
 
-    var path_positions: [200]Position = undefined;
-
     const allocator = std.testing.allocator;
     var path = try astar(
         &grid,
         .{ .x = start_x, .y = start_y },
         .{ .x = end_x, .y = end_y },
-        path_positions[0..],
         10_000,
         allocator,
     );
+    defer path.?.deinit();
 
-    try std.testing.expect(path.?.len > 0);
+    try std.testing.expect(path.?.items.len > 0);
 }

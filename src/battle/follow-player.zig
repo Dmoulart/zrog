@@ -36,8 +36,6 @@ pub fn follow(world: *Ecs, entity: Zecs.Entity) void {
         return;
     }
 
-    var path_positions: [1000]Position = undefined;
-
     var result = findPath(
         &grid,
         .{
@@ -48,7 +46,6 @@ pub fn follow(world: *Ecs, entity: Zecs.Entity) void {
             .x = end_pos.x.*,
             .y = end_pos.y.*,
         },
-        path_positions[0..],
         500,
         world.allocator,
     ) catch unreachable;
