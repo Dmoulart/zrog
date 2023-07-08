@@ -153,11 +153,13 @@ pub fn generateCollisionGrid(self: *Self) GlobalCollisionGrid {
                     .x = 0,
                     .y = 0,
                 });
+                var chunk_x = @intCast(usize, chunk.x);
+                var chunk_y = @intCast(usize, chunk.y);
 
                 for (chunk_grid) |*grid_row, x| {
                     for (grid_row) |_, y| {
-                        var global_x = @intCast(usize, (@intCast(usize, chunk.x) * Chunk.SIZE) + x);
-                        var global_y = @intCast(usize, (@intCast(usize, chunk.y) * Chunk.SIZE) + y);
+                        var global_x = @intCast(usize, (chunk_x * Chunk.SIZE) + x);
+                        var global_y = @intCast(usize, (chunk_y * Chunk.SIZE) + y);
                         // std.debug.print("\n x{} y{} \n", .{ global_x, global_y });
                         // std.debug.print("\n chunk grid {} \n", .{chunk_grid[x][y]});
                         grid[global_x][global_y] = chunk_grid[x][y];
