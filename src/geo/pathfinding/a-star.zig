@@ -1,7 +1,9 @@
 const std = @import("std");
 const print = std.debug.print;
 const assert = std.debug.assert;
+
 const ArrayList = std.ArrayList;
+const BoundedArray = std.BoundedArray;
 const NodeList = std.ArrayList(*Node);
 
 pub const Position = struct {
@@ -113,7 +115,8 @@ pub fn astar(
     path: []Position, // The slice we'll write the end path to
     limit: u32,
     allocator: std.mem.Allocator,
-) !?[]Position {
+) !?ArrayList(Position) {
+    _ = path;
     const GRID_WIDTH = grid.len;
     const GRID_HEIGHT = grid[0].len;
 
@@ -150,9 +153,7 @@ pub fn astar(
 
     var tries: u32 = 0;
 
-    while (open_list.items.len > 0) {
-        tries += 1;
-
+    while (open_list.items.len > 0) : (tries += 1) {
         if (tries >= limit) return null;
 
         var current_index: usize = 0;
@@ -175,19 +176,33 @@ pub fn astar(
 
         // Found goal
         if (current_node.equals(end_node)) {
+            var path_list = ArrayList(Position).init(allocator);
             var current: ?*Node = current_node;
-            var path_index: usize = 0;
+            // var path_index: usize = 0;
+            // _ = path_index;
+            // _ = path_index;
 
             while (current) |node| {
-                path[path_index] = node.position;
+                // path[path_index] = node.position;
+                try path_list.append(node.position);
                 current = node.parent;
-                path_index += 1;
+                // path_index += 1;
             }
 
-            return path;
+            // var path_len = path_index;
+
+            // var reversed_index: usize = 0;
+            // // reverse path
+            // while (reversed_index < path_len) : (reversed_index += 1) {
+            //     var tmp = path[path_index];
+            //     pat
+            //     path_index -= 1;
+            // }
+
+            return path_list;
         }
 
-        var children = try std.BoundedArray(*Node, neighbors.len).init(0);
+        var children = try BoundedArray(*Node, neighbors.len).init(0);
 
         for (neighbors) |new_position| {
             var node_position = current_node.position.add(new_position);

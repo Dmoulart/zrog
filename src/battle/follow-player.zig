@@ -49,10 +49,13 @@ pub fn follow(world: *Ecs, entity: Zecs.Entity) void {
         world.allocator,
     ) catch unreachable;
 
-    if (result) |path| {
-        var first_move_x = path[0].x - start_pos.x.*;
-        var first_move_y = path[0].y - start_pos.y.*;
-
+    if (result) |*path| {
+        _ = path.popOrNull(); // equal to start pos
+        var first_position = path.popOrNull();
+        if (first_position == null) return;
+        var first_move_x = first_position.?.x - start_pos.x.*;
+        var first_move_y = first_position.?.y - start_pos.y.*;
+        std.debug.print("\nfirst move {} {} \n", .{ first_move_x, first_move_y });
         world.set(entity, .Velocity, .x, first_move_x);
         world.set(entity, .Velocity, .y, first_move_y);
     }
