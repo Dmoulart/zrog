@@ -155,7 +155,7 @@ pub fn astar(
         if (tries >= limit) return null;
 
         var current_index: usize = 0;
-        // Get the current node
+
         var current_node = open_list.items[0];
 
         var i: usize = 0;
@@ -175,6 +175,9 @@ pub fn astar(
         // Found goal
         if (current_node.equals(end_node)) {
             var path_list = ArrayList(Position).init(allocator);
+            defer path_list.deinit();
+
+            var reversed_path_list = ArrayList(Position).init(allocator);
             var current: ?*Node = current_node;
 
             while (current) |node| {
@@ -182,7 +185,13 @@ pub fn astar(
                 current = node.parent;
             }
 
-            return path_list;
+            // reverse path
+            try reversed_path_list.ensureTotalCapacity(path_list.capacity);
+            while (path_list.popOrNull()) |item| {
+                reversed_path_list.appendAssumeCapacity(item);
+            }
+
+            return reversed_path_list;
         }
 
         var children = try BoundedArray(*Node, neighbors.len).init(0);
