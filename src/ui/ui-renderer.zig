@@ -1,34 +1,46 @@
 const std = @import("std");
+const rl = @import("raylib");
 const Zecs = @import("zecs");
 const Ecs = @import("../context.zig").Ecs;
-const rl = @import("raylib");
 
-const CELL_SIZE = @import("../graphics/renderer.zig").CELL_SIZE;
+const UI = @import("./test-ui.zig");
+const createCamera = @import("../graphics/camera.zig").createCamera;
 
-const getCameraBoundingBox = @import("../graphics/camera.zig").getCameraBoundingBox;
+var is_ready = false;
+var ui_camera: Zecs.Entity = undefined;
 
-pub fn renderUI(world: *Ecs) void {
-    const camera = world.getResource(.camera);
-    var fov_bbox = getCameraBoundingBox(world, camera);
-
-    rl.DrawFPS(
-        @intCast(c_int, fov_bbox.x * CELL_SIZE),
-        @intCast(c_int, fov_bbox.y * CELL_SIZE),
-    );
-
-    drawPanel(world);
+fn setup(world: *Ecs) void {
+    _ = UI.createTestUI(world);
+    ui_camera = createCamera(world);
+    is_ready = true;
 }
 
-fn drawPanel(world: *Ecs) void {
-    _ = world;
-    // const camera = world.getResource(.camera);
-    // var fov_bbox = getCameraBoundingBox(world, camera);
+pub fn renderUI(world: *Ecs) void {
+    if (!is_ready) {
+        setup(world);
+    }
 
-    // rl.DrawRectangle(
-    //     @intCast(c_int, fov_bbox.x * CELL_SIZE),
-    //     @intCast(c_int, fov_bbox.y * CELL_SIZE),
-    //     500,
-    //     500,
-    //     rl.BLACK,
-    // );
+    const camera = world.clone(ui_camera, .Camera);
+
+    rl.BeginMode2D(camera);
+    rl.DrawFPS(
+        @intCast(c_int, 0),
+        @intCast(c_int, 0),
+    );
+
+    const ui = world.query().all(.{ .ScreenPosition, .Panel }).execute();
+    ui.each(draw);
+}
+
+fn draw(world: *Ecs, entity: Zecs.Entity) void {
+    var pos = world.pack(entity, .ScreenPosition);
+    var panel = world.pack(entity, .Panel);
+
+    rl.DrawRectangle(
+        @intCast(c_int, pos.x.*),
+        @intCast(c_int, pos.y.*),
+        panel.width.*,
+        panel.height.*,
+        panel.background_color.*,
+    );
 }

@@ -46,7 +46,6 @@ pub fn createCamera(world: *Ecs) Zecs.Entity {
         },
     );
 
-    world.setResource(.camera, camera);
 
     return camera;
 }

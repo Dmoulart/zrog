@@ -69,7 +69,7 @@ fn init(world: *Ecs) anyerror!void {
         }
     }
     map.updateCollisionGrid();
-    
+
     world.setResource(.chunks, map);
 
     const screen_width = world.getResource(.screen_width);
@@ -78,8 +78,11 @@ fn init(world: *Ecs) anyerror!void {
     rl.InitWindow(screen_width, screen_height, "Zrog");
     rl.SetTargetFPS(60);
 
-    _ = createCamera(world);
-    _ = createPlayer(world);
+    var camera = createCamera(world);
+    world.setResource(.camera, camera);
+
+    var player = createPlayer(world);
+    world.setResource(.player, player);
 
     addSystems(world);
 

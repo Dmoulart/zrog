@@ -54,7 +54,6 @@ pub const Ecs = Zecs.Context(.{
                 range: i32,
             },
         ),
-        Zecs.Tag("FPSCounter"),
         Zecs.Tag("Chunk"),
         Zecs.Tag("Input"),
         Zecs.Tag("Terrain"),

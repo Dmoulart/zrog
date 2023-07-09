@@ -16,8 +16,6 @@ pub fn createPlayer(world: *Ecs) Zecs.Entity {
 
     var player = world.create(Player);
 
-    world.setResource(.player, player);
-
     var start_position = .{
         .x = 10,
         .y = 10,

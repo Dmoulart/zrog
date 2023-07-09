@@ -2,12 +2,11 @@ const Zecs = @import("zecs");
 const Ecs = @import("../context.zig").Ecs;
 const rl = @import("raylib");
 
-pub fn createFPSCounter(world: *Ecs) Zecs.Entity {
+pub fn createTestUI(world: *Ecs) Zecs.Entity {
     var counter = world.createEmpty();
 
     world.attach(counter, .ScreenPosition);
     world.attach(counter, .Panel);
-    world.attach(counter, .FPSCounter);
 
     var width: c_int = 250;
     var height: c_int = 100;
