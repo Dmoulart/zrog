@@ -119,8 +119,9 @@ fn addSystems(world: *Ecs) void {
     world.addSystem(updateCamera);
     world.addSystem(fieldsOfview);
 
-    if (world.getResource(.headless))
-        return;
+    // Remove all rendering systems.
+    // if (world.getResource(.headless))
+    //     return;
 
     world.addSystem(prerender);
     world.addSystem(render);

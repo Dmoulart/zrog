@@ -1,4 +1,5 @@
 const std = @import("std");
+const fmt = std.fmt;
 const rl = @import("raylib");
 const Zecs = @import("zecs");
 const Ecs = @import("../context.zig").Ecs;
@@ -9,8 +10,6 @@ const createCamera = @import("../graphics/camera.zig").createCamera;
 var is_ready = false;
 var camera: rl.Camera2D = undefined;
 
-var char_buffer: [1000]u8 = undefined;
-
 fn setup(world: *Ecs) void {
     _ = UI.createTestUI(world);
     _ = UI.createPositionIndicator(world);
@@ -19,6 +18,7 @@ fn setup(world: *Ecs) void {
     is_ready = true;
 }
 
+// Should we use the ecs for the UI ?
 pub fn renderUI(world: *Ecs) void {
     if (!is_ready) {
         setup(world);
@@ -63,15 +63,22 @@ fn draw(world: *Ecs, entity: Zecs.Entity) void {
             const x = player_transform.x.*;
             const y = player_transform.y.*;
 
-            content = std.fmt.bufPrint(&char_buffer, "x: {} y: {}", .{ x, y }) catch "Error";
+            var text_buffer: [20]u8 = undefined;
+
+            content = fmt.bufPrintZ(
+                &text_buffer,
+                "x: {d} y: {d}",
+                .{ x, y },
+            ) catch "Error";
         } else {
             content = text.content.*;
         }
 
+        // take text width into account
         const x = pos.x.* - rl.MeasureText(@ptrCast([*c]const u8, content), text.size.*);
 
         rl.DrawText(
-            @ptrCast([*c]const u8, content),
+            @ptrCast([*c]const u8, content[0..]),
             @intCast(c_int, x),
             @intCast(c_int, pos.y.*),
             text.size.*,
