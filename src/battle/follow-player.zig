@@ -9,7 +9,7 @@ const findPath = @import("../geo/pathfinding/a-star.zig").astar;
 const Position = @import("../geo/pathfinding/a-star.zig").Position;
 
 pub fn followPlayer(world: *Ecs) void {
-    var enemies = world.query().all(.{
+    const enemies = world.query().all(.{
         .Transform,
         .Velocity,
         .Mover,
