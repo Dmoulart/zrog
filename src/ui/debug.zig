@@ -6,7 +6,7 @@ pub fn createTestUI(world: *Ecs) Zecs.Entity {
     var counter = world.createEmpty();
 
     world.attach(counter, .ScreenPosition);
-    world.attach(counter, .Panel);
+    world.attach(counter, .Rect);
 
     var width: c_int = 250;
     var height: c_int = 100;
@@ -19,7 +19,7 @@ pub fn createTestUI(world: *Ecs) Zecs.Entity {
         .y = screen_height - height,
     });
 
-    world.write(counter, .Panel, .{
+    world.write(counter, .Rect, .{
         .width = width,
         .height = height,
         .background_color = rl.DARKBLUE,
@@ -27,4 +27,27 @@ pub fn createTestUI(world: *Ecs) Zecs.Entity {
     });
 
     return counter;
+}
+
+pub fn createPositionIndicator(world: *Ecs) Zecs.Entity {
+    const indicator = world.createEmpty();
+
+    world.attach(indicator, .ScreenPosition);
+    world.attach(indicator, .Text);
+
+    const screen_width = world.getResource(.screen_width);
+
+    const content = "[PLAYER_POS]";
+    world.write(indicator, .ScreenPosition, .{
+        .x = screen_width,
+        .y = 0,
+    });
+
+    world.write(indicator, .Text, .{
+        .content = content,
+        .size = 20,
+        .color = rl.WHITE,
+    });
+
+    return indicator;
 }

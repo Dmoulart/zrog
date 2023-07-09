@@ -33,22 +33,6 @@ pub const Ecs = Zecs.Context(.{
             rl.Camera2D,
         ),
         Zecs.Component(
-            "ScreenPosition",
-            struct {
-                x: c_int,
-                y: c_int,
-            },
-        ),
-        Zecs.Component(
-            "Panel",
-            struct {
-                width: c_int,
-                height: c_int,
-                background_color: rl.Color,
-                text: []const u8,
-            },
-        ),
-        Zecs.Component(
             "Vision",
             struct {
                 range: i32,
@@ -58,6 +42,31 @@ pub const Ecs = Zecs.Context(.{
         Zecs.Tag("Input"),
         Zecs.Tag("Terrain"),
         Zecs.Tag("Enemy"),
+        // UI ------
+        Zecs.Component(
+            "ScreenPosition",
+            struct {
+                x: c_int,
+                y: c_int,
+            },
+        ),
+        Zecs.Component(
+            "Rect",
+            struct {
+                width: c_int,
+                height: c_int,
+                background_color: rl.Color,
+                text: []const u8,
+            },
+        ),
+        Zecs.Component(
+            "Text",
+            struct {
+                content: []const u8,
+                size: c_int,
+                color: rl.Color,
+            },
+        ),
     },
     .Resources = struct {
         headless: bool = false,
