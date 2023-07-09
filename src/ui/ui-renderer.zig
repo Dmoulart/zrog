@@ -30,8 +30,11 @@ pub fn renderUI(world: *Ecs) void {
         @intCast(c_int, 0),
     );
 
-    const ui = world.query().all(.{.ScreenPosition}).any(.{ .Rect, .Text }).execute();
-    ui.each(draw);
+    world.query()
+        .all(.{.ScreenPosition})
+        .any(.{ .Rect, .Text })
+        .execute()
+        .each(draw);
 }
 
 fn draw(world: *Ecs, entity: Zecs.Entity) void {
