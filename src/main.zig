@@ -38,16 +38,18 @@ pub fn main() !void {
     Timers.start("init");
     // Creation
     try Ecs.setup(std.heap.page_allocator);
-    defer Ecs.unsetup();
 
     var world = try Ecs.init(.{
         .allocator = std.heap.page_allocator,
     });
-    defer world.deinit();
 
     // Initialization
     var chunks = Chunks.create(std.heap.page_allocator);
-    defer chunks.destroy();
+    defer {
+        Ecs.unsetup();
+        world.deinit();
+        chunks.destroy();
+    }
 
     for (chunks.chunks) |*row| {
         for (row) |*maybe_chunk| {
