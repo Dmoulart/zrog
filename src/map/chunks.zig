@@ -170,6 +170,8 @@ fn generateCollisionGrid(self: *Self) ChunksCollisionGrid {
 }
 
 pub fn getBoundingBox(self: *Self) BoundingBox {
+    assert(self.chunks.len > 0);
+
     var chunks_bbox: ?BoundingBox = null;
 
     for (self.chunks) |*row| {
@@ -193,14 +195,3 @@ pub fn getBoundingBox(self: *Self) BoundingBox {
     // We always should have at least one chunk loaded so the bbox should always be defined
     return chunks_bbox.?;
 }
-
-// pub fn getByID(self: *Self, id: Zecs.Entity) ?*Chunk {
-//     for (self.chunks) |*row| {
-//         for (row) |*maybe_chunk| {
-//             if (maybe_chunk.*) |*chunk| {
-//                 if (chunk.id == id) return chunk;
-//             }
-//         }
-//     }
-//     return null;
-// }
