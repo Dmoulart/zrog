@@ -22,7 +22,7 @@ pub fn createTestUI(world: *Ecs) Zecs.Entity {
     world.write(counter, .Panel, .{
         .width = width,
         .height = height,
-        .background_color = rl.WHITE,
+        .background_color = rl.DARKBLUE,
         .text = "Hello",
     });
 

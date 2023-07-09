@@ -7,11 +7,12 @@ const UI = @import("./test-ui.zig");
 const createCamera = @import("../graphics/camera.zig").createCamera;
 
 var is_ready = false;
-var ui_camera: Zecs.Entity = undefined;
+var camera: rl.Camera2D = undefined;
 
 fn setup(world: *Ecs) void {
     _ = UI.createTestUI(world);
-    ui_camera = createCamera(world);
+    var camera_entity = createCamera(world);
+    camera = world.clone(camera_entity, .Camera);
     is_ready = true;
 }
 
@@ -19,8 +20,6 @@ pub fn renderUI(world: *Ecs) void {
     if (!is_ready) {
         setup(world);
     }
-
-    const camera = world.clone(ui_camera, .Camera);
 
     rl.BeginMode2D(camera);
     rl.DrawFPS(
