@@ -23,7 +23,6 @@ pub fn createTestUI(world: *Ecs) Zecs.Entity {
         .width = width,
         .height = height,
         .background_color = rl.DARKBLUE,
-        .text = "Hello",
     });
 
     return counter;

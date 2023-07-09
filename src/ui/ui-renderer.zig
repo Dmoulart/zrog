@@ -4,17 +4,21 @@ const rl = @import("raylib");
 const Zecs = @import("zecs");
 const Ecs = @import("../context.zig").Ecs;
 
-const UI = @import("./debug.zig");
 const createCamera = @import("../graphics/camera.zig").createCamera;
+
+const createPositionIndicator = @import("./debug.zig").createPositionIndicator;
+const createPanel = @import("./panel.zig").createPanel;
 
 var is_ready = false;
 var camera: rl.Camera2D = undefined;
 
 fn setup(world: *Ecs) void {
-    _ = UI.createTestUI(world);
-    _ = UI.createPositionIndicator(world);
+    _ = createPositionIndicator(world);
+    _ = createPanel(world);
+
     const camera_entity = createCamera(world);
     camera = world.clone(camera_entity, .Camera);
+
     is_ready = true;
 }
 

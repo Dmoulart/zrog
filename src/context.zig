@@ -56,7 +56,6 @@ pub const Ecs = Zecs.Context(.{
                 width: c_int,
                 height: c_int,
                 background_color: rl.Color,
-                text: []const u8,
             },
         ),
         Zecs.Component(
