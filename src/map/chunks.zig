@@ -92,7 +92,7 @@ pub fn get(self: *Self, comptime data_field: Chunk.Data, world_x: i32, world_y: 
 
     assert(chunk != null);
 
-    return chunk.?.getFromWorldPosition(data_field, world_x, world_y);
+    return chunk.?.getFromGlobalPosition(data_field, world_x, world_y);
 }
 
 pub fn maybeGet(self: *Self, comptime data_field: Chunk.Data, world_x: i32, world_y: i32) ?Zecs.Entity {
@@ -100,7 +100,7 @@ pub fn maybeGet(self: *Self, comptime data_field: Chunk.Data, world_x: i32, worl
 
     if (chunk == null) return null;
 
-    return chunk.?.getFromWorldPosition(data_field, world_x, world_y);
+    return chunk.?.getFromGlobalPosition(data_field, world_x, world_y);
 }
 
 pub fn set(self: *Self, comptime data_field: Chunk.Data, entity: Zecs.Entity, world_x: i32, world_y: i32) void {
@@ -108,7 +108,7 @@ pub fn set(self: *Self, comptime data_field: Chunk.Data, entity: Zecs.Entity, wo
 
     assert(chunk != null);
 
-    chunk.?.setFromWorldPosition(data_field, entity, world_x, world_y);
+    chunk.?.setFromGlobalPosition(data_field, entity, world_x, world_y);
 }
 
 pub fn delete(self: *Self, comptime data_field: Chunk.Data, world_x: i32, world_y: i32) void {
@@ -116,7 +116,7 @@ pub fn delete(self: *Self, comptime data_field: Chunk.Data, world_x: i32, world_
 
     assert(chunk != null);
 
-    chunk.?.deleteFromWorldPosition(data_field, world_x, world_y);
+    chunk.?.deleteFromGlobalPosition(data_field, world_x, world_y);
 }
 
 pub fn filterVisible(
@@ -159,8 +159,8 @@ fn generateCollisionGrid(self: *Self) ChunksCollisionGrid {
         for (row) |*maybe_chunk| {
             if (maybe_chunk.*) |*chunk| {
                 var chunk_grid = chunk.generateCollisionGrid();
-                var chunk_x = @intCast(usize, chunk.x);
-                var chunk_y = @intCast(usize, chunk.y);
+                var chunk_x = @intCast(usize, chunk.chunks_x);
+                var chunk_y = @intCast(usize, chunk.chunks_y);
 
                 for (chunk_grid) |*grid_row, x| {
                     for (grid_row) |_, y| {

@@ -21,9 +21,9 @@ pub const Data = enum {
     beings,
 };
 
-// in chunk size
-x: i32,
-y: i32,
+// the coordinates of this chunk relative to other chunks
+chunks_x: i32,
+chunks_y: i32,
 
 bbox: BoundingBox,
 
@@ -33,8 +33,8 @@ beings: [SIZE * SIZE]Zecs.Entity = undefined,
 
 pub fn init(x: i32, y: i32) Self {
     var chunk = Self{
-        .x = x,
-        .y = y,
+        .chunks_x = x,
+        .chunks_y = y,
         .bbox = BoundingBox{
             .x = x * SIZE,
             .y = y * SIZE,
@@ -58,65 +58,65 @@ pub fn clear(self: *Self) void {
 }
 
 // todo : rename world to global ?
-pub fn setFromWorldPosition(self: *Self, comptime data_field: Data, entity: Zecs.Entity, x: i32, y: i32) void {
+pub fn setFromGlobalPosition(self: *Self, comptime data_field: Data, entity: Zecs.Entity, x: i32, y: i32) void {
     assert(self.bbox.contains(x, y));
 
-    var chunk_x = self.toChunkX(x);
-    var chunk_y = self.toChunkY(y);
+    var local_x = self.toLocalX(x);
+    var local_y = self.toLocalY(y);
 
-    self.set(data_field, entity, chunk_x, chunk_y);
+    self.set(data_field, entity, local_x, local_y);
 }
 
-pub fn set(self: *Self, comptime data_field: Data, entity: Zecs.Entity, chunk_x: usize, chunk_y: usize) void {
-    assert(chunk_x < SIZE and chunk_y < SIZE);
+pub fn set(self: *Self, comptime data_field: Data, entity: Zecs.Entity, local_x: usize, local_y: usize) void {
+    assert(local_x < SIZE and local_y < SIZE);
 
     var data = comptime &@field(self, @tagName(data_field));
-    data[chunk_x * SIZE + chunk_y] = entity;
+    data[local_x * SIZE + local_y] = entity;
 }
 
 // todo : rename world to global ?
-pub fn getFromWorldPosition(self: *Self, comptime data_field: Data, x: i32, y: i32) ?Zecs.Entity {
-    var chunk_x = self.toChunkX(x);
-    var chunk_y = self.toChunkY(y);
+pub fn getFromGlobalPosition(self: *Self, comptime data_field: Data, x: i32, y: i32) ?Zecs.Entity {
+    var local_x = self.toLocalX(x);
+    var local_y = self.toLocalY(y);
 
-    return self.get(data_field, chunk_x, chunk_y);
+    return self.get(data_field, local_x, local_y);
 }
 
-pub fn get(self: *Self, comptime data_field: Data, chunk_x: usize, chunk_y: usize) ?Zecs.Entity {
+pub fn get(self: *Self, comptime data_field: Data, local_x: usize, local_y: usize) ?Zecs.Entity {
     var data = comptime &@field(self, @tagName(data_field));
 
-    assert(chunk_x < SIZE and chunk_y < SIZE);
+    assert(local_x < SIZE and local_y < SIZE);
 
-    var prop = data[chunk_x * SIZE + chunk_y];
+    var prop = data[local_x * SIZE + local_y];
 
     return if (prop == 0) null else prop;
 }
 
-pub fn has(self: *Self, comptime data_field: Data, chunk_x: usize, chunk_y: usize) bool {
+pub fn has(self: *Self, comptime data_field: Data, local_x: usize, local_y: usize) bool {
     var data = comptime &@field(self, @tagName(data_field));
 
-    assert(chunk_x < SIZE and chunk_y < SIZE);
+    assert(local_x < SIZE and local_y < SIZE);
 
-    var prop = data[chunk_x * SIZE + chunk_y];
+    var prop = data[local_x * SIZE + local_y];
 
     return prop != 0;
 }
 
-pub fn deleteFromWorldPosition(self: *Self, comptime data_field: Data, x: i32, y: i32) void {
+pub fn deleteFromGlobalPosition(self: *Self, comptime data_field: Data, x: i32, y: i32) void {
     assert(self.bbox.contains(x, y));
 
-    var chunk_x = self.toChunkX(x);
-    var chunk_y = self.toChunkY(y);
+    var local_x = self.toLocalX(x);
+    var local_y = self.toLocalY(y);
 
-    self.delete(data_field, chunk_x, chunk_y);
+    self.delete(data_field, local_x, local_y);
 }
 
-pub fn delete(self: *Self, comptime data_field: Data, chunk_x: usize, chunk_y: usize) void {
-    assert(chunk_x < SIZE and chunk_y < SIZE);
+pub fn delete(self: *Self, comptime data_field: Data, local_x: usize, local_y: usize) void {
+    assert(local_x < SIZE and local_y < SIZE);
 
     var data = comptime &@field(self, @tagName(data_field));
 
-    data[chunk_x * SIZE + chunk_y] = 0;
+    data[local_x * SIZE + local_y] = 0;
 }
 
 pub fn generateCollisionGrid(self: *Self) ChunkCollisionGrid {
@@ -132,20 +132,20 @@ pub fn generateCollisionGrid(self: *Self) ChunkCollisionGrid {
     return grid;
 }
 
-pub fn getChunkX(self: *Self) i32 {
-    return self.x * SIZE;
+pub fn getGlobalX(self: *Self) i32 {
+    return self.chunks_x * SIZE;
 }
 
-pub fn getChunkY(self: *Self) i32 {
-    return self.y * SIZE;
+pub fn getGlobalY(self: *Self) i32 {
+    return self.chunks_y * SIZE;
 }
 
-pub fn toChunkX(self: *Self, x: i32) usize {
-    return @intCast(usize, x - self.getChunkX());
+pub fn toLocalX(self: *Self, x: i32) usize {
+    return @intCast(usize, x - self.getGlobalX());
 }
 
-pub fn toChunkY(self: *Self, y: i32) usize {
-    return @intCast(usize, y - self.getChunkY());
+pub fn toLocalY(self: *Self, y: i32) usize {
+    return @intCast(usize, y - self.getGlobalY());
 }
 
 pub fn toGlobalX(self: *Self, x: i32) i32 {

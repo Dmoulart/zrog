@@ -81,7 +81,7 @@ fn isBlocking(world: *Ecs, x: i32, y: i32) bool {
     var chunk = chunks.getChunkAtPosition(x, y);
     if (chunk == null) return true;
 
-    var prop = chunk.?.getFromWorldPosition(.props, x, y);
+    var prop = chunk.?.getFromGlobalPosition(.props, x, y);
 
     return prop != null;
 }

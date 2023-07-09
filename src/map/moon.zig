@@ -39,8 +39,8 @@ pub fn createTerrain(world: *Ecs, chunk: *Chunk) void {
         while (x < Chunk.SIZE) : (x += 1) {
             chunk.set(.terrain, createDust(
                 world,
-                chunk.getChunkX() + @intCast(i32, x),
-                chunk.getChunkY() + @intCast(i32, y),
+                chunk.getGlobalX() + @intCast(i32, x),
+                chunk.getGlobalY() + @intCast(i32, y),
             ), x, y);
         }
 
@@ -56,8 +56,8 @@ pub fn createRocks(world: *Ecs, chunk: *Chunk) void {
     var x: usize = 0;
     var y: usize = 0;
 
-    var cell_offset_x = @intCast(usize, chunk.getChunkX());
-    var cell_offset_y = @intCast(usize, chunk.getChunkY());
+    var cell_offset_x = @intCast(usize, chunk.getGlobalX());
+    var cell_offset_y = @intCast(usize, chunk.getGlobalY());
 
     while (y < automaton.height - 1) : (y += 1) {
         while (x < automaton.width - 1) : (x += 1) {
@@ -74,7 +74,7 @@ pub fn createRocks(world: *Ecs, chunk: *Chunk) void {
                 world_y,
             );
 
-            chunk.setFromWorldPosition(
+            chunk.setFromGlobalPosition(
                 .props,
                 rock,
                 world_x,

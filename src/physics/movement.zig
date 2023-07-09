@@ -44,16 +44,16 @@ pub fn move(world: *Ecs, entity: Zecs.Entity) void {
     // get out if we have reach the map edge
     if (new_chunk == null) return;
 
-    var prop = new_chunk.?.getFromWorldPosition(.props, movement_x, movement_y);
-    var being = new_chunk.?.getFromWorldPosition(.beings, movement_x, movement_y);
+    var prop = new_chunk.?.getFromGlobalPosition(.props, movement_x, movement_y);
+    var being = new_chunk.?.getFromGlobalPosition(.beings, movement_x, movement_y);
     // get out if there is a prop on our way
     if (prop != null or being != null) return;
 
     // update chunk position
-    old_chunk.?.deleteFromWorldPosition(.beings, transform.x.*, transform.y.*);
+    old_chunk.?.deleteFromGlobalPosition(.beings, transform.x.*, transform.y.*);
 
     transform.x.* = movement_x;
     transform.y.* = movement_y;
 
-    new_chunk.?.setFromWorldPosition(.beings, entity, movement_x, movement_y);
+    new_chunk.?.setFromGlobalPosition(.beings, entity, movement_x, movement_y);
 }
