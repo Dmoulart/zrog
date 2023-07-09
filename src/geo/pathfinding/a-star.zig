@@ -108,13 +108,16 @@ pub const Node = struct {
     }
 };
 
+// Find the shortest path between two points.
+// Astar implementation.
+// Returned slice should be freed at some point.
 pub fn astar(
     grid: anytype, // can be an 2D array or slice
     start: Position,
     end: Position,
     limit: u32,
     allocator: std.mem.Allocator,
-) !?ArrayList(Position) {
+) !?[]Position {
     const GRID_WIDTH = grid.len;
     const GRID_HEIGHT = grid[0].len;
 
@@ -128,17 +131,17 @@ pub fn astar(
         }
         nodes.deinit();
     }
+
     // estimate the total capacity to gain a little perf boost.
     try nodes.ensureTotalCapacity((GRID_WIDTH * GRID_HEIGHT));
 
     var start_node = try Node.create(null, start, allocator);
     var end_node = try Node.create(null, end, allocator);
+    assert(start_node.position.x >= 0 and start_node.position.x <= GRID_WIDTH);
+    assert(start_node.position.y >= 0 and start_node.position.y <= GRID_HEIGHT);
 
     nodes.appendAssumeCapacity(start_node);
     nodes.appendAssumeCapacity(end_node);
-
-    assert(start_node.position.x >= 0 and start_node.position.x <= GRID_WIDTH);
-    assert(start_node.position.y >= 0 and start_node.position.y <= GRID_HEIGHT);
 
     var open_list = NodeList.init(allocator);
     var closed_list = NodeList.init(allocator);
@@ -160,14 +163,11 @@ pub fn astar(
 
         var current_node = open_list.items[0];
 
-        var i: usize = 0;
-
-        for (open_list.items) |node| {
+        for (open_list.items) |node, i| {
             if (node.f < current_node.f) {
                 current_node = node;
                 current_index = i;
             }
-            i += 1;
         }
 
         // Add to close list
@@ -176,24 +176,24 @@ pub fn astar(
 
         // Found goal
         if (current_node.equals(end_node)) {
-            var path_list = ArrayList(Position).init(allocator);
-            defer path_list.deinit();
+            var path_positions = ArrayList(Position).init(allocator);
+            defer path_positions.deinit();
 
-            var reversed_path_list = ArrayList(Position).init(allocator);
             var current: ?*Node = current_node;
 
             while (current) |node| {
-                try path_list.append(node.position);
+                try path_positions.append(node.position);
                 current = node.parent;
             }
 
             // reverse path
-            try reversed_path_list.ensureTotalCapacity(path_list.capacity);
-            while (path_list.popOrNull()) |item| {
-                reversed_path_list.appendAssumeCapacity(item);
+            var path = try allocator.alloc(Position, path_positions.items.len);
+            var count: usize = 0;
+            while (path_positions.popOrNull()) |item| : (count += 1) {
+                path[count] = item;
             }
 
-            return reversed_path_list;
+            return path;
         }
 
         var children = try BoundedArray(*Node, neighbors.len).init(0);
@@ -330,7 +330,8 @@ test "Astar" {
         10_000,
         allocator,
     );
-    defer path.?.deinit();
+    // defer path.?.deinit();
+    defer allocator.free(path.?);
 
-    try std.testing.expect(path.?.items.len > 0);
+    try std.testing.expect(path.?.len > 0);
 }

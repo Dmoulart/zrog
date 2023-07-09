@@ -45,18 +45,14 @@ pub fn follow(world: *Ecs, entity: Zecs.Entity) void {
             .x = end_pos.x.*,
             .y = end_pos.y.*,
         },
-        500,
+        1500,
         world.allocator,
     ) catch unreachable;
 
-    if (result) |*path| {
-        // Remove start_pos from path
-        _ = path.orderedRemove(0);
-        var path_slice = path.toOwnedSlice();
-
-        if (path_slice.len == 0) return;
-
-        var first = path_slice[0];
+    if (result) |path| {
+        // first node is starting point
+        if (path.len <= 1) return;
+        var first = path[1];
 
         var first_move_x = first.x - start_pos.x.*;
         var first_move_y = first.y - start_pos.y.*;
@@ -64,7 +60,7 @@ pub fn follow(world: *Ecs, entity: Zecs.Entity) void {
         world.set(entity, .Velocity, .x, first_move_x);
         world.set(entity, .Velocity, .y, first_move_y);
 
-        path.deinit();
+        world.allocator.free(path);
     }
 }
 
