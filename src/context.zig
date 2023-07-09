@@ -61,6 +61,7 @@ pub const Ecs = Zecs.Context(.{
         Zecs.Tag("Enemy"),
     },
     .Resources = struct {
+        headless: bool = false,
         screen_height: c_int = 800,
         screen_width: c_int = 1200,
         dt: i64 = 0,

@@ -114,6 +114,9 @@ fn addSystems(world: *Ecs) void {
     world.addSystem(updateCamera);
     world.addSystem(fieldsOfview);
 
+    if (world.getResource(.headless))
+        return;
+
     world.addSystem(prerender);
     world.addSystem(render);
     world.addSystem(renderUI);
@@ -159,13 +162,15 @@ fn testRun(world: *Ecs) anyerror!void {
     try step(world);
 }
 
-test "Can run" {
+test "Produce no memory leaks" {
     try Ecs.setup(std.testing.allocator);
 
     var world = try Ecs.init(.{
         .allocator = std.testing.allocator,
         .on_start = testRun,
     });
+
+    world.setResource(.headless, true);
 
     try world.run();
 

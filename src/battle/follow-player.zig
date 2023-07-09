@@ -63,6 +63,8 @@ pub fn follow(world: *Ecs, entity: Zecs.Entity) void {
 
         world.set(entity, .Velocity, .x, first_move_x);
         world.set(entity, .Velocity, .y, first_move_y);
+
+        path.deinit();
     }
 }
 

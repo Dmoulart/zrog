@@ -14,12 +14,25 @@ var is_ready = false;
 var fields_of_views: FieldsOfViews = undefined;
 
 fn setup(world: *Ecs) void {
-    // memory leak
     fields_of_views = FieldsOfViews.init(world.allocator);
 
     world.setResource(.fields_of_views, &fields_of_views);
 
+    world.onDeinit(cleanup);
+
     is_ready = true;
+}
+
+fn cleanup(world: *Ecs) void {
+    _ = world;
+
+    var iterator = fields_of_views.iterator();
+
+    while (iterator.next()) |field_of_view| {
+        field_of_view.value_ptr.deinit();
+    }
+
+    fields_of_views.deinit();
 }
 
 pub fn fieldsOfview(world: *Ecs) void {
