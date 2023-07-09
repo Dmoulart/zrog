@@ -149,10 +149,7 @@ pub fn generateCollisionGrid(self: *Self) GlobalCollisionGrid {
     for (self.chunks) |*row| {
         for (row) |*maybe_chunk| {
             if (maybe_chunk.*) |*chunk| {
-                var chunk_grid = chunk.generateCollisionGrid(.{
-                    .x = 0,
-                    .y = 0,
-                });
+                var chunk_grid = chunk.generateCollisionGrid();
                 var chunk_x = @intCast(usize, chunk.x);
                 var chunk_y = @intCast(usize, chunk.y);
 
