@@ -10,41 +10,38 @@ width: i32,
 height: i32,
 
 pub fn contains(self: *Self, x: i32, y: i32) bool {
-    const x_end = self.endX();
-    const y_end = self.endY();
-
-    return x >= self.x and x < x_end and y >= self.y and y < y_end;
+    return x >= self.left() and x < self.right() and y >= self.top() and y < self.bottom();
 }
 
 pub fn intersects(self: *Self, other: *Self) bool {
-    const self_end_x = self.endX();
-    const self_end_y = self.endY();
+    const self_right = self.right();
+    const self_bottom = self.bottom();
 
-    const other_end_x = other.endX();
-    const other_end_y = other.endY();
+    const other_right = other.right();
+    const other_bottom = other.bottom();
 
-    return self.x < other_end_x and self_end_x > other.x and self.y < other_end_y and self_end_y > other.y;
+    return self.x < other_right and self_right > other.x and self.y < other_bottom and self_bottom > other.y;
 }
 
 pub fn intersection(self: *Self, other: *Self) Self {
     assert(self.intersects(other));
 
-    const self_end_x = self.endX();
-    const self_end_y = self.endY();
+    const self_right = self.right();
+    const self_bottom = self.bottom();
 
-    const other_end_x = other.endX();
-    const other_end_y = other.endY();
+    const other_right = other.right();
+    const other_bottom = other.bottom();
 
     // Calculate intersection coordinates
     const intersection_start_x = @max(self.x, other.x);
     const intersection_start_y = @max(self.y, other.y);
 
-    const intersection_end_x = @min(self_end_x, other_end_x);
-    const intersection_end_y = @min(self_end_y, other_end_y);
+    const intersection_right = @min(self_right, other_right);
+    const intersection_bottom = @min(self_bottom, other_bottom);
 
     // Calculate intersection dimensions
-    const intersection_width = intersection_end_x - intersection_start_x;
-    const intersection_height = intersection_end_y - intersection_start_y;
+    const intersection_width = intersection_right - intersection_start_x;
+    const intersection_height = intersection_bottom - intersection_start_y;
 
     return Self{
         .x = intersection_start_x,
@@ -55,27 +52,44 @@ pub fn intersection(self: *Self, other: *Self) Self {
 }
 
 pub fn merge(self: *Self, other: *Self) Self {
-    const union_start_x = @min(self.x, other.x);
-    const union_start_y = @min(self.y, other.y);
+    const self_right = self.right();
+    const self_bottom = self.bottom();
 
-    const self_end_x = self.endX();
-    const self_end_y = self.endY();
+    const other_right = other.right();
+    const other_bottom = other.bottom();
 
-    const other_end_x = other.endX();
-    const other_end_y = other.endY();
+    const union_x = @min(self.x, other.x);
+    const union_y = @min(self.y, other.y);
 
-    const union_end_x = @max(self_end_x, other_end_x);
-    const union_end_y = @max(self_end_y, other_end_y);
+    const union_right = @max(self_right, other_right);
+    const union_bottom = @max(self_bottom, other_bottom);
 
-    const union_width = union_end_x - union_start_x;
-    const union_height = union_end_y - union_start_y;
+    const union_width = union_right - union_x;
+    const union_height = union_bottom - union_y;
 
     return Self{
-        .x = union_start_x,
-        .y = union_start_y,
+        .x = union_x,
+        .y = union_y,
         .width = union_width,
         .height = union_height,
     };
+}
+
+// Must we make the bounding box immutable and precaculate all these props ?
+pub fn left(self: *Self) i32 {
+    return self.x;
+}
+
+pub fn right(self: *Self) i32 {
+    return self.x + self.width;
+}
+
+pub fn top(self: *Self) i32 {
+    return self.y;
+}
+
+pub fn bottom(self: *Self) i32 {
+    return self.y + self.height;
 }
 
 pub fn halfWidth(self: *Self) i32 {
@@ -86,14 +100,6 @@ pub fn halfHeight(self: *Self) i32 {
     return @divTrunc(self.height, 2);
 }
 
-pub fn endX(self: *Self) i32 {
-    return self.x + self.width;
-}
-
-pub fn endY(self: *Self) i32 {
-    return self.y + self.height;
-}
-
 pub fn debugPrint(self: *Self, name: []const u8) void {
-    std.debug.print("\n\nBbox {s} :\n-x {}\n-y {}\n-width {}\n-height {}\n-endX {}\n-endY {}\n", .{ name, self.x, self.y, self.width, self.height, self.endX(), self.endY() });
+    std.debug.print("\n\nBbox {s} :\n-x {}\n-y {}\n-width {}\n-height {}\n-endX {}\n-endY {}\n", .{ name, self.x, self.y, self.width, self.height, self.right(), self.bottom() });
 }
