@@ -45,8 +45,9 @@ pub fn move(world: *Ecs, entity: Zecs.Entity) void {
     if (new_chunk == null) return;
 
     var prop = new_chunk.?.getFromWorldPosition(.props, movement_x, movement_y);
+    var being = new_chunk.?.getFromWorldPosition(.beings, movement_x, movement_y);
     // get out if there is a prop on our way
-    if (prop != null) return;
+    if (prop != null or being != null) return;
 
     // update chunk position
     old_chunk.?.deleteFromWorldPosition(.beings, transform.x.*, transform.y.*);

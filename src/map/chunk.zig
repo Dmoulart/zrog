@@ -120,7 +120,7 @@ pub fn delete(self: *Self, comptime data_field: Data, chunk_x: usize, chunk_y: u
 }
 
 pub fn generateCollisionGrid(self: *Self) ChunkCollisionGrid {
-    var grid: [SIZE][SIZE]u8 = undefined;
+    var grid: ChunkCollisionGrid = undefined;
 
     for (grid) |*col, x| {
         for (col) |_, y| {
