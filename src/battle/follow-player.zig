@@ -29,23 +29,11 @@ pub fn follow(world: *Ecs, entity: Zecs.Entity) void {
     var player = world.getResource(.player);
     var end_pos = world.pack(player, .Transform);
 
-    // std.debug.print("\n start \n", .{});
-
     if (adjacent(start_pos.x.*, start_pos.y.*, end_pos.x.*, end_pos.y.*)) {
         world.set(entity, .Velocity, .x, 0);
         world.set(entity, .Velocity, .y, 0);
-        std.debug.print("\n start and pos EQUALS \n", .{});
         return;
     }
-
-    std.debug.print("\nstart x:{} y:{} end x:{} y:{}\n", .{
-        start_pos.x.*,
-        start_pos.y.*,
-        end_pos.x.*,
-        end_pos.y.*,
-    });
-
-    // std.debug.print("\ngrid {any}\n", .{grid});
 
     var result = findPath(
         &grid,
@@ -67,12 +55,8 @@ pub fn follow(world: *Ecs, entity: Zecs.Entity) void {
         var path_slice = path.toOwnedSlice();
 
         if (path_slice.len == 0) return;
-        // std.debug.print("\n path_slice {any} \n", .{path_slice});
-
-        // if (path_slice.len < 2) return;
 
         var first = path_slice[0];
-        // if (first == null) return;
 
         var first_move_x = first.x - start_pos.x.*;
         var first_move_y = first.y - start_pos.y.*;

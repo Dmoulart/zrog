@@ -85,8 +85,8 @@ fn loop(world: *Ecs) anyerror!void {
     var enemy = world.createEmpty();
     world.attach(enemy, .Transform);
     world.write(enemy, .Transform, .{
-        .x = 0,
-        .y = 0,
+        .x = 100,
+        .y = 100,
     });
     world.attach(enemy, .Velocity);
     world.write(enemy, .Velocity, .{
@@ -106,7 +106,7 @@ fn loop(world: *Ecs) anyerror!void {
     world.attach(enemy, .Enemy);
 
     var chunks = world.getResource(.chunks);
-    chunks.set(.beings, enemy, 0, 0);
+    chunks.set(.beings, enemy, 100, 100);
 
     // Main game loop
     while (!rl.WindowShouldClose()) {
