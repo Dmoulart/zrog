@@ -6,13 +6,14 @@ const Ecs = @import("../context.zig").Ecs;
 
 const BoundingBox = @import("../math/bounding-box.zig");
 const Vector = @import("../math/vector.zig").Vector;
+const CollisionGrid = @import("./collision-grid.zig").CollisionGrid;
 
 const Self = @This();
 
 // The size of a map chunk in cells.
 pub const SIZE = 50;
 
-pub const CollisionGrid = [SIZE][SIZE]u8;
+pub const ChunkCollisionGrid = CollisionGrid(SIZE, SIZE);
 
 pub const Data = enum {
     terrain,
@@ -118,7 +119,7 @@ pub fn delete(self: *Self, comptime data_field: Data, chunk_x: usize, chunk_y: u
     data[chunk_x * SIZE + chunk_y] = 0;
 }
 
-pub fn generateCollisionGrid(self: *Self) CollisionGrid {
+pub fn generateCollisionGrid(self: *Self) ChunkCollisionGrid {
     var grid: [SIZE][SIZE]u8 = undefined;
 
     for (grid) |*col, x| {

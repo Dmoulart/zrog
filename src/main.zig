@@ -58,17 +58,19 @@ fn run(world: *Ecs) anyerror!void {
 }
 
 fn init(world: *Ecs) anyerror!void {
-    var chunks = Chunks.create(std.heap.page_allocator);
+    var map = Chunks.create(std.heap.page_allocator);
     world.onDeinit(cleanupChunks);
 
-    for (chunks.chunks) |*row| {
+    for (map.chunks) |*row| {
         for (row) |*maybe_chunk| {
             if (maybe_chunk.*) |*chunk| {
                 Moon.generate(world, chunk);
             }
         }
     }
-    world.setResource(.chunks, chunks);
+    map.updateCollisionGrid();
+    
+    world.setResource(.chunks, map);
 
     const screen_width = world.getResource(.screen_width);
     const screen_height = world.getResource(.screen_height);
