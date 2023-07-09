@@ -35,26 +35,36 @@ const Position = @import("./geo//pathfinding/a-star.zig").Position;
 const Grid = @import("./geo//pathfinding/a-star.zig").Grid;
 
 pub fn main() !void {
-    Timers.start("init");
     // Creation
     try Ecs.setup(std.heap.page_allocator);
 
     var world = try Ecs.init(.{
         .allocator = std.heap.page_allocator,
+        .on_start = run,
     });
 
-    // Initialization
-    var chunks = Chunks.create(std.heap.page_allocator);
+    try world.run();
+
     defer {
         Ecs.unsetup();
         world.deinit();
-        chunks.destroy();
     }
+}
+
+fn run(world: *Ecs) anyerror!void {
+    try init(world);
+
+    try loop(world);
+}
+
+fn init(world: *Ecs) anyerror!void {
+    var chunks = Chunks.create(std.heap.page_allocator);
+    world.onDeinit(cleanupChunks);
 
     for (chunks.chunks) |*row| {
         for (row) |*maybe_chunk| {
             if (maybe_chunk.*) |*chunk| {
-                Moon.generate(&world, chunk);
+                Moon.generate(world, chunk);
             }
         }
     }
@@ -66,13 +76,38 @@ pub fn main() !void {
     rl.InitWindow(screen_width, screen_height, "Zrog");
     rl.SetTargetFPS(60);
 
-    _ = createCamera(&world);
-    _ = createPlayer(&world);
+    _ = createCamera(world);
+    _ = createPlayer(world);
 
-    try loop(&world);
+    addSystems(world);
+
+    addEnemy(world);
 }
 
 fn loop(world: *Ecs) anyerror!void {
+    // Main game loop
+    while (!rl.WindowShouldClose()) {
+        try step(world);
+    }
+
+    rl.CloseWindow();
+}
+
+fn step(world: *Ecs) anyerror!void {
+    var loop_start = timestamp();
+
+    // update turn number
+    var turn = world.getResource(.turn);
+    world.setResource(.turn, turn + 1);
+
+    world.step();
+
+    var dt = timestamp() - loop_start;
+
+    world.setResource(.dt, dt);
+}
+
+fn addSystems(world: *Ecs) void {
     world.addSystem(followPlayer);
     world.addSystem(movement);
     world.addSystem(moveCommands);
@@ -83,7 +118,9 @@ fn loop(world: *Ecs) anyerror!void {
     world.addSystem(render);
     world.addSystem(renderUI);
     world.addSystem(postrender);
+}
 
+fn addEnemy(world: *Ecs) void {
     var enemy = world.createEmpty();
     world.attach(enemy, .Transform);
     world.write(enemy, .Transform, .{
@@ -109,21 +146,31 @@ fn loop(world: *Ecs) anyerror!void {
 
     var chunks = world.getResource(.chunks);
     chunks.set(.beings, enemy, 100, 100);
+}
 
-    // Main game loop
-    while (!rl.WindowShouldClose()) {
-        var loop_start = timestamp();
+fn cleanupChunks(world: *Ecs) void {
+    var chunks = world.getResource(.chunks);
+    chunks.destroy();
+}
 
-        // update turn number
-        var turn = world.getResource(.turn);
-        world.setResource(.turn, turn + 1);
+fn testRun(world: *Ecs) anyerror!void {
+    try init(world);
 
-        world.step();
+    try step(world);
+}
 
-        var dt = timestamp() - loop_start;
+test "Can run" {
+    try Ecs.setup(std.testing.allocator);
 
-        world.setResource(.dt, dt);
+    var world = try Ecs.init(.{
+        .allocator = std.testing.allocator,
+        .on_start = testRun,
+    });
+
+    try world.run();
+
+    defer {
+        Ecs.unsetup();
+        world.deinit();
     }
-
-    rl.CloseWindow();
 }
