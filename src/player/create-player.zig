@@ -9,6 +9,7 @@ const Player = Ecs.Type(.{
     .Glyph,
     .Input,
     .Vision,
+    .Health,
 });
 
 pub fn createPlayer(world: *Ecs) Zecs.Entity {

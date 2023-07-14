@@ -38,34 +38,16 @@ pub const Ecs = Zecs.Context(.{
                 range: i32,
             },
         ),
+        Zecs.Component(
+            "Health",
+            struct {
+                points: i32 = 10,
+            },
+        ),
         Zecs.Tag("Chunk"),
         Zecs.Tag("Input"),
         Zecs.Tag("Terrain"),
         Zecs.Tag("Enemy"),
-        // UI ------
-        Zecs.Component(
-            "ScreenPosition",
-            struct {
-                x: c_int,
-                y: c_int,
-            },
-        ),
-        Zecs.Component(
-            "Rect",
-            struct {
-                width: c_int,
-                height: c_int,
-                background_color: rl.Color,
-            },
-        ),
-        Zecs.Component(
-            "Text",
-            struct {
-                content: []const u8,
-                size: c_int,
-                color: rl.Color,
-            },
-        ),
     },
     .Resources = struct {
         headless: bool = false,
