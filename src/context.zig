@@ -1,10 +1,39 @@
 const Zecs = @import("zecs");
 const rl = @import("raylib");
 
+// const Zecs = @import("../libs/zecs/src/main.zig");
+
 const Chunks = @import("./map/chunks.zig");
 const Chunk = @import("./map/chunk.zig");
 
 const FieldsOfViews = @import("./fov/fields-of-view.zig").FieldsOfViews;
+
+// pub const World = Zecs.Context(.{
+//     .components = .{
+//         Zecs.Component(
+//             "Position",
+//             struct {
+//                 x: i32,
+//                 y: i32,
+//             },
+//         ),
+//         Zecs.Component("Lifetime", struct {
+//             duration: u16,
+//         }),
+//         Zecs.Component(comptime component_name: []const u8, comptime T: type)
+//         Zecs.Component(
+//             "Glyph",
+//             struct {
+//                 x: i32,
+//                 y: i32,
+//             },
+//         ),
+//     },
+//     .Resources = struct {
+
+//     },
+//     .capacity = 1_000_000
+// });
 
 pub const Ecs = Zecs.Context(.{
     .components = .{

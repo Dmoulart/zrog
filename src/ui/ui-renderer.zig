@@ -9,8 +9,11 @@ const UI = @import("./element.zig");
 const createCamera = @import("../graphics/camera.zig").createCamera;
 
 var camera: rl.Camera2D = undefined;
+
 var panel: UI.Element = undefined;
 var position_indicator: UI.Element = undefined;
+var health_indicator: UI.Element = undefined;
+
 var is_ready = false;
 
 fn setup(world: *Ecs) void {
@@ -19,19 +22,21 @@ fn setup(world: *Ecs) void {
 
     const screen_width = world.getResource(.screen_width);
     const screen_height = world.getResource(.screen_height);
-    _ = screen_height;
+
+    const panel_height = screen_height;
+    const panel_width = 250;
 
     panel = UI.Element{
         .rect = .{
             .size = .{
-                .width = 250,
-                .height = 1000,
+                .width = panel_width,
+                .height = panel_height,
             },
             .pos = .{
-                .x = 500,
-                .y = 500,
+                .x = screen_width - panel_width,
+                .y = 0,
             },
-            .color = rl.GREEN,
+            .color = rl.BLACK,
         },
     };
 
@@ -44,6 +49,18 @@ fn setup(world: *Ecs) void {
             },
             .color = rl.WHITE,
             .content = " ",
+        },
+    };
+
+    health_indicator = UI.Element{
+        .text = .{
+            .font_size = 20,
+            .pos = .{
+                .x = screen_width - 50,
+                .y = 250,
+            },
+            .color = rl.WHITE,
+            .content = "HEALTH",
         },
     };
 
@@ -82,6 +99,8 @@ pub fn renderUI(world: *Ecs) void {
     };
 
     position_indicator.draw();
+
+    health_indicator.draw();
 }
 
 // fn draw(world: *Ecs, entity: Zecs.Entity) void {
