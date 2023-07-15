@@ -44,6 +44,7 @@ pub fn createPlayer(world: *Ecs) Zecs.Entity {
     });
 
     world.set(player, .Vision, .range, 30);
+    world.set(player, .Health, .points, 10);
 
     return player;
 }

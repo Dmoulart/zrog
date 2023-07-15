@@ -100,6 +100,19 @@ pub fn renderUI(world: *Ecs) void {
 
     position_indicator.draw();
 
+    health_indicator.text.content = blk: {
+        const player = world.getResource(.player);
+        const player_health = world.pack(player, .Health);
+
+        var text_buffer: [20]u8 = undefined;
+
+        break :blk fmt.bufPrintZ(
+            &text_buffer,
+            "HEALTH: {d}",
+            .{player_health.points.*},
+        ) catch "Error";
+    };
+
     health_indicator.draw();
 }
 
