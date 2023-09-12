@@ -1,6 +1,7 @@
 const std = @import("std");
 // const raylib = @import("libs/raylib-zig/lib.zig"); //call .Pkg() with the folder raylib-zig is in relative to project build.zig
 const raylib = @import("libs/raylib/build.zig"); //call .Pkg() with the folder raylib-zig is in relative to project build.zig
+
 pub fn build(b: *std.Build) void {
     // Standard target options allows the person running `zig build` to choose
     // what target to build for. Here we do not override the defaults, which
@@ -33,6 +34,12 @@ pub fn build(b: *std.Build) void {
 
     b.installArtifact(zrog);
     b.installArtifact(zecs);
+
+    const zecs_module = b.createModule(.{
+        .source_file = .{ .path = "libs/zecs/src/main.zig" },
+        .dependencies = &.{},
+    });
+    zrog.addModule("zecs", zecs_module);
 
     raylib.addTo(b, zrog, target, optimize);
 
