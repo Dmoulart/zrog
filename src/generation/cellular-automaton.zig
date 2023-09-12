@@ -52,7 +52,7 @@ pub fn CellularAutomaton(comptime width: comptime_int, comptime height: comptime
             // is this a great idea ?
             @setEvalBranchQuota(10_000_000);
 
-            std.mem.set(Cells, &self.cells, .dead);
+            @memset(&self.cells, .dead);
         }
 
         pub fn map(self: *Self, function: *const fn (x: usize, y: usize, state: Cells) Cells) void {

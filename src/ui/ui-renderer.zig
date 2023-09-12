@@ -18,8 +18,15 @@ var is_ready = false;
 
 fn setup(world: *Ecs) void {
     const camera_entity = createCamera(world);
-    camera = world.clone(camera_entity, .Camera);
 
+    const camera_clone = world.clone(camera_entity, .Camera);
+    // holy sh**
+    camera = rl.Camera2D{
+        .offset = rl.Vector2{ .x = camera_clone.offset.x, .y = camera_clone.offset.y },
+        .target = rl.Vector2{ .x = camera_clone.target.x, .y = camera_clone.target.y },
+        .rotation = camera_clone.rotation,
+        .zoom = camera_clone.zoom,
+    };
     const screen_width = world.getResource(.screen_width);
     const screen_height = world.getResource(.screen_height);
 

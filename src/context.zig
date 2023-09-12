@@ -1,7 +1,7 @@
 const Zecs = @import("zecs");
 const rl = @import("raylib");
 
-// const Zecs = @import("../libs/zecs/src/main.zig");
+// const Zecs = @import("../../libs/zecs/src/main.zig");
 
 const Chunks = @import("./map/chunks.zig");
 const Chunk = @import("./map/chunk.zig");
@@ -58,10 +58,6 @@ pub const Ecs = Zecs.Context(.{
             },
         ),
         Zecs.Component(
-            "Camera",
-            rl.Camera2D,
-        ),
-        Zecs.Component(
             "Vision",
             struct {
                 range: i32,
@@ -70,9 +66,19 @@ pub const Ecs = Zecs.Context(.{
         Zecs.Component(
             "Health",
             struct {
-                points: i32 = 10,
+                points: i32,
             },
         ),
+        Zecs.Component(
+            "Camera",
+            struct {
+                offset: rl.Vector2,
+                target: rl.Vector2,
+                rotation: f32,
+                zoom: f32,
+            },
+        ),
+
         Zecs.Tag("Chunk"),
         Zecs.Tag("Input"),
         Zecs.Tag("Terrain"),

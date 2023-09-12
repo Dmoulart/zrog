@@ -14,15 +14,22 @@ const Chunk = @import("../map/chunk.zig");
 pub const CELL_SIZE = 24;
 
 pub fn prerender(world: *Ecs) void {
-    var camera = world.getResource(.camera);
+    const camera = world.getResource(.camera);
     // clone ?
-    var camera_object = world.clone(camera, .Camera);
+    const camera_object = world.clone(camera, .Camera);
+    // can we cast this crap somehow instead of creating an object
+    const rl_camera = rl.Camera2D{
+        .offset = rl.Vector2{ .x = camera_object.offset.x, .y = camera_object.offset.y },
+        .target = rl.Vector2{ .x = camera_object.target.x, .y = camera_object.target.y },
+        .rotation = camera_object.rotation,
+        .zoom = camera_object.zoom,
+    };
 
     rl.BeginDrawing();
 
     rl.ClearBackground(rl.BLACK);
 
-    rl.BeginMode2D(camera_object);
+    rl.BeginMode2D(rl_camera);
 }
 
 pub fn render(world: *Ecs) void {

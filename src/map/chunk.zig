@@ -51,9 +51,9 @@ pub fn init(x: i32, y: i32) Self {
 pub fn clear(self: *Self) void {
     var cell_x: usize = 0;
     while (cell_x < SIZE) : (cell_x += 1) {
-        std.mem.set(Zecs.Entity, &self.terrain, 0);
-        std.mem.set(Zecs.Entity, &self.props, 0);
-        std.mem.set(Zecs.Entity, &self.beings, 0);
+        @memset(&self.terrain, 0);
+        @memset(&self.props, 0);
+        @memset(&self.beings, 0);
     }
 }
 
@@ -70,7 +70,7 @@ pub fn setFromGlobalPosition(self: *Self, comptime data_field: Data, entity: Zec
 pub fn set(self: *Self, comptime data_field: Data, entity: Zecs.Entity, local_x: usize, local_y: usize) void {
     assert(local_x < SIZE and local_y < SIZE);
 
-    var data = comptime &@field(self, @tagName(data_field));
+    var data = &@field(self, @tagName(data_field));
     data[local_x * SIZE + local_y] = entity;
 }
 
@@ -83,7 +83,7 @@ pub fn getFromGlobalPosition(self: *Self, comptime data_field: Data, x: i32, y: 
 }
 
 pub fn get(self: *Self, comptime data_field: Data, local_x: usize, local_y: usize) ?Zecs.Entity {
-    var data = comptime &@field(self, @tagName(data_field));
+    var data = &@field(self, @tagName(data_field));
 
     assert(local_x < SIZE and local_y < SIZE);
 
@@ -93,7 +93,7 @@ pub fn get(self: *Self, comptime data_field: Data, local_x: usize, local_y: usiz
 }
 
 pub fn has(self: *Self, comptime data_field: Data, local_x: usize, local_y: usize) bool {
-    var data = comptime &@field(self, @tagName(data_field));
+    var data = &@field(self, @tagName(data_field));
 
     assert(local_x < SIZE and local_y < SIZE);
 
@@ -114,7 +114,7 @@ pub fn deleteFromGlobalPosition(self: *Self, comptime data_field: Data, x: i32, 
 pub fn delete(self: *Self, comptime data_field: Data, local_x: usize, local_y: usize) void {
     assert(local_x < SIZE and local_y < SIZE);
 
-    var data = comptime &@field(self, @tagName(data_field));
+    var data = &@field(self, @tagName(data_field));
 
     data[local_x * SIZE + local_y] = 0;
 }
@@ -122,7 +122,7 @@ pub fn delete(self: *Self, comptime data_field: Data, local_x: usize, local_y: u
 pub fn generateCollisionGrid(self: *Self) ChunkCollisionGrid {
     var grid: ChunkCollisionGrid = undefined;
 
-    for (grid, 0..) |*col, x| {
+    for (&grid, 0..) |*col, x| {
         for (col, 0..) |_, y| {
             const obstacle = self.has(.props, x, y); // or self.has(.beings, x, y);
             col[y] = if (obstacle) 1 else 0;

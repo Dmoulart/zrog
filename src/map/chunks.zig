@@ -154,7 +154,7 @@ fn generateCollisionGrid(self: *Self) ChunksCollisionGrid {
                 var chunk_x: usize = @intCast(chunk.chunks_x);
                 var chunk_y: usize = @intCast(chunk.chunks_y);
 
-                for (chunk_grid, 0..) |*grid_row, x| {
+                for (&chunk_grid, 0..) |*grid_row, x| {
                     for (grid_row, 0..) |_, y| {
                         var global_x: usize = @intCast((chunk_x * Chunk.SIZE) + x);
                         var global_y: usize = @intCast((chunk_y * Chunk.SIZE) + y);
