@@ -61,8 +61,8 @@ pub fn create(allocator: std.mem.Allocator) *Self {
 
     for (COORDS) |point| {
         chunk_group[point.x][point.y] = Chunk.init(
-            @intCast(i32, point.x),
-            @intCast(i32, point.y),
+            @intCast(point.x),
+            @intCast(point.y),
         );
     }
 
@@ -151,13 +151,13 @@ fn generateCollisionGrid(self: *Self) ChunksCollisionGrid {
         for (row) |*maybe_chunk| {
             if (maybe_chunk.*) |*chunk| {
                 var chunk_grid = chunk.generateCollisionGrid();
-                var chunk_x = @intCast(usize, chunk.chunks_x);
-                var chunk_y = @intCast(usize, chunk.chunks_y);
+                var chunk_x: usize = @intCast(chunk.chunks_x);
+                var chunk_y: usize = @intCast(chunk.chunks_y);
 
-                for (chunk_grid) |*grid_row, x| {
-                    for (grid_row) |_, y| {
-                        var global_x = @intCast(usize, (chunk_x * Chunk.SIZE) + x);
-                        var global_y = @intCast(usize, (chunk_y * Chunk.SIZE) + y);
+                for (chunk_grid, 0..) |*grid_row, x| {
+                    for (grid_row, 0..) |_, y| {
+                        var global_x: usize = @intCast((chunk_x * Chunk.SIZE) + x);
+                        var global_y: usize = @intCast((chunk_y * Chunk.SIZE) + y);
 
                         grid[global_x][global_y] = chunk_grid[x][y];
                     }

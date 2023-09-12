@@ -15,9 +15,17 @@ const Program = struct {
     desc: []const u8,
 };
 
-pub fn build(b: *Builder) void {
-    const mode = b.standardReleaseOptions();
+pub fn build(b: *std.Build) void {
+    // Standard target options allows the person running `zig build` to choose
+    // what target to build for. Here we do not override the defaults, which
+    // means any target is allowed, and the default is native. Other options
+    // for restricting supported target set are available.
     const target = b.standardTargetOptions(.{});
+
+    // Standard optimization options allow the person running `zig build` to select
+    // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall. Here we do not
+    // set a preferred release mode, allowing the user to decide how to optimize.
+    const optimize = b.standardOptimizeOption(.{});
 
     const examples = [_]Program{
         .{
@@ -59,7 +67,7 @@ pub fn build(b: *Builder) void {
             .name = "texture_outline",
             .path = "examples/shaders/texture_outline.zig",
             .desc = "Uses a shader to create an outline around a sprite",
-        }
+        },
         // .{
         //     .name = "models_loading",
         //     .path = "examples/models/models_loading.zig",
@@ -76,10 +84,16 @@ pub fn build(b: *Builder) void {
     const system_lib = b.option(bool, "system-raylib", "link to preinstalled raylib libraries") orelse false;
 
     for (examples) |ex| {
-        const exe = b.addExecutable(ex.name, ex.path);
-
-        exe.setBuildMode(mode);
-        exe.setTarget(target);
+        const exe = b.addExecutable(
+            ex.name,
+            ex.path,
+            .{
+                .name = ex.name,
+                .root_source_file = .{ .path = ex.path },
+                .target = target,
+                .optimize = optimize,
+            },
+        );
 
         raylib.link(exe, system_lib);
         raylib.addAsPackage("raylib", exe);

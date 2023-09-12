@@ -153,7 +153,7 @@ pub fn CellularAutomaton(comptime width: comptime_int, comptime height: comptime
         pub fn fillWithLivingChanceOf(self: *Self, chance: u8) void {
             assert(chance >= 0 and chance <= 100);
 
-            var rnd = RndGen.init(@intCast(u64, std.time.milliTimestamp()));
+            var rnd = RndGen.init(@as(u64, @intCast(std.time.milliTimestamp())));
 
             var y: usize = 0;
 
@@ -186,7 +186,7 @@ pub fn CellularAutomaton(comptime width: comptime_int, comptime height: comptime
                     const state = self.get(cells_x, cells_y);
 
                     if (state == .alive) {
-                        rl.DrawText("*", @intCast(c_int, cells_x) * size, @intCast(c_int, cells_y) * size, size, rl.WHITE);
+                        rl.DrawText("*", @as(c_int, @intCast(cells_x)) * size, @as(c_int, @intCast(cells_y)) * size, size, rl.WHITE);
                     }
                 }
             }

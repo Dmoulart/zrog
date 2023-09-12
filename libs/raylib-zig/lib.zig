@@ -54,11 +54,15 @@ pub fn link(exe: *LibExeObjStep, system_lib: bool) void {
     }
 }
 
-pub fn addAsPackage(name: []const u8, to: *LibExeObjStep) void {
-    to.addPackagePath(name, srcdir ++ "/lib/raylib-zig.zig");
+pub fn addAsPackage(name: []const u8, to: *std.Build.Step.Compile) void {
+    _ = name;
+    // to.addPackagePath(name, srcdir ++ "/lib/raylib-zig.zig");
+    to.addLibraryPath(.{ .path = srcdir ++ "/lib/raylib-zig.zig" });
 }
 pub const math = struct {
-    pub fn addAsPackage(name: []const u8, to: *LibExeObjStep) void {
-        to.addPackagePath(name, srcdir ++ "/lib/raylib-zig-math.zig");
+    pub fn addAsPackage(name: []const u8, to: *std.Build.Step.Compile) void {
+        _ = name;
+        // to.addPackagePath(name, srcdir ++ "/lib/raylib-zig-math.zig");
+        to.addLibraryPath(.{ .path = srcdir ++ "/lib/raylib-zig-math.zig" });
     }
 };

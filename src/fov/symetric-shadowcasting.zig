@@ -194,7 +194,7 @@ const Row = struct {
     end_slope: f32,
 
     pub fn tiles(self: Self) Tile.Iterator {
-        const depth = @intToFloat(f32, self.depth);
+        const depth: f32 = @floatFromInt(self.depth);
 
         const min_col = roundTiesUp(depth * self.start_slope) - 1; // need this to avoid a hole between west and north, but why ?
         const max_col = roundTiesDown(depth * self.end_slope);
@@ -220,26 +220,26 @@ const Row = struct {
 // It returns true if the central point of the tile is in the sector swept out by the row’s start and end slopes.
 // Otherwise, it returns false.
 fn slope(tile: Tile) f32 {
-    return (2 * @intToFloat(f32, tile.col) - 1) / (2 * @intToFloat(f32, tile.depth));
+    return (2 * @as(f32, @floatFromInt(tile.col)) - 1) / (2 * @as(f32, @floatFromInt(tile.depth)));
 }
 
 // Round n to the nearest integer. If n ends in .5, rounds up.
 // there might be a problem with this one (see function utilisation above)
 fn roundTiesUp(n: f32) i32 {
-    return @floatToInt(i32, @floor(n + 0.5));
+    return @as(i32, @intFromFloat(@floor(n + 0.5)));
 }
 
 // Round n to the nearest integer. If n ends in .5, rounds down
 fn roundTiesDown(n: f32) i32 {
-    return @floatToInt(i32, @ceil(n - 0.5));
+    return @as(i32, @intFromFloat(@ceil(n - 0.5)));
 }
 
 // Checks if a given floor tile can be seen symmetrically from the origin.
 // It returns true if the central point of the tile is in the sector swept out by the row’s start and end slopes.
 // Otherwise, it returns false.
 fn isSymmetric(row: *Row, tile: Tile) bool {
-    var depth = @intToFloat(f32, row.depth);
-    var col = @intToFloat(f32, tile.col);
+    var depth = @as(f32, @floatFromInt(row.depth));
+    var col = @as(f32, @floatFromInt(tile.col));
 
     return (col >= depth * row.start_slope and col <= depth * row.end_slope);
 }

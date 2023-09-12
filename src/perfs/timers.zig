@@ -56,7 +56,7 @@ pub fn endTimer(self: *Self) void {
     self.after = std.time.nanoTimestamp();
 
     var duration = self.after - self.before;
-    var ms = @intToFloat(f64, duration) / 1_000_000;
+    var ms = @as(f64, @floatFromInt(duration)) / 1_000_000;
 
     print("\n", .{});
     print("\n{s} Results : {d:.4} ms", .{ self.name, ms });

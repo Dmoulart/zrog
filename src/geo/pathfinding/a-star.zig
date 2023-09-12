@@ -163,7 +163,7 @@ pub fn astar(
 
         var current_node = open_list.items[0];
 
-        for (open_list.items) |node, i| {
+        for (open_list.items, 0..) |node, i| {
             if (node.f < current_node.f) {
                 current_node = node;
                 current_index = i;
@@ -206,7 +206,7 @@ pub fn astar(
                 continue;
             }
 
-            if (grid[@intCast(usize, node_position.x)][@intCast(usize, node_position.y)] != 0) {
+            if (grid[@as(usize, @intCast(node_position.x))][@as(usize, @intCast(node_position.y))] != 0) {
                 continue;
             }
 
@@ -287,7 +287,9 @@ pub fn bench() !void {
                     break;
                 }
             }
-            if (grid[@intCast(usize, x)][@intCast(usize, y)] == 1) {
+            const usize_x: usize = @intCast(x);
+            const usize_y: usize = @intCast(y);
+            if (grid[usize_x][usize_y] == 1) {
                 std.debug.print("x ", .{});
             } else if (x == start_x and y == start_y) {
                 std.debug.print("S ", .{});

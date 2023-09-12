@@ -22,7 +22,7 @@ pub fn move(world: *Ecs, entity: Zecs.Entity) void {
 
     var move_freq = speed.move_freq.*;
 
-    var turn_nb_since_last_move: f32 = @intToFloat(f32, turn - speed.last_move.*);
+    var turn_nb_since_last_move: f32 = @floatFromInt(turn - speed.last_move.*);
 
     if (turn_nb_since_last_move <= move_freq) return;
 

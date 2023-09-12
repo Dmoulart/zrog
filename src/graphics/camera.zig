@@ -46,7 +46,6 @@ pub fn createCamera(world: *Ecs) Zecs.Entity {
         },
     );
 
-
     return camera;
 }
 
@@ -92,11 +91,11 @@ fn syncCameraMovements(world: *Ecs, camera: Zecs.Entity) void {
 
     var transform = world.pack(camera, .Transform);
 
-    var screen_width = @intToFloat(f32, world.getResource(.screen_width));
-    var screen_height = @intToFloat(f32, world.getResource(.screen_height));
+    var screen_width: f32 = @floatFromInt(world.getResource(.screen_width));
+    var screen_height: f32 = @floatFromInt(world.getResource(.screen_height));
 
-    var position_x = @intToFloat(f32, transform.x.*) * CELL_SIZE;
-    var position_y = @intToFloat(f32, transform.y.*) * CELL_SIZE;
+    var position_x = @as(f32, @floatFromInt(transform.x.*)) * CELL_SIZE;
+    var position_y = @as(f32, @floatFromInt(transform.y.*)) * CELL_SIZE;
 
     offset.x = -position_x + screen_width / 2;
     offset.y = -position_y + screen_height / 2;
@@ -105,8 +104,8 @@ fn syncCameraMovements(world: *Ecs, camera: Zecs.Entity) void {
 pub fn getCameraBoundingBox(world: *Ecs, camera: Zecs.Entity) BoundingBox {
     var transform = world.pack(camera, .Transform);
 
-    var screen_width = @intCast(i32, world.getResource(.screen_width));
-    var screen_height = @intCast(i32, world.getResource(.screen_height));
+    var screen_width: i32 = @intCast(world.getResource(.screen_width));
+    var screen_height: i32 = @intCast(world.getResource(.screen_height));
 
     var screen_cells_width = @divTrunc(screen_width, CELL_SIZE);
     var screen_cells_height = @divTrunc(screen_height, CELL_SIZE);

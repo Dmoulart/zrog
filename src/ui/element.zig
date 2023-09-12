@@ -22,13 +22,13 @@ pub const Text = struct {
     color: rl.Color,
 
     pub fn draw(self: Self) void {
-        const content = @ptrCast([*c]const u8, self.content);
+        const content: [*c]const u8 = @ptrCast(self.content);
         const x = self.pos.x - rl.MeasureText(content, self.font_size);
 
         rl.DrawText(
             content,
-            @intCast(c_int, x),
-            @intCast(c_int, self.pos.y),
+            @as(c_int, @intCast(x)),
+            @as(c_int, @intCast(self.pos.y)),
             self.font_size,
             self.color,
         );
@@ -46,8 +46,8 @@ pub const Rect = struct {
 
     pub fn draw(self: Self) void {
         rl.DrawRectangle(
-            @intCast(c_int, self.pos.x),
-            @intCast(c_int, self.pos.y),
+            @as(c_int, @intCast(self.pos.x)),
+            @as(c_int, @intCast(self.pos.y)),
             self.size.width,
             self.size.height,
             self.color,

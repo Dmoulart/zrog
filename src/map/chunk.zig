@@ -122,8 +122,8 @@ pub fn delete(self: *Self, comptime data_field: Data, local_x: usize, local_y: u
 pub fn generateCollisionGrid(self: *Self) ChunkCollisionGrid {
     var grid: ChunkCollisionGrid = undefined;
 
-    for (grid) |*col, x| {
-        for (col) |_, y| {
+    for (grid, 0..) |*col, x| {
+        for (col, 0..) |_, y| {
             const obstacle = self.has(.props, x, y); // or self.has(.beings, x, y);
             col[y] = if (obstacle) 1 else 0;
         }
@@ -141,11 +141,11 @@ pub fn getGlobalY(self: *Self) i32 {
 }
 
 pub fn toLocalX(self: *Self, x: i32) usize {
-    return @intCast(usize, x - self.getGlobalX());
+    return @intCast(x - self.getGlobalX());
 }
 
 pub fn toLocalY(self: *Self, y: i32) usize {
-    return @intCast(usize, y - self.getGlobalY());
+    return @intCast(y - self.getGlobalY());
 }
 
 pub fn toGlobalX(self: *Self, x: i32) i32 {

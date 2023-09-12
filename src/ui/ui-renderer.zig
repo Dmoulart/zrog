@@ -76,8 +76,8 @@ pub fn renderUI(world: *Ecs) void {
     rl.BeginMode2D(camera);
 
     rl.DrawFPS(
-        @intCast(c_int, 0),
-        @intCast(c_int, 0),
+        @as(c_int, @intCast(0)),
+        @as(c_int, @intCast(0)),
     );
 
     panel.draw();

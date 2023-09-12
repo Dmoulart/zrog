@@ -40,19 +40,19 @@ pub fn render(world: *Ecs) void {
     for (visible_chunks) |visible_chunk| {
         var intersection = camera_bbox.intersection(&visible_chunk.bbox);
 
-        var start_x = @intCast(usize, intersection.x - visible_chunk.bbox.x);
-        var start_y = @intCast(usize, intersection.y - visible_chunk.bbox.y);
+        var start_x: usize = @intCast(intersection.x - visible_chunk.bbox.x);
+        var start_y: usize = @intCast(intersection.y - visible_chunk.bbox.y);
 
-        var end_x = @intCast(usize, start_x + @intCast(usize, intersection.width));
-        var end_y = @intCast(usize, start_y + @intCast(usize, intersection.height));
+        var end_x: usize = @intCast(start_x + @as(usize, @intCast(intersection.width)));
+        var end_y: usize = @intCast(start_y + @as(usize, @intCast(intersection.height)));
 
         var x = start_x;
         var y = start_y;
 
         while (y < end_y) : (y += 1) {
             while (x < end_x) : (x += 1) {
-                var global_x = visible_chunk.toGlobalX(@intCast(i32, x));
-                var global_y = visible_chunk.toGlobalY(@intCast(i32, y));
+                var global_x = visible_chunk.toGlobalX(@as(i32, @intCast(x)));
+                var global_y = visible_chunk.toGlobalY(@as(i32, @intCast(y)));
 
                 if (!player_fov.contains(.{ .x = global_x, .y = global_y })) {
                     continue;
@@ -78,8 +78,8 @@ fn draw(world: *Ecs, entity: Zecs.Entity) void {
     const glyph = world.pack(entity, .Glyph);
     const transform = world.pack(entity, .Transform);
 
-    var x = @intCast(c_int, transform.x.*) * CELL_SIZE;
-    var y = @intCast(c_int, transform.y.*) * CELL_SIZE;
+    var x = @as(c_int, @intCast(transform.x.*)) * CELL_SIZE;
+    var y = @as(c_int, @intCast(transform.y.*)) * CELL_SIZE;
 
     rl.DrawText(glyph.char.*, x, y, CELL_SIZE, glyph.color.*);
 }

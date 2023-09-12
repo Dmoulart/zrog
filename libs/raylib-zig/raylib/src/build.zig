@@ -1,6 +1,6 @@
 const std = @import("std");
 
-pub fn addRaylib(b: *std.build.Builder, target: std.zig.CrossTarget) *std.build.LibExeObjStep {
+pub fn addRaylib(b: *std.Build, target: std.zig.CrossTarget) *std.build.LibExeObjStep {
     const raylib_flags = &[_][]const u8{
         "-std=gnu99",
         "-DPLATFORM_DESKTOP",
@@ -89,7 +89,7 @@ pub fn build(b: *std.build.Builder) void {
     lib.install();
 }
 
-const srcdir = struct{
+const srcdir = struct {
     fn getSrcDir() []const u8 {
         return std.fs.path.dirname(@src().file).?;
     }
